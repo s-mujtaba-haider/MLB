@@ -171,6 +171,40 @@ def game_context(games: pd.DataFrame) -> pd.DataFrame:
 # Starting pitcher identification (point-in-time)
 # ---------------------------------------------------------------------------
 
+def current_form(players: pd.DataFrame, games: pd.DataFrame,
+                 as_of_date: str, event_id: str = "__PENDING__"
+                 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Form for a game that has not happened yet.
+
+    A placeholder appearance dated `as_of_date` is appended for every player,
+    then the ordinary (shifted) form pipeline is run and those placeholder rows
+    are returned. Reusing the exact backtest code path rather than writing a
+    parallel "live" version is deliberate: a separate implementation is how
+    train/serve skew gets in, and skew here would silently change what the
+    model's inputs mean between validation and production.
+    """
+    stub_game = pd.DataFrame([{
+        "espn_id": event_id, "game_date": as_of_date, "venue": None,
+        "home_team": None, "away_team": None, "home_score": np.nan,
+        "away_score": np.nan, "total_runs": np.nan, "home_margin": np.nan,
+        "date": f"{as_of_date}T00:00:00Z",
+    }])
+    games2 = pd.concat([games, stub_game], ignore_index=True)
+
+    ath = players[["athlete_id", "group", "team"]].drop_duplicates(
+        subset=["athlete_id", "group"])
+    stub = ath.assign(event_id=event_id)
+    for c in players.columns:
+        if c not in stub.columns:
+            stub[c] = np.nan
+    players2 = pd.concat([players, stub[players.columns]], ignore_index=True)
+
+    bat = batter_form(players2, games2)
+    pit = pitcher_form(players2, games2)
+    return (bat[bat["event_id"] == event_id].drop(columns=["event_id"]),
+            pit[pit["event_id"] == event_id].drop(columns=["event_id"]))
+
+
 def starters_from_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
     """Who is starting, inferred from the market itself.
 

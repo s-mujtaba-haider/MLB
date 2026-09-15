@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLB Edge — Daily Picks</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#262b36; --fg:#e7e9ee;
+          --muted:#9aa3b2; --pos:#3fb950; --neg:#f85149; --warn:#d29922;
+          --accent:#4f8cc9; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5
+         ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  header { padding:18px 22px; border-bottom:1px solid var(--line);
+           display:flex; gap:18px; align-items:baseline; flex-wrap:wrap; }
+  h1 { font-size:18px; margin:0; letter-spacing:.2px; }
+  .muted { color:var(--muted); }
+  main { padding:18px 22px; max-width:1500px; }
+  .controls { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;
+              align-items:center; }
+  select,input,button { background:var(--panel); color:var(--fg);
+      border:1px solid var(--line); border-radius:6px; padding:7px 10px;
+      font:inherit; }
+  button { cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  .cards { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+  .card { background:var(--panel); border:1px solid var(--line);
+          border-radius:8px; padding:12px 16px; min-width:140px; }
+  .card .k { color:var(--muted); font-size:12px; text-transform:uppercase;
+             letter-spacing:.6px; }
+  .card .v { font-size:22px; font-weight:600; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; background:var(--panel);
+          border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  th,td { padding:9px 11px; text-align:left; border-bottom:1px solid var(--line);
+          white-space:nowrap; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.5px;
+       color:var(--muted); background:#12151b; cursor:pointer; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#1b1f27; }
+  .num { text-align:right; font-variant-numeric:tabular-nums; }
+  .pos { color:var(--pos); } .neg { color:var(--neg); }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px;
+          font-size:11px; font-weight:600; letter-spacing:.3px; }
+  .live { background:rgba(63,185,80,.15); color:var(--pos); }
+  .vetoed { background:rgba(210,153,34,.15); color:var(--warn); }
+  .killed { background:rgba(248,81,73,.15); color:var(--neg); }
+  .bar { height:6px; background:#2a2f3a; border-radius:3px; overflow:hidden;
+         width:70px; display:inline-block; vertical-align:middle; }
+  .bar > i { display:block; height:100%; background:var(--accent); }
+  .empty { padding:40px; text-align:center; color:var(--muted); }
+  section { margin-bottom:28px; }
+  h2 { font-size:14px; text-transform:uppercase; letter-spacing:.7px;
+       color:var(--muted); margin:0 0 10px; }
+  .scroll { overflow-x:auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>MLB Edge</h1>
+  <span class="muted" id="status">loading…</span>
+</header>
+
+<main>
+  <div class="controls">
+    <label class="muted">Date <select id="date"></select></label>
+    <label class="muted">Market <select id="market"><option value="">all</option></select></label>
+    <label class="muted">Min confidence <input id="conf" type="number" value="0" min="0" max="100" step="5" style="width:80px"></label>
+    <button id="refresh">Refresh</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <section>
+    <h2>Today's picks</h2>
+    <div class="scroll"><table id="picks">
+      <thead><tr>
+        <th data-k="market">Market</th><th data-k="subject">Selection</th>
+        <th data-k="side">Side</th><th class="num" data-k="line">Line</th>
+        <th class="num" data-k="price">Price</th><th data-k="book">Book</th>
+        <th class="num" data-k="p_model">Model&nbsp;%</th>
+        <th class="num" data-k="p_raw">Implied&nbsp;%</th>
+        <th class="num" data-k="ev">EV</th>
+        <th class="num" data-k="kelly">Stake</th>
+        <th class="num" data-k="confidence">Confidence</th>
+        <th class="num" data-k="n_books_cons">Books</th>
+        <th data-k="commence_time">First pitch</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Market status</h2>
+    <div class="scroll"><table id="markets">
+      <thead><tr>
+        <th>Market</th><th>Verdict</th><th>Deployment</th>
+        <th class="num">Bets</th><th class="num">ROI</th>
+        <th class="num">CI low</th><th class="num">CLV</th>
+        <th class="num">EV cut</th><th>Cause</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const pct = (v,d=1) => v==null ? '—' : (100*v).toFixed(d)+'%';
+const sign = v => v==null ? '' : (v>0?'pos':(v<0?'neg':''));
+const amer = v => v==null ? '—' : (v>0?'+':'')+Math.round(v);
+let PICKS = [], SORT = {k:'ev', dir:-1};
+
+async function get(u){ const r = await fetch(u); return r.json(); }
+
+function renderCards(){
+  const n = PICKS.length;
+  const avgEv = n ? PICKS.reduce((a,p)=>a+(p.ev||0),0)/n : null;
+  const avgConf = n ? PICKS.reduce((a,p)=>a+(p.confidence||0),0)/n : null;
+  const mkts = new Set(PICKS.map(p=>p.market)).size;
+  const units = PICKS.reduce((a,p)=>a+(p.kelly||0),0);
+  $('#cards').innerHTML = [
+    ['Picks', n],
+    ['Markets firing', mkts],
+    ['Avg EV', avgEv==null?'—':pct(avgEv,2)],
+    ['Avg confidence', avgConf==null?'—':avgConf.toFixed(0)],
+    ['Total stake', (100*units).toFixed(2)+'% bank'],
+  ].map(([k,v])=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+}
+
+function renderPicks(){
+  const tb = $('#picks tbody');
+  if(!PICKS.length){ tb.innerHTML = `<tr><td colspan="13" class="empty">No picks cleared their EV threshold for this date.</td></tr>`; renderCards(); return; }
+  const rows = [...PICKS].sort((a,b)=>{
+    const x=a[SORT.k], y=b[SORT.k];
+    if(x==null) return 1; if(y==null) return -1;
+    return (x>y?1:x<y?-1:0)*SORT.dir;
+  });
+  tb.innerHTML = rows.map(p=>`<tr>
+    <td>${p.market}</td>
+    <td>${p.subject==='game' ? '—' : p.subject}</td>
+    <td>${p.side}</td>
+    <td class="num">${p.line==null?'—':p.line}</td>
+    <td class="num">${amer(p.price)}</td>
+    <td>${p.book}</td>
+    <td class="num">${pct(p.p_model)}</td>
+    <td class="num">${pct(p.p_raw)}</td>
+    <td class="num ${sign(p.ev)}">${pct(p.ev,2)}</td>
+    <td class="num">${pct(p.kelly,2)}</td>
+    <td class="num"><span class="bar"><i style="width:${p.confidence||0}%"></i></span> ${(p.confidence||0).toFixed(0)}</td>
+    <td class="num">${p.n_books_cons==null?'—':Math.round(p.n_books_cons)}</td>
+    <td class="muted">${(p.commence_time||'').replace('T',' ').replace('Z',' UTC')}</td>
+  </tr>`).join('');
+  renderCards();
+}
+
+function renderMarkets(ms){
+  $('#markets tbody').innerHTML = ms.map(m=>{
+    const k = m.metrics||{};
+    const cls = m.deployment==='live'?'live':(m.deployment==='veto_filtered'?'vetoed':'killed');
+    return `<tr>
+      <td>${m.market}<div class="muted" style="font-size:12px">${m.label||''}</div></td>
+      <td><b>${m.verdict}</b></td>
+      <td><span class="pill ${cls}">${m.deployment}</span></td>
+      <td class="num">${k.n_bets??'—'}</td>
+      <td class="num ${sign(k.roi)}">${pct(k.roi,2)}</td>
+      <td class="num ${sign(k.roi_lo)}">${pct(k.roi_lo,2)}</td>
+      <td class="num ${sign(k.clv_mean)}">${k.clv_mean==null?'—':(k.clv_mean>0?'+':'')+(100*k.clv_mean).toFixed(2)+'%'}</td>
+      <td class="num">${m.threshold==null?'—':pct(m.threshold,1)}</td>
+      <td class="muted">${m.cause||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function load(){
+  const d = $('#date').value, m = $('#market').value, c = $('#conf').value||0;
+  const qs = new URLSearchParams();
+  if(d) qs.set('date', d);
+  if(m) qs.set('market', m);
+  if(c) qs.set('min_confidence', c);
+  PICKS = await get('/api/picks?'+qs);
+  renderPicks();
+}
+
+async function boot(){
+  const [h, ms] = await Promise.all([get('/api/health'), get('/api/markets')]);
+  $('#status').textContent = h.picks_total
+    ? `${h.picks_total} picks on file · last run ${h.last_generated_at||'—'}`
+    : 'no picks generated yet — run scripts/daily.py';
+  const dates = (h.dates_covered||[]).slice().reverse();
+  $('#date').innerHTML = dates.length
+      ? dates.map(d=>`<option>${d}</option>`).join('')
+      : '<option value="">—</option>';
+  $('#market').innerHTML = '<option value="">all</option>' +
+      ms.filter(m=>m.deployment!=='killed').map(m=>`<option>${m.market}</option>`).join('');
+  renderMarkets(ms);
+  await load();
+}
+
+document.querySelectorAll('#picks th').forEach(th=>th.onclick=()=>{
+  const k = th.dataset.k;
+  SORT = {k, dir: SORT.k===k ? -SORT.dir : -1};
+  renderPicks();
+});
+$('#refresh').onclick = load;
+$('#date').onchange = load;
+$('#market').onchange = load;
+$('#conf').onchange = load;
+boot();
+</script>
+</body>
+</html>
