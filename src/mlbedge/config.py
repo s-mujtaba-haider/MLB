@@ -198,7 +198,11 @@ DEFAULT_ANCHOR_WEIGHT = 0.10
 SELF_ANCHOR_MARKETS = frozenset({"batter_strikeouts"})
 
 # How many *other* books must stand behind a price before it can be bet.
-DEFAULT_MIN_BOOKS = 3
+# Two, not three: the selection calibrator now conditions on the book count and
+# discounts a thin consensus on its own, which is a better instrument than a
+# hard cutoff. A blanket minimum of three threw away real volume in exchange
+# for a judgement the correction already makes more precisely.
+DEFAULT_MIN_BOOKS = 2
 MIN_BOOKS = {"batter_strikeouts": 1}
 
 
