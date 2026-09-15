@@ -7,3 +7,13 @@
 [quotes 2025] parsing alternate ladders
 [quotes 2025] 4,245,298 rows -> quotes_2025.parquet
 [graded 2025] 2413/2448 events matched to ESPN games
+[graded 2025] 4,245,298 rows -> graded_2025.parquet
+  propositions 256,258  candidates 499,577  closing 2,004
+Traceback (most recent call last):
+  File "C:\Users\mujta\mlb\scripts\validate.py", line 138, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\mujta\mlb\scripts\validate.py", line 65, in main
+    games = pd.concat(game_frames, ignore_index=True).drop_duplicates("espn_id")
+                      ^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'game_frames' where it is not associated with a value

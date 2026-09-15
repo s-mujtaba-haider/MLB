@@ -47,9 +47,13 @@ def main() -> None:
     # pipeline by two orders of magnitude and nothing downstream of the
     # consensus needs two seasons of it in memory at once.
     prop_frames, cand_frames, close_frames = [], [], []
+    game_frames, player_frames = [], []
     for s in seasons:
         print(f"\n--- season {s} ---", flush=True)
         p, c, cl = P.build_season_frames(s, devig_method=args.devig)
+        gs, pls = P.build_results(s)
+        game_frames.append(gs)
+        player_frames.append(pls)
         print(f"  propositions {len(p):,}  candidates {len(c):,}  "
               f"closing {len(cl):,}", flush=True)
         prop_frames.append(p)

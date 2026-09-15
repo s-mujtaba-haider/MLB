@@ -118,18 +118,35 @@ def build_season_frames(season: int, devig_method: str = "shin",
     cluster job, for no benefit -- nothing downstream of the consensus needs
     to see two seasons at the same time.
     """
+    import hashlib
+    import json as _json
+
     from . import calibrate as CAL
     from . import config as C
     from . import dataset as D
     from . import ladder as LAD
     from .devig import attach_consensus
 
+    # Cache keyed on the inputs that change the answer: the de-vig model, and
+    # the fitted tables. A new ladder or new anchor weights must invalidate,
+    # or a re-run silently reports the previous configuration's numbers.
+    tbl = LAD.load()
+    weights = CAL.load()
+    sig = hashlib.sha1(
+        _json.dumps([devig_method, sorted(tags), tbl, weights],
+                    sort_keys=True).encode()).hexdigest()[:10]
+    pp = C.CURATED / f"props_{season}_{sig}.parquet"
+    cc = C.CURATED / f"cand_{season}_{sig}.parquet"
+    kk = C.CURATED / f"close_{season}_{sig}.parquet"
+    if pp.exists() and cc.exists():
+        return (pd.read_parquet(pp), pd.read_parquet(cc),
+                pd.read_parquet(kk) if kk.exists() else pd.DataFrame())
+
     graded = build_graded(season, tags=tags)
     games, players = build_results(season)
     cons = attach_consensus(graded, method=devig_method, min_books=2,
                             self_anchor_markets=C.SELF_ANCHOR_MARKETS,
-                            fitted_weights=CAL.load())
-    tbl = LAD.load()
+                            fitted_weights=weights)
     props = D.build_props(graded, games, players, cons=cons, ladder_table=tbl)
     cand = D.build_candidates(graded, cons=cons, tag="decision", props=props,
                               ladder_table=tbl)
@@ -143,6 +160,10 @@ def build_season_frames(season: int, devig_method: str = "shin",
     closing = cons[cons["tag"] == "closing"][
         D_CLOSING_COLS].copy() if "tag" in cons else pd.DataFrame()
     del graded, cons
+    props.to_parquet(pp, index=False)
+    cand.to_parquet(cc, index=False)
+    if not closing.empty:
+        closing.to_parquet(kk, index=False)
     return props, cand, closing
 
 
