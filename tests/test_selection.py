@@ -123,3 +123,51 @@ def test_calibrator_fits_anchor_types_separately():
         g = out[out["anchor_src"] == key]
         assert np.abs(g["p_cal"] - g["p_true"]).mean() < \
                np.abs(g["p_model"] - g["p_true"]).mean(), key
+
+
+def _context_dependent(n=40000, seed=9):
+    """Same apparent edge, two regimes.
+
+    Against a deep consensus the edge is real; against a shallow one it is
+    pure selection. An isotonic fit on edge alone must average the two and get
+    both wrong; a conditional fit should tell them apart.
+    """
+    rng = np.random.default_rng(seed)
+    deep = rng.random(n) < 0.5
+    n_books = np.where(deep, rng.integers(10, 18, n), rng.integers(3, 5, n))
+    p_true = rng.uniform(0.35, 0.65, n)
+    apparent = rng.uniform(0.0, 0.10, n)
+    # Deep consensus: the apparent edge is genuine. Shallow: it is noise.
+    p_raw = np.where(deep, p_true - apparent, p_true)
+    p_model = p_raw + apparent
+    won = (rng.random(n) < p_true).astype(float)
+    price = _price_from_prob(p_raw)
+    d = pd.DataFrame({
+        "p_model": p_model, "p_raw": american_to_prob(price), "price": price,
+        "won_flag": won, "result": np.where(won == 1, "win", "loss"),
+        "p_true": p_true, "n_books_cons": n_books.astype(float),
+        "lead_min": 30.0, "book": "draftkings", "anchor_src": "direct",
+        "deep": deep,
+    })
+    d["payout"] = profit_per_unit(d["price"].to_numpy(dtype=float))
+    d["profit"] = np.where(d["won_flag"] == 1, d["payout"], -1.0)
+    return add_apparent_edge(d)
+
+
+def test_conditional_model_separates_real_from_selected_edges():
+    d = _context_dependent()
+    cal = SelectionCalibrator().fit(d)
+    assert cal.cond is not None, "conditional model should fit at this size"
+    out = cal.apply(d)
+
+    deep = out[out["deep"]]
+    shallow = out[~out["deep"]]
+    # It should keep the genuine edges and discount the manufactured ones.
+    assert deep["p_cal"].mean() - deep["p_raw"].mean() > \
+           shallow["p_cal"].mean() - shallow["p_raw"].mean()
+
+    # And betting on the corrected EV should beat betting on raw apparent edge.
+    naive = d[d["apparent_edge"] > 0.04]
+    smart = out[out["ev_cal"] > 0.02]
+    assert len(smart) > 500
+    assert smart["profit"].mean() > naive["profit"].mean()

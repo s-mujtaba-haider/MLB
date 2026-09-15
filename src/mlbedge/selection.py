@@ -49,6 +49,7 @@ class SelectionCalibrator:
         self.group_col = group_col
         self.iso: IsotonicRegression | None = None
         self.by_group: dict[str, IsotonicRegression] = {}
+        self.cond = None          # conditional model, when there is data for it
         self.n_fit = 0
 
     @staticmethod
@@ -81,7 +82,67 @@ class SelectionCalibrator:
                     sub[edge_col].to_numpy(dtype=float),
                     sub[outcome_col].to_numpy(dtype=float)
                     - sub[price_prob_col].to_numpy(dtype=float))
+
+        self._fit_conditional(d, edge_col, outcome_col)
         return self
+
+    # -- conditional model -------------------------------------------------
+    # Whether an apparent edge is real is not a function of its size alone. An
+    # edge of four points against three books is a different proposition from
+    # the same four points against fifteen, and a stale number an hour out is
+    # different from one taken at the bell. This learns P(win) from the price
+    # and that context together, constrained to stay increasing in the apparent
+    # edge so it cannot invent a non-monotone story out of noise.
+    COND_FEATURES = ("apparent_edge", "logit_price", "n_books_cons",
+                     "lead_min", "book_tier", "is_ladder")
+    MIN_COND_FIT = 4000
+
+    def _cond_matrix(self, d: pd.DataFrame, edge_col: str) -> np.ndarray | None:
+        from .config import book_tier
+        from .devig import logit
+
+        if "p_raw" not in d.columns:
+            return None
+        cols = {
+            "apparent_edge": d[edge_col].to_numpy(dtype=float),
+            "logit_price": logit(d["p_raw"].to_numpy(dtype=float)),
+            "n_books_cons": pd.to_numeric(
+                d.get("n_books_cons", pd.Series(np.nan, index=d.index)),
+                errors="coerce").to_numpy(dtype=float),
+            "lead_min": pd.to_numeric(
+                d.get("lead_min", pd.Series(np.nan, index=d.index)),
+                errors="coerce").to_numpy(dtype=float),
+            "book_tier": (d["book"].map(book_tier).to_numpy(dtype=float)
+                          if "book" in d.columns
+                          else np.full(len(d), np.nan)),
+            "is_ladder": ((d[self.group_col].astype(str) == "ladder")
+                          .to_numpy(dtype=float)
+                          if self.group_col in d.columns
+                          else np.zeros(len(d))),
+        }
+        return np.column_stack([cols[c] for c in self.COND_FEATURES])
+
+    def _fit_conditional(self, d: pd.DataFrame, edge_col: str,
+                         outcome_col: str) -> None:
+        if len(d) < self.MIN_COND_FIT:
+            return
+        X = self._cond_matrix(d, edge_col)
+        if X is None:
+            return
+        from sklearn.ensemble import HistGradientBoostingClassifier
+
+        # Monotone increasing in apparent edge; everything else unconstrained.
+        mono = [1 if c == "apparent_edge" else 0 for c in self.COND_FEATURES]
+        m = HistGradientBoostingClassifier(
+            max_iter=200, learning_rate=0.05, max_leaf_nodes=15,
+            min_samples_leaf=400, l2_regularization=1.0,
+            monotonic_cst=mono, early_stopping=True, validation_fraction=0.2,
+            n_iter_no_change=20, random_state=0)
+        try:
+            m.fit(X, d[outcome_col].to_numpy(dtype=float))
+        except (ValueError, TypeError):
+            return
+        self.cond = m
 
     def realised_edge(self, apparent: np.ndarray,
                       groups: np.ndarray | None = None) -> np.ndarray:
@@ -109,8 +170,19 @@ class SelectionCalibrator:
                   if self.group_col in d.columns else None)
         adj = self.realised_edge(d[edge_col].to_numpy(dtype=float), groups)
         d["realised_edge"] = adj
-        d["p_cal"] = np.clip(d[price_prob_col].to_numpy(dtype=float) + adj,
-                             1e-4, 1 - 1e-4)
+        p_iso = np.clip(d[price_prob_col].to_numpy(dtype=float) + adj,
+                        1e-4, 1 - 1e-4)
+
+        if self.cond is not None:
+            X = self._cond_matrix(d, edge_col)
+            if X is not None:
+                p_cond = self.cond.predict_proba(X)[:, 1]
+                # Average the two in probability space. The isotonic fit is
+                # robust but coarse; the conditional model is sharper but can
+                # drift where a context slice is thin. Blending keeps most of
+                # the sharpening without betting the farm on it.
+                p_iso = np.clip(0.5 * p_iso + 0.5 * p_cond, 1e-4, 1 - 1e-4)
+        d["p_cal"] = p_iso
         d["ev_cal"] = ev_per_unit(d["p_cal"].to_numpy(),
                                   d["price"].to_numpy(dtype=float))
         return d
