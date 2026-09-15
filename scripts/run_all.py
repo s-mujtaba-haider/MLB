@@ -61,21 +61,24 @@ def main() -> None:
     seasons = [str(s) for s in sorted(args.seasons)]
 
     if not args.skip_alt:
-        run("1/6 alternate ladders",
+        run("1/7 alternate ladders",
             ["scripts/backfill.py", "--seasons", *seasons, "--only-alt"])
         drop_derived()
 
-    run("2/6 anchor weights",
+    run("2/7 anchor weights",
         ["scripts/fit_weights.py", "--season", str(args.fit_season)])
-    run("3/6 ladder table",
+    run("3/7 ladder table",
         ["scripts/fit_ladder.py", "--season", str(args.fit_season)])
 
-    run("4/6 validate",
+    run("4/7 hyperparameters",
+        ["scripts/tune.py", "--season", str(args.fit_season)])
+
+    run("5/7 validate",
         ["scripts/validate.py", "--seasons", *seasons,
          "--burn-days", str(args.burn_days),
          "--step-days", str(args.step_days)])
 
-    run("5/6 train production",
+    run("6/7 train production",
         ["scripts/train_production.py", "--seasons", *seasons])
 
     print("\nDONE. See reports/market_report.md and models/manifest.json",

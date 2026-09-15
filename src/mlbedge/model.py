@@ -60,6 +60,25 @@ class FitReport:
         return self.ll_market - self.ll_final
 
 
+def tuned_params(market: str) -> dict:
+    """Hyperparameters chosen for this market by scripts/tune.py.
+
+    Empty when tuning has not been run, in which case the defaults apply. The
+    file is written from the earliest season only, so these are train-fold
+    choices for every walk-forward fold.
+    """
+    from . import config as C
+    p = C.DATA / "model_params.json"
+    if not p.exists():
+        return {}
+    try:
+        import json
+        rec = json.loads(p.read_text()).get(market, {})
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return {k: v for k, v in rec.items() if not k.startswith("_")}
+
+
 class MarketModel:
     """One market's probability model."""
 
@@ -70,6 +89,11 @@ class MarketModel:
                  max_train_rows: int = 400_000):
         self.market = market
         self.seed = seed
+        over = tuned_params(market)
+        learning_rate = over.get("learning_rate", learning_rate)
+        max_leaf_nodes = over.get("max_leaf_nodes", max_leaf_nodes)
+        min_samples_leaf = over.get("min_samples_leaf", min_samples_leaf)
+        l2 = over.get("l2", l2)
         self.params = dict(max_iter=max_iter, learning_rate=learning_rate,
                            max_leaf_nodes=max_leaf_nodes,
                            min_samples_leaf=min_samples_leaf,
