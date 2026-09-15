@@ -67,27 +67,43 @@ def make_folds(dates: pd.Series, n_burn_days: int = 400,
 
 def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
                      min_bets: int = 150, ev_col: str = "ev") -> float:
-    """Pick the EV cut that maximises a shrunk training ROI.
+    """Pick the EV cut that maximises the training edge-to-noise ratio.
 
-    The raw argmax of training ROI overfits toward thresholds so high that only
-    a handful of bets survive, so each candidate is shrunk toward zero by its
-    own sample size. This is a decision rule fitted on training data, not a
-    reported result.
+    Not raw ROI, and not ROI shrunk by sample size. What decides whether a
+    market is worth running is the size of the edge *relative to its standard
+    error* -- a two-point edge over ten thousand bets is a business, a
+    four-point edge over four hundred is a rumour. Maximising ROI alone walks
+    the threshold up until only a handful of bets survive; maximising
+    roi * sqrt(n) balances the two the way the evidence does.
+
+    Bets are clustered by game here too: raising the threshold usually drops
+    whole games rather than scattered bets, and counting bets would overstate
+    how much independent evidence a tighter cut retains.
+
+    Fitted on training data only. This is a decision rule, not a reported
+    result.
     """
     if train_bets.empty:
         return 0.02
-    grid = grid if grid is not None else np.arange(0.0, 0.16, 0.005)
+    grid = grid if grid is not None else np.arange(0.0, 0.16, 0.0025)
     if ev_col not in train_bets.columns:
         ev_col = "ev"
+    has_games = "event_id" in train_bets.columns
+
     best_t, best_score = 0.03, -np.inf
     for t in grid:
         sel = train_bets[train_bets[ev_col] >= t]
         n = len(sel)
         if n < min_bets:
             continue
-        roi = sel["profit"].sum() / n
-        # Shrink toward zero: a 200-bet ROI is worth far less than a 5,000-bet one.
-        score = roi * n / (n + 1500.0)
+        prof = sel["profit"].to_numpy(dtype=float)
+        roi = float(prof.mean())
+        if roi <= 0:
+            continue
+        n_eff = sel["event_id"].nunique() if has_games else n
+        sd = float(prof.std(ddof=1)) or 1.0
+        # Training t-statistic on the independent unit.
+        score = roi * np.sqrt(max(n_eff, 1)) / sd
         if score > best_score:
             best_t, best_score = float(t), score
     return best_t

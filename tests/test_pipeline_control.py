@@ -114,3 +114,50 @@ def test_threshold_was_fitted_not_optimised_on_the_fold(control_run):
     _, _, bets, _ = control_run
     per_fold = bets.groupby("fold")["threshold"].nunique()
     assert (per_fold == 1).all(), "a fold used more than one threshold"
+
+
+def test_threshold_prefers_volume_when_the_edge_is_similar():
+    """A two-point edge over ten thousand bets beats a four-point edge over
+    four hundred, because what decides a market is edge relative to its
+    standard error. Maximising ROI alone walks the cut up until almost
+    nothing survives."""
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(21)
+    rows = []
+    # Low EV band: huge volume, small but real edge.
+    for i in range(12000):
+        rows.append({"ev": 0.01 + rng.random() * 0.02,
+                     "profit": 0.91 if rng.random() < 0.535 else -1.0,
+                     "event_id": f"a{i // 4}"})
+    # High EV band: tiny volume, bigger edge.
+    for i in range(400):
+        rows.append({"ev": 0.06 + rng.random() * 0.02,
+                     "profit": 0.91 if rng.random() < 0.555 else -1.0,
+                     "event_id": f"b{i // 4}"})
+    d = pd.DataFrame(rows)
+    thr = B.choose_threshold(d, min_bets=150)
+    kept = d[d["ev"] >= thr]
+    # The point is that it does not collapse onto the 400-bet high-EV band.
+    assert len(kept) > 1200, (thr, len(kept))
+    assert thr < 0.06, thr
+
+
+def test_threshold_still_rejects_a_band_that_loses():
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(22)
+    rows = []
+    for i in range(6000):       # low band loses
+        rows.append({"ev": 0.005 + rng.random() * 0.015,
+                     "profit": 0.91 if rng.random() < 0.49 else -1.0,
+                     "event_id": f"a{i // 4}"})
+    for i in range(4000):       # high band wins
+        rows.append({"ev": 0.05 + rng.random() * 0.03,
+                     "profit": 0.91 if rng.random() < 0.56 else -1.0,
+                     "event_id": f"b{i // 4}"})
+    d = pd.DataFrame(rows)
+    thr = B.choose_threshold(d, min_bets=150)
+    assert thr >= 0.02, thr
