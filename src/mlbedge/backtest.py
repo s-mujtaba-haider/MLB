@@ -106,8 +106,11 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
 
     # Candidates inherit the proposition's features; their own consensus is the
     # leave-one-out value for the book being priced.
+    # `line` is both a join key and a model feature, so it must not be listed
+    # twice in the projection -- pandas rejects a duplicate label on merge.
     keep = [c_ for c_ in p.columns
-            if c_ in feats or c_ in ("game_date", "espn_id")]
+            if (c_ in feats or c_ in ("game_date", "espn_id"))
+            and c_ not in PROP_KEY]
     c = c.merge(p[PROP_KEY + list(dict.fromkeys(keep))], on=PROP_KEY,
                 how="inner", suffixes=("", "_prop"))
     c["logit_cons"] = logit(c["p_cons"].to_numpy(dtype=float))
