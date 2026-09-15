@@ -24,11 +24,11 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
 
     npass = sum(1 for v in verdicts if v.verdict == PASS)
     nveto = sum(1 for v in verdicts if v.verdict == VETO)
-    a("# MLB market validation — Phase 1\n")
+    a("# MLB market validation -- Phase 1\n")
     a(f"Seasons: {', '.join(str(s) for s in seasons)}  ")
     if folds:
         a(f"Walk-forward: {len(folds)} expanding-window folds, "
-          f"{folds[0].test_start} → {folds[-1].test_end}  ")
+          f"{folds[0].test_start} -> {folds[-1].test_end}  ")
     a(f"Verdict: **{npass}/{len(verdicts)} PASS**"
       + (f", {nveto} VETO (leakage)" if nveto else "") + "\n")
 
@@ -38,10 +38,10 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
     a("|---|---|---|---:|---:|---:|---|---:|---:|---:|---:|")
     for v in sorted(verdicts, key=lambda x: (x.verdict != PASS, x.market)):
         m = v.metrics
-        ci = (f"{_fmt(m.get('roi_lo'))} … {_fmt(m.get('roi_hi'))}"
+        ci = (f"{_fmt(m.get('roi_lo'))} ... {_fmt(m.get('roi_hi'))}"
               if np.isfinite(m.get("roi_lo", np.nan)) else "n/a")
         ng = m.get("n_games")
-        ng = "�" if ng is None or not np.isfinite(ng) else f"{int(ng)}"
+        ng = "--" if ng is None or not np.isfinite(ng) else f"{int(ng)}"
         a(f"| `{v.market}` | **{v.verdict}** | {v.deployment} | "
           f"{m.get('n_bets', 0)} | {ng} | {_fmt(m.get('roi'))} | {ci} | "
           f"{_fmt(m.get('p_value'), '.4f')} | {_fmt(m.get('clv_mean'), '+.4f')} | "
@@ -54,7 +54,7 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
       "only; every fold's model, calibration and EV threshold were fitted "
       "strictly before that fold began.")
     a("- **95% CI** is a percentile bootstrap over **games**, not bets. A market passes only "
-      "if the lower bound clears zero — a positive point estimate with an "
+      "if the lower bound clears zero -- a positive point estimate with an "
       "interval straddling zero is not evidence.")
     a("- **p** is a one-sided bootstrap p-value, then corrected across all "
       "eleven markets with Benjamini-Hochberg. Testing eleven things and "
@@ -70,14 +70,14 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
       "at DraftKings.")
     a("- **Shrink** is how far the model was allowed to move from the market "
       "consensus, fitted per fold on training data. Near zero means the edge "
-      "is line-shopping rather than projection — a real edge, but a different "
+      "is line-shopping rather than projection -- a real edge, but a different "
       "one, and worth knowing which.\n")
 
     # -- per market ---------------------------------------------------------
     a("## Per-market detail\n")
     for v in sorted(verdicts, key=lambda x: (x.verdict != PASS, x.market)):
         m = C.BY_NAME.get(v.market)
-        a(f"### `{v.market}` — {m.label if m else ''} — **{v.verdict}**\n")
+        a(f"### `{v.market}` -- {m.label if m else ''} -- **{v.verdict}**\n")
         met = v.metrics
         ng = met.get("n_games")
         ng_txt = ("" if ng is None or not np.isfinite(ng)
@@ -86,7 +86,7 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
           f"({met.get('n_win', 0)}W / {met.get('n_loss', 0)}L / "
           f"{met.get('n_push', 0)}P){ng_txt}")
         a(f"- ROI: **{_fmt(met.get('roi'))}** "
-          f"(95% CI {_fmt(met.get('roi_lo'))} … {_fmt(met.get('roi_hi'))}), "
+          f"(95% CI {_fmt(met.get('roi_lo'))} ... {_fmt(met.get('roi_hi'))}), "
           f"p = {_fmt(met.get('p_value'), '.4f')}")
         a(f"- CLV: {_fmt(met.get('clv_mean'), '+.4f')} on "
           f"{met.get('clv_n', 0)} matched bets; "
