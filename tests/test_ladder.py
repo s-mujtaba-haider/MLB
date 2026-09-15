@@ -95,3 +95,58 @@ def test_empty_table_is_safe():
     probe = pd.DataFrame([{"market": "batter_hits", "line": 0.5,
                            "p_primary": 0.4, "primary_line": 0.5}])
     assert np.isnan(L.apply(probe, {})[0])
+
+
+def _spread_market(n=20000, seed=11):
+    """Run lines. The stored line is a handicap ADDED to the home margin, so
+    the home side wins when margin + line > 0 -- not when margin > line."""
+    rng = np.random.default_rng(seed)
+    margin = rng.normal(0.2, 4.0, n).round()
+    rows = []
+    for i in range(n):
+        # Primary line is the well-quoted -1.5; alternates are sparse.
+        for line, nb in ((-1.5, 11), (1.5, 3), (3.5, 1), (-3.5, 1)):
+            rows.append({
+                "event_id": f"e{i}", "market": "spreads", "subject": "game",
+                "line": line, "n_books_prop": nb, "n_quotes": nb * 2,
+                "stat_value": float(margin[i]),
+                # Only the primary line carries a direct consensus.
+                "p_cons_all": (0.5 + margin[i] / 20.0) if line == -1.5 else np.nan,
+            })
+    d = pd.DataFrame(rows)
+    d["p_cons_all"] = d["p_cons_all"].clip(0.05, 0.95)
+    return d
+
+
+def test_spread_ladder_is_not_inverted():
+    """The bug this guards against.
+
+    Comparing the margin to the line instead of the negated line inverts the
+    whole ladder: on real 2023 data it predicted 0.078 where the truth was
+    0.836, and the model then spent its entire shrinkage budget undoing it.
+    """
+    d = _spread_market()
+    tbl = L.smooth(L.fit(d, min_cell=40))
+    assert "spreads" in tbl
+    out = L.attach(d, tbl)
+    lad = out[out["p_ladder"].notna() & (out["line"] != -1.5)].copy()
+    assert len(lad) > 2000
+
+    # Truth for a handicap: the home side covers when margin + line > 0.
+    truth = (lad["stat_value"] + lad["line"] > 0).astype(float)
+    pred = lad["p_ladder"].to_numpy()
+    # Correlated the right way round, not backwards.
+    assert np.corrcoef(pred, truth)[0, 1] > 0.3, np.corrcoef(pred, truth)[0, 1]
+    # And roughly calibrated rather than mirrored.
+    assert abs(pred.mean() - truth.mean()) < 0.12, (pred.mean(), truth.mean())
+
+
+def test_handicap_probability_rises_with_the_line():
+    """A bigger handicap is easier to cover, unlike a bigger total."""
+    d = _spread_market()
+    tbl = L.smooth(L.fit(d, min_cell=40))
+    cells = tbl["spreads"][next(iter(tbl["spreads"]))]
+    lines = sorted(cells, key=float)
+    for bk in cells[lines[0]]:
+        seq = [cells[t][bk] for t in lines if bk in cells[t]]
+        assert all(a <= b + 1e-9 for a, b in zip(seq, seq[1:])), (lines, seq)

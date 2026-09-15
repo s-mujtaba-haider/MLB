@@ -50,6 +50,25 @@ def strength_bucket(p: np.ndarray, n_buckets: int = N_BUCKETS) -> np.ndarray:
     return np.clip(idx, 0, n_buckets - 1)
 
 
+#: Markets where the stored line is a handicap *added* to the graded statistic
+#: rather than a number it must exceed. A run line of +4.5 wins when
+#: margin + 4.5 > 0, i.e. margin > -4.5 -- so the threshold is the negated
+#: line, and the probability *rises* with the line instead of falling.
+#: Getting this wrong inverts the ladder: measured on 2023, ladder-anchored
+#: spreads predicted 0.078 where the truth was 0.836.
+HANDICAP_MARKETS = frozenset({"spreads"})
+
+
+def threshold_for(market: str, line: float) -> float:
+    """The value the graded statistic must exceed for the over/home side."""
+    return -line if market in HANDICAP_MARKETS else line
+
+
+def line_direction(market: str) -> int:
+    """+1 if the win probability falls as the line rises, -1 if it rises."""
+    return -1 if market in HANDICAP_MARKETS else 1
+
+
 def primary_lines(props: pd.DataFrame) -> pd.DataFrame:
     """For each (event, market, subject), the line the books price best.
 
@@ -111,7 +130,9 @@ def fit(props: pd.DataFrame, n_buckets: int = N_BUCKETS,
             b = gp["bucket"].to_numpy()
             cells: dict = {}
             for t in targets:
-                over = (y > t).astype(float)
+                # For a handicap market the statistic must beat the NEGATED
+                # line; comparing against the line itself inverts the ladder.
+                over = (y > threshold_for(market, t)).astype(float)
                 per_bucket = {}
                 for bk in range(n_buckets):
                     m = b == bk
@@ -145,10 +166,13 @@ def smooth(table: dict) -> dict:
     out: dict = {}
     for market, by_primary in table.items():
         out[market] = {}
+        direction = line_direction(market)
         for primary, cells in by_primary.items():
             fixed = {t: _isotonise(pb) for t, pb in cells.items()}
-            # A higher line can never be more likely to be exceeded.
-            order = sorted(fixed, key=float)
+            # For an ordinary total or count, a higher line is harder to
+            # exceed. For a handicap, a higher line is *easier* to cover, so
+            # the constraint runs the other way.
+            order = sorted(fixed, key=float, reverse=direction < 0)
             for i in range(1, len(order)):
                 lo, hi = fixed[order[i - 1]], fixed[order[i]]
                 for bk in hi:

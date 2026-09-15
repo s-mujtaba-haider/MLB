@@ -1,7 +1,51 @@
+=== INGESTION DONE, STARTING FULL RUN ===
+Tue, Sep 15, 2026  8:27:14 AM
 
 ==============================================================================
 1/7 alternate ladders
 ==============================================================================
+
+======================================================================
+SEASON 2023  (2023-03-30 .. 2023-10-01)
+======================================================================
+[events 2023] 2301 cached
+[events 2023] 2301 in window
+[alt alt] 6903 (event,region) requests over 2301 events
+  [alt alt] 200/6903 (24.2/s, eta 4.6m) 0 calls, 0 credits spent
+  [alt alt] 400/6903 (26.1/s, eta 4.1m) 0 calls, 0 credits spent
+  [alt alt] 600/6903 (26.9/s, eta 3.9m) 0 calls, 0 credits spent
+  [alt alt] 800/6903 (27.0/s, eta 3.8m) 0 calls, 0 credits spent
+  [alt alt] 1000/6903 (27.1/s, eta 3.6m) 0 calls, 0 credits spent
+  [alt alt] 1200/6903 (27.1/s, eta 3.5m) 0 calls, 0 credits spent
+  [alt alt] 1400/6903 (26.3/s, eta 3.5m) 48 calls, 750 credits spent this run, 926,843 remaining
+  [alt alt] 1600/6903 (24.4/s, eta 3.6m) 247 calls, 3,990 credits spent this run, 920,603 remaining
+  [alt alt] 1800/6903 (23.3/s, eta 3.7m) 444 calls, 7,230 credits spent this run, 914,423 remaining
+  [alt alt] 2000/6903 (22.5/s, eta 3.6m) 644 calls, 10,540 credits spent this run, 908,293 remaining
+  [alt alt] 2200/6903 (21.8/s, eta 3.6m) 841 calls, 13,780 credits spent this run, 902,013 remaining
+  [alt alt] 2400/6903 (21.3/s, eta 3.5m) 1041 calls, 17,050 credits spent this run, 895,623 remaining
+  [alt alt] 2600/6903 (20.8/s, eta 3.4m) 1241 calls, 20,360 credits spent this run, 889,393 remaining
+  [alt alt] 2800/6903 (20.4/s, eta 3.4m) 1432 calls, 23,460 credits spent this run, 883,233 remaining
+  [alt alt] 3000/6903 (20.1/s, eta 3.2m) 1632 calls, 26,760 credits spent this run, 876,953 remaining
+  [alt alt] 3200/6903 (19.8/s, eta 3.1m) 1829 calls, 30,000 credits spent this run, 870,783 remaining
+  [alt alt] 3400/6903 (19.6/s, eta 3.0m) 2029 calls, 33,160 credits spent this run, 864,871 remaining
+  [alt alt] 3600/6903 (19.3/s, eta 2.8m) 2229 calls, 36,460 credits spent this run, 858,451 remaining
+  [alt alt] 3800/6903 (19.3/s, eta 2.7m) 2429 calls, 39,710 credits spent this run, 852,261 remaining
+  [alt alt] 4000/6903 (19.1/s, eta 2.5m) 2626 calls, 42,960 credits spent this run, 846,041 remaining
+  [alt alt] 4200/6903 (19.1/s, eta 2.4m) 2823 calls, 46,150 credits spent this run, 839,941 remaining
+  [alt alt] 4400/6903 (19.0/s, eta 2.2m) 3020 calls, 49,380 credits spent this run, 833,671 remaining
+  [alt alt] 4600/6903 (18.9/s, eta 2.0m) 3217 calls, 52,600 credits spent this run, 827,491 remaining
+  [alt alt] 4800/6903 (18.8/s, eta 1.9m) 3417 calls, 55,890 credits spent this run, 821,261 remaining
+  [alt alt] 5000/6903 (18.7/s, eta 1.7m) 3614 calls, 59,100 credits spent this run, 815,311 remaining
+  [alt alt] 5200/6903 (18.6/s, eta 1.5m) 3814 calls, 62,390 credits spent this run, 809,181 remaining
+  [alt alt] 5400/6903 (18.6/s, eta 1.3m) 4008 calls, 65,570 credits spent this run, 803,221 remaining
+  [alt alt] 5600/6903 (18.4/s, eta 1.2m) 4208 calls, 68,880 credits spent this run, 796,841 remaining
+  [alt alt] 5800/6903 (18.4/s, eta 1.0m) 4408 calls, 72,150 credits spent this run, 790,861 remaining
+  [alt alt] 6000/6903 (18.3/s, eta 0.8m) 4608 calls, 75,450 credits spent this run, 786,041 remaining
+  [alt alt] 6200/6903 (18.2/s, eta 0.6m) 4808 calls, 78,730 credits spent this run, 782,761 remaining
+  [alt alt] 6400/6903 (18.1/s, eta 0.5m) 5005 calls, 81,980 credits spent this run, 779,521 remaining
+  [alt alt] 6600/6903 (18.0/s, eta 0.3m) 5205 calls, 85,260 credits spent this run, 776,231 remaining
+  [alt alt] 6800/6903 (17.9/s, eta 0.1m) 5396 calls, 88,540 credits spent this run, 772,951 remaining
+[alt alt] done. 5496 calls, 90,540 credits spent this run, 770,951 remaining
 
 ======================================================================
 SEASON 2024  (2024-03-28 .. 2024-09-30)
@@ -9,14 +53,227 @@ SEASON 2024  (2024-03-28 .. 2024-09-30)
 [events 2024] 2439 cached
 [events 2024] 2439 in window
 [alt alt] 7317 (event,region) requests over 2439 events
-  [alt alt] 200/7317 (13.9/s, eta 8.6m) 200 calls, 4,000 credits spent this run, 1,599,936 remaining
-  [alt alt] 400/7317 (15.5/s, eta 7.4m) 397 calls, 7,940 credits spent this run, 1,595,385 remaining
-  [alt alt] 600/7317 (16.0/s, eta 7.0m) 583 calls, 11,660 credits spent this run, 1,585,955 remaining
-  [alt alt] 800/7317 (16.5/s, eta 6.6m) 782 calls, 15,640 credits spent this run, 1,576,605 remaining
-  [alt alt] 1000/7317 (16.7/s, eta 6.3m) 976 calls, 19,520 credits spent this run, 1,567,355 remaining
-  [alt alt] 1200/7317 (16.6/s, eta 6.2m) 1176 calls, 23,520 credits spent this run, 1,557,835 remaining
-  [alt alt] 1400/7317 (16.5/s, eta 6.0m) 1373 calls, 27,460 credits spent this run, 1,548,615 remaining
-  [alt alt] 1600/7317 (16.4/s, eta 5.8m) 1573 calls, 31,460 credits spent this run, 1,539,205 remaining
-  [alt alt] 1800/7317 (16.3/s, eta 5.6m) 1773 calls, 35,460 credits spent this run, 1,529,795 remaining
-  [alt alt] 2000/7317 (16.3/s, eta 5.4m) 1967 calls, 39,340 credits spent this run, 1,520,415 remaining
-  [alt alt] 2200/7317 (16.2/s, eta 5.3m) 2168 calls, 43,360 credits spent this run, 1,511,165 remaining
+  [alt alt] 200/7317 (1649.0/s, eta 0.1m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 400/7317 (2214.4/s, eta 0.1m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 600/7317 (2526.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 800/7317 (2692.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1000/7317 (2815.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1200/7317 (2897.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1400/7317 (2965.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1600/7317 (3015.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1800/7317 (3065.9/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2000/7317 (3099.9/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2200/7317 (3136.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2400/7317 (3162.9/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2600/7317 (3188.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2800/7317 (3209.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3000/7317 (3229.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3200/7317 (3248.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3400/7317 (3264.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3600/7317 (3276.9/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3800/7317 (3282.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4000/7317 (3289.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4200/7317 (3298.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4400/7317 (3301.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4600/7317 (3286.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4800/7317 (3292.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5000/7317 (3305.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5200/7317 (3319.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5400/7317 (3331.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5600/7317 (3340.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5800/7317 (3352.0/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6000/7317 (3361.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6200/7317 (3371.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6400/7317 (3379.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6600/7317 (3388.0/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6800/7317 (3395.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 7000/7317 (3400.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 7200/7317 (3405.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+[alt alt] done. 5496 calls, 90,540 credits spent this run, 770,951 remaining
+
+======================================================================
+SEASON 2025  (2025-03-27 .. 2025-09-28)
+======================================================================
+[events 2025] 2448 cached
+[events 2025] 2448 in window
+[alt alt] 7344 (event,region) requests over 2448 events
+  [alt alt] 200/7344 (2135.2/s, eta 0.1m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 400/7344 (2708.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 600/7344 (2969.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 800/7344 (3109.0/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1000/7344 (3194.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1200/7344 (3264.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1400/7344 (3303.7/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1600/7344 (3340.7/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1800/7344 (3349.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2000/7344 (3377.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2200/7344 (3391.0/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2400/7344 (3388.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2600/7344 (3384.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 2800/7344 (3362.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3000/7344 (3365.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3200/7344 (3365.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3400/7344 (3364.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3600/7344 (3361.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 3800/7344 (3353.0/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4000/7344 (3348.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4200/7344 (3340.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4400/7344 (3330.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4600/7344 (3318.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 4800/7344 (3306.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5000/7344 (3309.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5200/7344 (3312.7/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5400/7344 (3315.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5600/7344 (3313.7/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 5800/7344 (3315.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6000/7344 (3313.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6200/7344 (3314.9/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6400/7344 (3312.3/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6600/7344 (3317.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 6800/7344 (3319.2/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 7000/7344 (3319.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 7200/7344 (3323.5/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+[alt alt] done. 5496 calls, 90,540 credits spent this run, 770,951 remaining
+
+======================================================================
+SEASON 2026  (2026-03-26 .. 2026-09-14)
+======================================================================
+[events 2026] 2290 cached
+[events 2026] 2276 in window
+[alt alt] 6828 (event,region) requests over 2276 events
+  [alt alt] 200/6828 (1640.8/s, eta 0.1m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 400/6828 (2230.6/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 600/6828 (2500.8/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 800/6828 (2665.1/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1000/6828 (2771.4/s, eta 0.0m) 5496 calls, 90,540 credits spent this run, 770,951 remaining
+  [alt alt] 1200/6828 (2858.5/s, eta 0.0m) 5496 calls, 90,[graded 2024] 5,674,507 rows -> graded_2024.parquet
+measured skill weights for 11 markets
+comparing weighting schemes by consensus log-loss ...
+scheme              exchange_first   fitted    prior  sharp_heavy  sharp_only  uniform
+market                                                                                
+batter_hits                0.63722  0.63717  0.63722      0.63718         NaN  0.63722
+batter_home_runs           0.35074  0.35043  0.35047      0.35064         NaN  0.35034
+batter_rbis                0.59874  0.59875  0.59879      0.59876         NaN  0.59874
+batter_strikeouts          0.66102  0.66101  0.66099      0.66097         NaN  0.66102
+batter_total_bases         0.66872  0.66856  0.66864      0.66854     0.66882  0.66856
+h2h                        0.67372  0.67371  0.67371      0.67375     0.67377  0.67371
+pitcher_outs               0.68175  0.68160  0.68162      0.68172     0.68420  0.68164
+pitcher_strikeouts         0.65783  0.65769  0.65771      0.65756     0.68728  0.65763
+runs_scored                0.65302  0.65303  0.65312      0.65306         NaN  0.65302
+spreads                    0.54087  0.54074  0.54090      0.54077     0.67199  0.54091
+totals                     0.54540  0.54546  0.54539      0.54541     0.69214  0.54544
+
+  batter_hits            -> fitted          log-loss 0.63717 (prior 0.63722, gain +0.00005)
+  batter_home_runs       -> uniform         log-loss 0.35034 (prior 0.35047, gain +0.00013)
+  batter_rbis            -> exchange_first  log-loss 0.59874 (prior 0.59879, gain +0.00005)
+  batter_strikeouts      -> sharp_heavy     log-loss 0.66097 (prior 0.66099, gain +0.00002)
+  batter_total_bases     -> sharp_heavy     log-loss 0.66854 (prior 0.66864, gain +0.00010)
+  h2h                    -> fitted          log-loss 0.67371 (prior 0.67371, gain +0.00000)
+  pitcher_outs           -> fitted          log-loss 0.68160 (prior 0.68162, gain +0.00002)
+  pitcher_strikeouts     -> sharp_heavy     log-loss 0.65756 (prior 0.65771, gain +0.00015)
+  runs_scored            -> exchange_first  log-loss 0.65302 (prior 0.65312, gain +0.00010)
+  spreads                -> fitted          log-loss 0.54074 (prior 0.54090, gain +0.00016)
+  totals                 -> prior           log-loss 0.54539 (prior 0.54539, gain +0.00000)
+saved fitted anchor weights for 11 markets -> C:\Users\mujta\mlb\data\anchor_weights.json
+[2/7 anchor weights] 304s
+
+==============================================================================
+3/7 ladder table
+==============================================================================
+loading season 2024 ...
+[quotes 2024] parsing props (decision) for 2439 events
+[quotes 2024] parsing featured (decision)
+[quotes 2024] parsing alternate ladders
+[quotes 2024] 5,674,507 rows -> quotes_2024.parquet
+[graded 2024] 2405/2439 events matched to ESPN games
+[graded 2024] 5,674,507 rows -> graded_2024.parquet
+Traceback (most recent call last):
+  File "C:\Users\mujta\mlb\scripts\fit_ladder.py", line 56, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\mujta\mlb\scripts\fit_ladder.py", line 40, in main
+    props = D.build_props(graded, games, players, cons=cons, ladder_table={})
+  File "C:\Users\mujta\mlb\src\mlbedge\dataset.py", line 109, in build_props
+    out = attach_features(out, games, players)
+  File "C:\Users\mujta\mlb\src\mlbedge\dataset.py", line 158, in attach_features
+    out.loc[side != "batting", bat_cols] = np.nan
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 932, in __setitem__
+    indexer = self._get_setitem_indexer(key)
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 807, in _get_setitem_indexer
+    return self._convert_to_indexer(key, axis=0)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 1540, in _convert_to_indexer
+    return self._get_listlike_indexer(key, axis)[1]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 1576, in _get_listlike_indexer
+    keyarr, indexer = ax._get_indexer_strict(key, axis_name)
+                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 6297, in _get_indexer_strict
+    indexer = self.get_indexer_for(keyarr)
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 6284, in get_indexer_for
+    return self.get_indexer(target)
+           ~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 3792, in get_indexer
+    return this._get_indexer(
+           ~~~~~~~~~~~~~~~~~^
+        target, method=method, limit=limit, tolerance=tolerance
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 3823, in _get_indexer
+    indexer = self._engine.get_indexer(tgt_values)
+  File "pandas/_libs/index.pyx", line 374, in pandas._libs.index.IndexEngine.get_indexer
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7719, in pandas._libs.hashtable.PyObjectHashTable.lookup
+TypeError: unhashable type: 'Series'
+3/7 ladder table failed with exit 1
+    -> sharp_heavy     log-loss 0.64267 (prior 0.64282, gain +0.00015)
+  runs_scored            -> prior           log-loss 0.65852 (prior 0.65852, gain +0.00000)
+  spreads                -> fitted          log-loss 0.53471 (prior 0.53473, gain +0.00002)
+  totals                 -> fitted          log-loss 0.55779 (prior 0.55784, gain +0.00005)
+saved fitted anchor weights for 10 markets -> C:\Users\mujta\mlb\data\anchor_weights.json
+[2/7 anchor weights] 251s
+
+==============================================================================
+3/7 ladder table
+==============================================================================
+loading season 2023 ...
+  256,187 directly-priced propositions
+saved ladder table: 10 markets, 199 line cells -> C:\Users\mujta\mlb\data\ladder_table.json
+
+  batter_hits            primary   0.5 -> lines [0.5, 1.5]
+  batter_hits            primary   1.5 -> lines [0.5, 1.5]
+  batter_home_runs       primary   0.5 -> lines [0.5]
+  batter_rbis            primary   0.5 -> lines [0.5]
+  batter_strikeouts      primary   0.5 -> lines [0.5, 1.5]
+  batter_strikeouts      primary   1.5 -> lines [0.5, 1.5]
+  batter_total_bases     primary   0.5 -> lines [0.5, 1.5]
+  batter_total_bases     primary   1.5 -> lines [0.5, 1.5]
+  pitcher_outs           primary  14.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  15.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  16.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  17.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  18.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_strikeouts     primary   3.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   4.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   5.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   6.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   7.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  runs_scored            primary   0.5 -> lines [0.5]
+  spreads                primary  -1.5 -> lines [-5.5, -4.5, -3.5, -3, -2.5, -2, -1.5, -1, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.5]
+  spreads                primary   1.5 -> lines [-5.5, -4.5, -3.5, -3, -2.5, -2, -1.5, -1, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.5]
+  totals                 primary   7.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary     8 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary   8.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary     9 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary   9.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+[3/7 ladder table] 60s
+
+==============================================================================
+4/7 hyperparameters
+==============================================================================
+tuning on 298,293 propositions from 2023
+
+  h2h                    -> aggressive     ll 0.67243 (market 0.67551, gain +0.00309, shrink 0.38)
+  spreads                -> very_regular   ll 0.54036 (market 0.81894, gain +0.27858, shrink 1.00)
+  totals                 -> aggressive     ll 0.56172 (market 0.56416, gain +0.00243, shrink 0.23)
