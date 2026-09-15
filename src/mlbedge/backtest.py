@@ -29,6 +29,11 @@ from .odds import american_to_prob, ev_per_unit, profit_per_unit
 from .selection import SelectionCalibrator, add_apparent_edge
 
 
+# Stakeable price band. Outside it a quote is either a four-figure favourite
+# nobody funds or a lottery ticket whose de-vigged probability is guesswork.
+MIN_PRICE, MAX_PRICE = -2000.0, 2000.0
+
+
 @dataclass
 class Fold:
     train_end: str
@@ -122,6 +127,11 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
     if c.empty:
         return pd.DataFrame(), []
 
+    # Prices beyond these bounds are not realistically stakeable at size, and
+    # at the extremes the de-vig is least trustworthy.
+    c = c[(c["price"] >= MIN_PRICE) & (c["price"] <= MAX_PRICE)]
+    if c.empty:
+        return pd.DataFrame(), []
     c["p_raw"] = american_to_prob(c["price"].to_numpy(dtype=float))
     c["payout"] = profit_per_unit(c["price"].to_numpy(dtype=float))
 
@@ -151,6 +161,13 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
         te_bets = cal.apply(add_apparent_edge(_score(te_c, mm)))
         ev_col = "ev_cal" if cal.fitted else "ev"
         sel = te_bets[te_bets[ev_col] >= thr].copy()
+        # One bet per proposition. Both sides can clear a threshold at the
+        # margin, and taking both is a hedge that locks in the hold -- not
+        # something a bettor would ever do, and it quietly halves the measured
+        # edge while doubling the bet count.
+        if not sel.empty:
+            sel = (sel.sort_values(ev_col, ascending=False)
+                      .drop_duplicates(subset=PROP_KEY, keep="first"))
         sel["fold"] = f.test_start
         sel["threshold"] = thr
         sel["shrink"] = rep.shrink
