@@ -173,33 +173,37 @@ def test_threshold_still_rejects_a_band_that_loses():
     assert thr >= 0.02, thr
 
 
-def test_anchor_groups_are_gated_on_training_performance():
-    """A group that loses on the training fold must not be bet on the test
+def test_losing_segments_are_gated_out_on_training_performance():
+    """A segment that loses on the training fold must not bet on the test
     fold -- and the decision has to come from training data, never from the
-    fold being scored."""
+    fold being scored. A segment is (anchor source, price band): both a
+    ladder-priced quote and a longshot price are places a small probability
+    error becomes a large apparent edge."""
     import numpy as np
     import pandas as pd
 
     rng = np.random.default_rng(33)
     rows = []
-    for i in range(4000):      # 'direct' collects
-        rows.append({"ev": 0.05, "anchor_src": "direct",
-                     "profit": 0.91 if rng.random() < 0.56 else -1.0})
-    for i in range(4000):      # 'ladder' does not
-        rows.append({"ev": 0.05, "anchor_src": "ladder",
-                     "profit": 0.91 if rng.random() < 0.44 else -1.0})
-    tr = pd.DataFrame(rows)
-    allowed = B._profitable_groups(tr, 0.02)
-    assert allowed == {"direct"}, allowed
+    for _ in range(4000):      # favourites collect
+        rows.append({"ev": 0.05, "anchor_src": "direct", "price": -200.0,
+                     "profit": 0.5 if rng.random() < 0.70 else -1.0})
+    for _ in range(4000):      # longshots do not
+        rows.append({"ev": 0.05, "anchor_src": "direct", "price": 200.0,
+                     "profit": 2.0 if rng.random() < 0.28 else -1.0})
+    allowed = B._profitable_groups(pd.DataFrame(rows), 0.02)
+    assert allowed is not None
+    assert any("-250.0, -150.0" in a for a in allowed), allowed
+    assert not any("150.0, 250.0" in a for a in allowed), allowed
 
 
-def test_a_thin_group_is_not_dropped_for_lack_of_evidence():
+def test_a_thin_segment_is_not_dropped_for_lack_of_evidence():
     import numpy as np
     import pandas as pd
 
     rng = np.random.default_rng(34)
-    rows = [{"ev": 0.05, "anchor_src": "direct",
-             "profit": 0.91 if rng.random() < 0.56 else -1.0} for _ in range(3000)]
-    rows += [{"ev": 0.05, "anchor_src": "ladder", "profit": -1.0} for _ in range(20)]
+    rows = [{"ev": 0.05, "anchor_src": "direct", "price": -200.0,
+             "profit": 0.5 if rng.random() < 0.70 else -1.0} for _ in range(3000)]
+    rows += [{"ev": 0.05, "anchor_src": "ladder", "price": 300.0,
+              "profit": -1.0} for _ in range(20)]
     allowed = B._profitable_groups(pd.DataFrame(rows), 0.02)
-    assert allowed == {"direct", "ladder"}, allowed
+    assert any("ladder" in a for a in allowed), allowed

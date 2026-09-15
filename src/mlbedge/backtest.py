@@ -109,24 +109,51 @@ def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
     return best_t
 
 
+#: Price bands the bet universe is split into before deciding what may fire.
+#: The split matters because a de-vig that is a shade optimistic about
+#: longshots turns into a large apparent edge at +300 and a negligible one at
+#: -200. Measured over four seasons: bets at -250..-150 realised +0.89% over
+#: their price, bets at +150..+250 realised -1.60%.
+PRICE_BANDS = (-100000.0, -250.0, -150.0, -110.0, 100.0, 150.0, 250.0,
+               400.0, 100000.0)
+
+
+def price_band(price: pd.Series) -> pd.Series:
+    return pd.cut(price, PRICE_BANDS).astype(str)
+
+
+def bet_segment(bets: pd.DataFrame) -> pd.Series:
+    """The (anchor, price band) cell a bet belongs to."""
+    anchor = (bets["anchor_src"].astype(str) if "anchor_src" in bets.columns
+              else pd.Series("direct", index=bets.index))
+    return anchor + "|" + price_band(bets["price"])
+
+
 def _profitable_groups(train_bets: pd.DataFrame, thr: float,
                        ev_col: str = "ev", min_n: int = 250
                        ) -> set[str] | None:
-    """Anchor groups that actually collect on the training fold.
+    """Segments that actually collect on the training fold.
 
-    Returns None when there is nothing to decide with, in which case every
-    group is allowed. A group with too few training bets to judge is kept:
-    the point is to drop what demonstrably loses, not to require proof of
-    innocence from a thin sample.
+    A segment is (anchor source, price band). Both dimensions matter and for
+    different reasons: a ladder-priced quote is an estimate standing in for a
+    consensus, and a longshot price is where a small de-vig error becomes a
+    large apparent edge. Judged on the training window only, and never on the
+    fold being scored.
+
+    Returns None when there is nothing to decide with. A segment too thin to
+    judge is kept -- the rule drops what demonstrably loses, it does not
+    demand proof of innocence from a small sample.
     """
-    if train_bets.empty or "anchor_src" not in train_bets.columns:
+    if train_bets.empty or "profit" not in train_bets.columns:
         return None
     col = ev_col if ev_col in train_bets.columns else "ev"
     sel = train_bets[train_bets[col] >= thr]
     if sel.empty:
         return None
+    seg = bet_segment(sel)
     keep = set()
-    for grp, sub in sel.groupby("anchor_src", observed=True):
+    for grp, idx in sel.groupby(seg, observed=True).groups.items():
+        sub = sel.loc[idx]
         if len(sub) < min_n or sub["profit"].mean() > 0:
             keep.add(str(grp))
     return keep or None
@@ -212,8 +239,8 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
         te_bets = cal.apply(add_apparent_edge(_score(te_c, mm)))
         ev_col = "ev_cal" if cal.fitted else "ev"
         sel = te_bets[te_bets[ev_col] >= thr].copy()
-        if allowed is not None and "anchor_src" in sel.columns:
-            sel = sel[sel["anchor_src"].isin(allowed)]
+        if allowed is not None and not sel.empty:
+            sel = sel[bet_segment(sel).isin(allowed)]
         # One bet per proposition. Both sides can clear a threshold at the
         # margin, and taking both is a hedge that locks in the hold -- not
         # something a bettor would ever do, and it quietly halves the measured
