@@ -66,7 +66,8 @@ class MarketModel:
     def __init__(self, market: str, seed: int = 0,
                  max_iter: int = 300, learning_rate: float = 0.05,
                  max_leaf_nodes: int = 31, min_samples_leaf: int = 200,
-                 l2: float = 1.0, n_calib_folds: int = 4):
+                 l2: float = 1.0, n_calib_folds: int = 3,
+                 max_train_rows: int = 400_000):
         self.market = market
         self.seed = seed
         self.params = dict(max_iter=max_iter, learning_rate=learning_rate,
@@ -76,6 +77,7 @@ class MarketModel:
                            early_stopping=True, validation_fraction=0.15,
                            n_iter_no_change=25, random_state=seed)
         self.n_calib_folds = n_calib_folds
+        self.max_train_rows = max_train_rows
         self.features: list[str] = []
         self.clf: HistGradientBoostingClassifier | None = None
         self.iso: IsotonicRegression | None = None
@@ -89,6 +91,12 @@ class MarketModel:
         d = train.dropna(subset=[target, "logit_cons"])
         if len(d) < 400:
             raise ValueError(f"{self.market}: only {len(d)} training rows")
+        # Cap the window at the most recent rows. Partly speed, but mostly
+        # that a four-season-old pricing regime is weak evidence about how a
+        # book prices today -- the expanding window should not let 2024 outvote
+        # 2026 simply by being longer.
+        if len(d) > self.max_train_rows and "game_date" in d.columns:
+            d = d.sort_values("game_date").tail(self.max_train_rows)
         self.features = list(features)
         X = d[self.features].to_numpy(dtype=float)
         y = d[target].to_numpy(dtype=float)
