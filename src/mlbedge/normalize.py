@@ -201,6 +201,32 @@ def _featured_outcomes(mk, m, eid, book, region, snap, commence, lead,
 
 # ---------------------------------------------------------------------------
 
+#: Columns worth storing as categoricals. Three seasons is ~17M quote rows;
+#: left as Python objects that is tens of gigabytes, and as categories it is
+#: well under one.
+_CATEGORICAL = ("event_id", "market", "subject", "side", "book", "region",
+                "tag", "snapshot_ts", "commence_time", "espn_id",
+                "athlete_id", "match_how", "result", "game_date")
+
+
+def compact(df: pd.DataFrame) -> pd.DataFrame:
+    """Shrink a quote frame in place-ish, without changing any value."""
+    if df.empty:
+        return df
+    for c in _CATEGORICAL:
+        if c in df.columns and not isinstance(df[c].dtype, pd.CategoricalDtype):
+            df[c] = df[c].astype("category")
+    for c in ("line", "lead_min", "stat_value", "p_cons", "p_book_fair",
+              "hold_book", "n_books_cons"):
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce").astype("float32")
+    if "price" in df.columns:
+        df["price"] = pd.to_numeric(df["price"], errors="coerce").astype("float32")
+    if "season" in df.columns:
+        df["season"] = pd.to_numeric(df["season"], errors="coerce").astype("int16")
+    return df
+
+
 def _finish(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df

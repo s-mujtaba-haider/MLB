@@ -28,7 +28,8 @@ from .grade import LOSS, PUSH, VOID, WIN
 PROP_KEY = ["event_id", "market", "subject", "line"]
 
 MARKET_STRUCT = ["n_books_cons", "hold_book", "lead_min", "line",
-                 "book_spread", "n_quotes"]
+                 "book_spread", "n_quotes", "book_std",
+                 "proj_mean", "line_minus_proj", "line_over_proj"]
 
 
 def proposition_outcome(graded: pd.DataFrame) -> pd.DataFrame:
@@ -129,6 +130,86 @@ def attach_features(props: pd.DataFrame, games: pd.DataFrame,
     out["is_home_player"] = (out["player_team"].notna() &
                              (out["player_team"] == out["home_team"])
                              ).astype(float)
+    return add_projection(out)
+
+
+# Which rolling rate column carries each market's statistic.
+_BAT_RATE = {
+    "batter_hits": "bat_hits_ppa",
+    "batter_rbis": "bat_rbi_ppa",
+    "batter_total_bases": "bat_total_bases_ppa",
+    "batter_home_runs": "bat_home_runs_ppa",
+    "runs_scored": "bat_runs_ppa",
+    "batter_strikeouts": "bat_strike_outs_ppa",
+}
+_PIT_RATE = {
+    "pitcher_strikeouts": "pit_strike_outs",
+    "pitcher_outs": "pit_outs",
+}
+
+
+def add_projection(out: pd.DataFrame) -> pd.DataFrame:
+    """An explicit baseball projection, and the line relative to it.
+
+    A gradient booster can in principle recover "expected plate appearances
+    times per-PA rate" from the raw rolling columns, but only by spending
+    splits on it, and only for the markets where it happens to find the
+    interaction. Handing it the product directly -- and, more importantly, the
+    *line minus the projection* -- gives it the one quantity that actually
+    decides a prop, in the units the prop is written in.
+    """
+    n = len(out)
+    proj = np.full(n, np.nan)
+    mkt = out["market"].to_numpy()
+
+    for market, rate_col in _BAT_RATE.items():
+        m = mkt == market
+        if not m.any():
+            continue
+        # Blend recent form with the longer window: 30 games is stable but
+        # slow, 10 is responsive but noisy.
+        r10 = out.get(f"{rate_col}_r10")
+        r30 = out.get(f"{rate_col}_r30")
+        exp = out.get(f"{rate_col}_exp")
+        rate = _blend(r10, r30, exp)
+        pa = _blend(out.get("bat_pa_r10"), out.get("bat_pa_r30"),
+                    out.get("bat_pa_exp"))
+        if rate is not None and pa is not None:
+            proj = np.where(m, rate * pa, proj)
+
+    for market, col in _PIT_RATE.items():
+        m = mkt == market
+        if not m.any():
+            continue
+        v = _blend(out.get(f"{col}_r3"), out.get(f"{col}_r8"),
+                   out.get(f"{col}_exp"))
+        if v is not None:
+            proj = np.where(m, v, proj)
+
+    out["proj_mean"] = proj
+    line = out["line"].to_numpy(dtype=float)
+    out["line_minus_proj"] = line - proj
+    with np.errstate(divide="ignore", invalid="ignore"):
+        out["line_over_proj"] = np.where(proj > 0, line / proj, np.nan)
+    return out
+
+
+def _blend(*series, weights=(0.3, 0.5, 0.2)):
+    """Weighted blend of rolling windows, skipping any that are absent."""
+    cols = [s for s in series if s is not None]
+    if not cols:
+        return None
+    arrs = [pd.to_numeric(s, errors="coerce").to_numpy(dtype=float)
+            for s in cols]
+    w = np.array(weights[:len(arrs)], dtype=float)
+    stack = np.vstack(arrs)
+    mask = np.isfinite(stack)
+    wmat = np.where(mask, w[:, None], 0.0)
+    tot = wmat.sum(axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = np.where(tot > 0,
+                       np.nansum(np.where(mask, stack, 0.0) * wmat, axis=0) / tot,
+                       np.nan)
     return out
 
 

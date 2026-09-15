@@ -84,6 +84,7 @@ def build_graded(season: int, tags: tuple[str, ...] = ("decision",),
     q = M.attach_players(q, players, e2e)
     gr = G.grade(q, games, players)
     gr = gr.merge(games[["espn_id", "game_date"]], on="espn_id", how="left")
+    gr = N.compact(gr)
     gr.to_parquet(out, index=False)
     print(f"[graded {season}] {len(gr):,} rows -> {out.name}", flush=True)
     return gr
@@ -101,3 +102,42 @@ def load_all(seasons: tuple[int, ...], tags: tuple[str, ...] = ("decision",)
     return (pd.concat(gr, ignore_index=True),
             pd.concat(gm, ignore_index=True).drop_duplicates("espn_id"),
             pd.concat(pl, ignore_index=True))
+
+
+def build_season_frames(season: int, devig_method: str = "shin",
+                        tags: tuple[str, ...] = ("decision", "closing")
+                        ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Consensus, propositions and bet candidates for one season.
+
+    Built per season and thrown away: the quote frame is by far the largest
+    object in the pipeline (millions of rows per season), while the frames it
+    produces are two orders of magnitude smaller. Holding three seasons of
+    quotes in memory at once is what turns this from a laptop job into a
+    cluster job, for no benefit -- nothing downstream of the consensus needs
+    to see two seasons at the same time.
+    """
+    from . import config as C
+    from . import dataset as D
+    from .devig import attach_consensus
+
+    graded = build_graded(season, tags=tags)
+    games, players = build_results(season)
+    cons = attach_consensus(graded, method=devig_method, min_books=2,
+                            self_anchor_markets=C.SELF_ANCHOR_MARKETS)
+    props = D.build_props(graded, games, players, cons=cons)
+    cand = D.build_candidates(graded, cons=cons, tag="decision")
+    if not cand.empty:
+        cand = cand.merge(games[["espn_id", "game_date"]], on="espn_id",
+                          how="left", suffixes=("", "_g"))
+        if "game_date_g" in cand:
+            cand["game_date"] = cand["game_date"].astype(object).fillna(
+                cand["game_date_g"])
+            cand = cand.drop(columns=["game_date_g"])
+    closing = cons[cons["tag"] == "closing"][
+        D_CLOSING_COLS].copy() if "tag" in cons else pd.DataFrame()
+    del graded, cons
+    return props, cand, closing
+
+
+D_CLOSING_COLS = ["event_id", "market", "subject", "line", "tag", "side",
+                  "book", "price"]

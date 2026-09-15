@@ -11,6 +11,7 @@ Outputs
 from __future__ import annotations
 
 import argparse
+import gc
 import sys
 import time
 from pathlib import Path
@@ -27,7 +28,6 @@ from mlbedge import gate as GATE  # noqa: E402
 from mlbedge import leakage as LK  # noqa: E402
 from mlbedge import pipeline as P  # noqa: E402
 from mlbedge import report as R  # noqa: E402
-from mlbedge.devig import attach_consensus  # noqa: E402
 
 
 def main() -> None:
@@ -42,28 +42,30 @@ def main() -> None:
 
     t0 = time.time()
     seasons = tuple(sorted(args.seasons))
-    print(f"Loading seasons {seasons} ...", flush=True)
-    graded, games, players = P.load_all(seasons, tags=("decision", "closing"))
-    print(f"  graded quotes {len(graded):,}  games {len(games):,}  "
-          f"player-games {len(players):,}", flush=True)
 
-    print("Building consensus ...", flush=True)
-    cons = attach_consensus(graded, method=args.devig, min_books=2,
-                        self_anchor_markets=C.SELF_ANCHOR_MARKETS)
+    # Built one season at a time. The quote frame is the largest object in the
+    # pipeline by two orders of magnitude and nothing downstream of the
+    # consensus needs two seasons of it in memory at once.
+    prop_frames, cand_frames, close_frames = [], [], []
+    for s in seasons:
+        print(f"\n--- season {s} ---", flush=True)
+        p, c, cl = P.build_season_frames(s, devig_method=args.devig)
+        print(f"  propositions {len(p):,}  candidates {len(c):,}  "
+              f"closing {len(cl):,}", flush=True)
+        prop_frames.append(p)
+        cand_frames.append(c)
+        if not cl.empty:
+            close_frames.append(cl)
+        gc.collect()
 
-    print("Building proposition frame ...", flush=True)
-    props = D.build_props(graded, games, players, cons=cons)
-    print(f"  propositions {len(props):,}", flush=True)
-
-    print("Building bet candidates ...", flush=True)
-    cand = D.build_candidates(graded, cons=cons, tag="decision")
-    cand = cand.merge(games[["espn_id", "game_date"]], on="espn_id",
-                      how="left", suffixes=("", "_g"))
-    if "game_date_g" in cand:
-        cand["game_date"] = cand["game_date"].fillna(cand["game_date_g"])
-    closing = cons[cons["tag"] == "closing"]
-    print(f"  candidates {len(cand):,}  closing quotes {len(closing):,}",
-          flush=True)
+    props = pd.concat(prop_frames, ignore_index=True)
+    cand = pd.concat(cand_frames, ignore_index=True)
+    closing = (pd.concat(close_frames, ignore_index=True)
+               if close_frames else pd.DataFrame())
+    del prop_frames, cand_frames, close_frames
+    gc.collect()
+    print(f"\ntotal: propositions {len(props):,}  candidates {len(cand):,}  "
+          f"closing quotes {len(closing):,}", flush=True)
 
     folds = B.make_folds(props["game_date"], n_burn_days=args.burn_days,
                          step_days=args.step_days)
