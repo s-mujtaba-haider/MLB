@@ -19,6 +19,30 @@ specific lever for each failure. Markets that pass ship live and fire daily.
 Markets that fail are killed or veto-filtered — none are left running as they
 were.
 
+## Result
+
+**0 of 11 markets clear the gate.** Three have genuinely positive out-of-sample
+returns with confidence intervals that include zero, and run veto-filtered at a
+high EV floor; eight are killed.
+
+| | markets |
+|---|---|
+| `live` | none |
+| `veto_filtered` | `totals` (+2.18% ROI), `batter_total_bases` (+1.79%), `spreads` (+0.06%) |
+| `killed` | the other eight |
+
+Closing-line value is positive on all eleven (+0.11% to +0.49%), so the price
+selection genuinely works — it is simply smaller than the ~2.2-point hold it
+has to overcome. The binding constraint is independent sample: intervals are
+clustered by game, and a 1-2 point edge needs on the order of 10,000
+independent games to clear a 95% bar. Four full seasons is 9,731 games in
+total, and each market fires on a fraction of them.
+
+**[docs/FINDINGS.md](docs/FINDINGS.md) is the full analysis** -- the arithmetic,
+the two findings that mattered (the winner's curse on shopped prices, and
+longshot bias), what was ruled out and why, and what would actually change the
+answer.
+
 ---
 
 ## What the edge actually is
