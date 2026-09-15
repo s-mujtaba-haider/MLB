@@ -16,3 +16,16 @@ SEASON 2025  (2025-03-27 .. 2025-09-28)
   [featured decision] 1600/3690 (13.8/s, eta 2.5m) 1732 calls, 46,653 credits spent this run, 3,733,991 remaining
   [featured decision] 1800/3690 (13.7/s, eta 2.3m) 1932 calls, 52,653 credits spent this run, 3,727,991 remaining
   [featured decision] 2000/3690 (13.5/s, eta 2.1m) 2132 calls, 58,653 credits spent this run, 3,721,991 remaining
+  [featured decision] 2200/3690 (13.5/s, eta 1.8m) 2332 calls, 64,653 credits spent this run, 3,715,991 remaining
+  [featured decision] 2400/3690 (13.3/s, eta 1.6m) 2533 calls, 70,683 credits spent this run, 3,709,961 remaining
+  [featured decision] 2600/3690 (13.2/s, eta 1.4m) 2733 calls, 76,683 credits spent this run, 3,703,961 remaining
+  [featured decision] 2800/3690 (13.1/s, eta 1.1m) 2933 calls, 82,683 credits spent this run, 3,697,991 remaining
+  [featured decision] 3000/3690 (13.1/s, eta 0.9m) 3132 calls, 88,653 credits spent this run, 3,692,021 remaining
+  [featured decision] 3200/3690 (13.0/s, eta 0.6m) 3334 calls, 94,713 credits spent this run, 3,685,931 remaining
+  [featured decision] 3400/3690 (12.9/s, eta 0.4m) 3532 calls, 100,653 credits spent this run, 3,679,991 remaining
+  [featured decision] 3600/3690 (12.9/s, eta 0.1m) 3732 calls, 106,653 credits spent this run, 3,674,021 remaining
+[featured decision] done. 3822 calls, 109,353 credits spent this run, 3,671,291 remaining
+[props decision] 12240 (event,region) requests over 2448 events
+  [props decision] 200/12240 (13.0/s, eta 15.5m) 4022 calls, 116,633 credits spent this run, 3,664,011 remaining
+  [props decision] 400/12240 (13.4/s, eta 14.7m) 4222 calls, 123,533 credits spent this run, 3,657,111 remaining
+  [props decision] 600/12240 (13.4/s, eta 14.4m) 4422 calls, 130,913 credits spent this run, 3,649,731 remaining

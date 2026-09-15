@@ -58,9 +58,11 @@ def devig_pair(raw_a: np.ndarray, raw_b: np.ndarray,
         hi = np.full_like(a, 10.0)
         for _ in range(60):
             mid = 0.5 * (lo + hi)
+            # a,b < 1, so a**k + b**k is DECREASING in k: f > 0 means the root
+            # lies to the right and the lower bound is what moves.
             f = a ** mid + b ** mid - 1.0
-            hi = np.where(f > 0, mid, hi)
-            lo = np.where(f > 0, lo, mid)
+            lo = np.where(f > 0, mid, lo)
+            hi = np.where(f > 0, hi, mid)
         k = 0.5 * (lo + hi)
         pa = a ** k
         return np.clip(pa / (pa + b ** k), EPS, 1 - EPS)

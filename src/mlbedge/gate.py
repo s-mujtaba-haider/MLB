@@ -71,6 +71,39 @@ def roi_pvalue(profit: np.ndarray, n_boot: int = 10000, seed: int = 0) -> float:
     return float((centred >= profit.mean()).mean())
 
 
+def recent_roi(bets: pd.DataFrame, frac: float = 1 / 3) -> float:
+    """ROI over the most recent slice of the out-of-sample period.
+
+    A market whose edge was real early and gone late has a healthy full-sample
+    ROI and no future. Since the whole point is to fire tomorrow, the recent
+    slice gets its own check rather than being averaged away.
+    """
+    if bets.empty or "game_date" not in bets:
+        return np.nan
+    d = bets.sort_values("game_date")
+    k = max(1, int(len(d) * frac))
+    return float(d["profit"].tail(k).mean())
+
+
+def decayed(bets: pd.DataFrame, frac: float = 1 / 3, z: float = 1.0) -> bool:
+    """Is the recent slice *confidently* losing, rather than merely noisy?
+
+    A point estimate on a third of the bets is far too noisy to gate on: a
+    genuinely profitable market will show a negative recent third perhaps a
+    third of the time. So decay is only called when the recent slice is below
+    zero by more than `z` standard errors -- confident decay, not a cold spell.
+    """
+    if bets.empty or "game_date" not in bets:
+        return False
+    d = bets.sort_values("game_date")
+    k = max(1, int(len(d) * frac))
+    tail = d["profit"].tail(k).to_numpy(dtype=float)
+    if len(tail) < 60:
+        return False
+    se = tail.std(ddof=1) / np.sqrt(len(tail))
+    return bool(tail.mean() + z * se < 0)
+
+
 def calibration_error(bets: pd.DataFrame) -> float:
     cal = B.calibration(bets)
     if cal.empty:
@@ -130,6 +163,15 @@ LEVERS = {
         "an explicit regime feature (park run environment and month-of-season "
         "are already computed) and re-fit; if it stays lumpy, veto-filter to "
         "the folds' common denominator rather than shipping the average."),
+    "edge_decayed": (
+        "The edge is real in the early sample and gone by the end, which is "
+        "the shape of a market the books have since tightened, or of a "
+        "bookmaker that has cut limits or corrected a stale feed. The "
+        "full-sample ROI is therefore not a forecast. Lever: re-fit on a "
+        "trailing window only (drop the oldest season rather than expanding), "
+        "and check the per-book breakdown -- if the decay is concentrated in "
+        "one or two books that have since tightened, drop those books and "
+        "re-test the remainder rather than abandoning the market."),
     "miscalibrated": (
         "Predicted probabilities do not track realised frequencies, so the EV "
         "number is not trustworthy even where the sign is right. Re-fit the "
@@ -168,10 +210,11 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
         metrics["max_fold_share"] = (
             float(stab["profit"].max() / tot) if tot > 0 else np.nan)
         metrics["avg_shrink"] = float(bets["shrink"].mean()) if "shrink" in bets else np.nan
+        metrics["recent_roi"] = recent_roi(bets)
     else:
         metrics.update({"p_value": 1.0, "cal_error": np.nan, "n_folds": 0,
                         "fold_win_rate": np.nan, "max_fold_share": np.nan,
-                        "avg_shrink": np.nan})
+                        "avg_shrink": np.nan, "recent_roi": np.nan})
 
     checks: dict[str, bool] = {}
 
@@ -215,6 +258,12 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
          or metrics["max_fold_share"] <= MAX_SINGLE_FOLD_SHARE))
     if not checks["stability"]:
         return Verdict(market, FAIL, "unstable", LEVERS["unstable"],
+                       VETO_FILTERED, metrics, checks)
+
+    # 5b. Decay -- the edge must still be there at the end of the sample.
+    checks["no_decay"] = not decayed(bets)
+    if not checks["no_decay"]:
+        return Verdict(market, FAIL, "edge_decayed", LEVERS["edge_decayed"],
                        VETO_FILTERED, metrics, checks)
 
     # 6. Calibration.
