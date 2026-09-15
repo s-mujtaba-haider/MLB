@@ -65,3 +65,46 @@ total: propositions 256,258  candidates 499,577  closing quotes 2,004
   [runs_scored] fold 2025-07-05 train=23174 thr=0.060 shrink=0.80 bets=118
   [runs_scored] fold 2025-07-26 train=27161 thr=0.130 shrink=0.75 bets=70
   [runs_scored] fold 2025-08-16 train=32118 thr=0.105 shrink=0.88 bets=239
+  [runs_scored] fold 2025-09-06 train=37146 thr=0.060 shrink=0.78 bets=335
+  [runs_scored] fold 2025-09-27 train=42118 thr=0.035 shrink=0.78 bets=40
+  bets=802 roi=-0.1221 [-0.2031,-0.0395] p=0.9988 clv=+nan -> FAIL negative_edge
+
+=== batter_strikeouts ===
+  [batter_strikeouts] fold 2025-07-05 train=9556 thr=0.030 shrink=0.20 bets=1
+  [batter_strikeouts] fold 2025-07-26 train=11203 thr=0.030 shrink=0.25 bets=0
+  [batter_strikeouts] fold 2025-08-16 train=13844 thr=0.005 shrink=0.33 bets=13
+  [batter_strikeouts] fold 2025-09-06 train=15843 thr=0.005 shrink=0.30 bets=0
+  bets=14 roi=-0.4877 [-0.8736,+0.0154] p=0.9924 clv=+nan -> VETO leakage
+
+=== pitcher_strikeouts ===
+  [pitcher_strikeouts] fold 2025-07-05 train=3166 thr=0.110 shrink=0.55 bets=174
+  [pitcher_strikeouts] fold 2025-07-26 train=3763 thr=0.035 shrink=0.48 bets=387
+  [pitcher_strikeouts] fold 2025-08-16 train=4468 thr=0.055 shrink=0.33 bets=169
+  [pitcher_strikeouts] fold 2025-09-06 train=5145 thr=0.120 shrink=0.62 bets=106
+  [pitcher_strikeouts] fold 2025-09-27 train=5823 thr=0.055 shrink=0.70 bets=37
+  bets=873 roi=-0.0076 [-0.0783,+0.0654] p=0.5787 clv=+nan -> FAIL negative_edge
+
+=== pitcher_outs ===
+  [pitcher_outs] fold 2025-07-05 train=2379 thr=0.010 shrink=0.50 bets=409
+  [pitcher_outs] fold 2025-07-26 train=2882 thr=0.020 shrink=0.55 bets=390
+  [pitcher_outs] fold 2025-08-16 train=3484 thr=0.030 shrink=0.60 bets=396
+  [pitcher_outs] fold 2025-09-06 train=4101 thr=0.060 shrink=0.60 bets=271
+  [pitcher_outs] fold 2025-09-27 train=4655 thr=0.070 shrink=0.62 bets=16
+  bets=1482 roi=-0.0116 [-0.0649,+0.0422] p=0.6632 clv=+nan -> FAIL negative_edge
+wrote C:\Users\mujta\mlb\reports\market_report.md
+
+==============================================================================
+            market verdict    deployment  n_bets       roi    roi_lo  p_value  clv_mean         cause
+               h2h    FAIL veto_filtered     989  0.037185 -0.032809   0.1532  0.000000       no_edge
+           spreads    FAIL        killed     781 -0.022380 -0.093075   0.7369 -0.001803 negative_edge
+            totals    FAIL        killed    1107 -0.014850 -0.073771   0.6933 -0.002621 negative_edge
+       batter_hits    VETO        killed    2138 -0.027309 -0.076019   0.8713       NaN       leakage
+       batter_rbis    FAIL        killed    3078 -0.011237 -0.060320   0.6706       NaN negative_edge
+batter_total_bases    VETO        killed    2241 -0.015654 -0.058926   0.7537       NaN       leakage
+  batter_home_runs    VETO        killed     633  0.095285 -0.068703   0.1288       NaN       leakage
+       runs_scored    FAIL        killed     802 -0.122084 -0.203121   0.9988       NaN negative_edge
+ batter_strikeouts    VETO        killed      14 -0.487729 -0.873626   0.9924       NaN       leakage
+pitcher_strikeouts    FAIL        killed     873 -0.007567 -0.078349   0.5787       NaN negative_edge
+      pitcher_outs    FAIL        killed    1482 -0.011579 -0.064891   0.6632       NaN negative_edge
+
+0/11 markets PASS. Completed in 3.6 min.

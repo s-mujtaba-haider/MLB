@@ -24,12 +24,29 @@ def main() -> None:
     args = ap.parse_args()
 
     graded = P.build_graded(args.season, tags=("decision",))
-    w = CAL.fit_anchor_weights(graded)
-    if not w:
-        raise SystemExit("no weights fitted -- not enough graded book views")
-    CAL.save(w)
+
+    fitted = CAL.fit_anchor_weights(graded)
+    print(f"measured skill weights for {len(fitted)} markets", flush=True)
+
+    print("comparing weighting schemes by consensus log-loss ...", flush=True)
+    cmp = CAL.compare_schemes(graded, fitted=fitted)
+    if cmp.empty:
+        raise SystemExit("not enough graded book views to compare schemes")
+    piv = cmp.pivot(index="market", columns="scheme", values="log_loss")
+    print(piv.round(5).to_string())
+
+    choice = CAL.best_scheme_per_market(cmp)
     print()
-    print(CAL.report(w))
+    for m, s in sorted(choice.items()):
+        best = piv.loc[m].min()
+        prior = piv.loc[m].get("prior", float("nan"))
+        print(f"  {m:22s} -> {s:15s} log-loss {best:.5f} "
+              f"(prior {prior:.5f}, gain {prior - best:+.5f})")
+
+    from mlbedge.devig import book_views
+    books = sorted(book_views(graded[graded["tag"] == "decision"])["book"].unique())
+    w = CAL.weights_from_schemes(choice, books, fitted=fitted)
+    CAL.save(w)
 
 
 if __name__ == "__main__":

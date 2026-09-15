@@ -87,6 +87,98 @@ def fit_anchor_weights(graded: pd.DataFrame, method: str = "shin"
     return result
 
 
+def _scheme_weights(scheme: str, books: list[str]) -> dict[str, float]:
+    """Candidate weighting schemes, evaluated head-to-head on the fit season."""
+    if scheme == "prior":
+        return {b: C.ANCHOR_WEIGHTS.get(b, C.DEFAULT_ANCHOR_WEIGHT)
+                for b in books}
+    if scheme == "uniform":
+        return {b: 1.0 for b in books}
+    if scheme == "sharp_only":
+        # Exchanges and sharp books only; retail and soft get no vote.
+        return {b: (1.0 if C.book_tier(b) <= 1 else 0.0) for b in books}
+    if scheme == "sharp_heavy":
+        # Retail still votes, but an order of magnitude quieter.
+        return {b: (1.0 if C.book_tier(b) == 0 else
+                    0.8 if C.book_tier(b) == 1 else
+                    0.1 if C.book_tier(b) == 2 else 0.02) for b in books}
+    if scheme == "exchange_first":
+        return {b: (1.0 if b in C.EXCHANGES or b == "pinnacle" else 0.05)
+                for b in books}
+    raise ValueError(scheme)
+
+
+SCHEMES = ("prior", "sharp_heavy", "sharp_only", "exchange_first", "uniform")
+
+
+def compare_schemes(graded: pd.DataFrame, method: str = "shin",
+                    fitted: dict | None = None) -> pd.DataFrame:
+    """Score each weighting scheme by the log-loss of the consensus it builds.
+
+    This is configuration selection, so it happens on the fit season only --
+    the same season the weights themselves are fitted on, and one that lies
+    inside every fold's training window. Choosing the scheme by looking at
+    out-of-sample ROI would be exactly the "best of N tries" problem the gate
+    exists to correct for, applied one level up where the gate cannot see it.
+    """
+    from .devig import consensus, expit, logit
+
+    dec = graded[graded["tag"] == "decision"]
+    bv_base = book_views(dec, method=method)
+    if bv_base.empty:
+        return pd.DataFrame()
+    outcome = proposition_outcome(dec)
+    books = sorted(bv_base["book"].unique())
+
+    rows = []
+    for scheme in SCHEMES + (("fitted",) if fitted else ()):
+        bv = bv_base.copy()
+        if scheme == "fitted":
+            bv["w"] = [fitted.get(mk, {}).get(
+                bk, C.ANCHOR_WEIGHTS.get(bk, C.DEFAULT_ANCHOR_WEIGHT))
+                for mk, bk in zip(bv["market"], bv["book"])]
+        else:
+            w = _scheme_weights(scheme, books)
+            bv["w"] = bv["book"].map(w).fillna(0.0)
+        bv.loc[bv["book"].isin(C.DFS_BOOKS), "w"] = 0.0
+        bv.loc[bv["hold"] > 0.35, "w"] = 0.0
+
+        cs = consensus(bv, min_books=2).drop_duplicates(PROP_KEY)
+        m = cs.merge(outcome, on=PROP_KEY, how="inner").dropna(
+            subset=["p_cons_all", "won"])
+        if len(m) < 1000:
+            continue
+        for market, sub in m.groupby("market", observed=True):
+            if len(sub) < 500:
+                continue
+            rows.append({
+                "scheme": scheme, "market": market, "n": len(sub),
+                "log_loss": _log_loss(sub["won"].to_numpy(dtype=float),
+                                      sub["p_cons_all"].to_numpy(dtype=float)),
+            })
+    return pd.DataFrame(rows)
+
+
+def best_scheme_per_market(cmp: pd.DataFrame) -> dict[str, str]:
+    if cmp.empty:
+        return {}
+    idx = cmp.groupby("market")["log_loss"].idxmin()
+    return dict(zip(cmp.loc[idx, "market"], cmp.loc[idx, "scheme"]))
+
+
+def weights_from_schemes(choice: dict[str, str], books: list[str],
+                         fitted: dict | None = None
+                         ) -> dict[str, dict[str, float]]:
+    """Materialise the per-market winning scheme into per-market weights."""
+    out: dict[str, dict[str, float]] = {}
+    for market, scheme in choice.items():
+        if scheme == "fitted" and fitted:
+            out[market] = fitted.get(market, {})
+        else:
+            out[market] = _scheme_weights(scheme, books)
+    return out
+
+
 def save(weights: dict, path=WEIGHTS_PATH) -> None:
     path.write_text(json.dumps(weights, indent=2))
     print(f"saved fitted anchor weights for {len(weights)} markets -> {path}")

@@ -91,7 +91,10 @@ def test_gate_refuses_the_control_market(control_run):
     _, _, bets, _ = control_run
     v = G.judge("totals", bets, closing=None)
     assert v.verdict == G.FAIL
-    assert v.cause in ("negative_edge", "no_edge")
+    # The cause depends on how many bets survive the selection correction,
+    # which is not the point: what matters is that an efficient market is
+    # never authorised to fire.
+    assert v.cause in ("negative_edge", "no_edge", "insufficient_sample")
     assert v.deployment in (G.KILLED, G.VETO_FILTERED)
 
 

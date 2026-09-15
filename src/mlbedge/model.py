@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.isotonic import IsotonicRegression
-from sklearn.model_selection import KFold
+from sklearn.model_selection import GroupKFold
 
 from .devig import expit, logit
 
@@ -104,10 +104,19 @@ class MarketModel:
 
         # Out-of-fold predictions inside the training window, used for both
         # calibration and the shrinkage search. Nothing here sees the test fold.
+        #
+        # Grouped by DATE, not shuffled at random. A random split puts
+        # propositions from the same game on both sides of the fold, and the
+        # batters in one high-scoring game go over together -- so the
+        # out-of-fold estimate is flattered, the shrinkage search trusts the
+        # model further than it has earned, and the whole thing is then applied
+        # out of sample where that correlation does not help. Grouping by date
+        # makes the estimate mean what it is supposed to mean.
         oof = np.full(len(d), np.nan)
-        kf = KFold(n_splits=self.n_calib_folds, shuffle=True,
-                   random_state=self.seed)
-        for tr, va in kf.split(X):
+        groups = (d["game_date"].to_numpy() if "game_date" in d.columns
+                  else np.arange(len(d)))
+        splitter = GroupKFold(n_splits=self.n_calib_folds)
+        for tr, va in splitter.split(X, y, groups=groups):
             m = HistGradientBoostingClassifier(**self.params)
             m.fit(X[tr], y[tr])
             oof[va] = m.predict_proba(X[va])[:, 1]

@@ -1,0 +1,42 @@
+market,check,severity,detail,n
+h2h,quote_timing,ok,all 989 quotes strictly pre-first-pitch (min lead 30.3 min),989
+h2h,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+h2h,conditional_signal,ok,max residual AUC 0.536 (away_tg_runs_against_r90),0
+spreads,quote_timing,ok,all 781 quotes strictly pre-first-pitch (min lead 30.3 min),781
+spreads,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+spreads,conditional_signal,ok,max residual AUC 0.557 (home_tg_runs_for_r10),0
+totals,quote_timing,ok,all 1107 quotes strictly pre-first-pitch (min lead 30.3 min),1107
+totals,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+totals,conditional_signal,ok,max residual AUC 0.562 (away_tg_won_r10),0
+batter_hits,quote_timing,ok,all 2138 quotes strictly pre-first-pitch (min lead 30.3 min),2138
+batter_hits,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+batter_hits,conditional_signal,ok,max residual AUC 0.528 (book_spread),0
+batter_hits,asof::bat_hits_ppa_r10,veto,1/250 sampled rows match a window that includes the current game -- the feature sees its own outcome,1
+batter_rbis,quote_timing,ok,all 3078 quotes strictly pre-first-pitch (min lead 30.3 min),3078
+batter_rbis,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+batter_rbis,conditional_signal,ok,max residual AUC 0.594 (p_primary),0
+batter_rbis,asof::bat_hits_ppa_r10,warn,26/250 rows differ from an independent recomputation (not explained by future data),26
+batter_total_bases,quote_timing,ok,all 2241 quotes strictly pre-first-pitch (min lead 30.3 min),2241
+batter_total_bases,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+batter_total_bases,conditional_signal,ok,max residual AUC 0.524 (tm_runs_ppa_r30),0
+batter_total_bases,asof::bat_hits_ppa_r10,veto,2/250 sampled rows match a window that includes the current game -- the feature sees its own outcome,2
+batter_home_runs,quote_timing,ok,all 633 quotes strictly pre-first-pitch (min lead 30.3 min),633
+batter_home_runs,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+batter_home_runs,conditional_signal,veto,p_primary separates residual outcomes at AUC 0.741 -- implausible without leakage,0
+batter_home_runs,asof::bat_hits_ppa_r10,veto,1/250 sampled rows match a window that includes the current game -- the feature sees its own outcome,1
+runs_scored,quote_timing,ok,all 802 quotes strictly pre-first-pitch (min lead 30.3 min),802
+runs_scored,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+runs_scored,conditional_signal,warn,p_primary residual AUC 0.616 (above 0.6),0
+runs_scored,asof::bat_hits_ppa_r10,warn,44/250 rows differ from an independent recomputation (not explained by future data),44
+batter_strikeouts,quote_timing,ok,all 14 quotes strictly pre-first-pitch (min lead 30.4 min),14
+batter_strikeouts,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-19",0
+batter_strikeouts,conditional_signal,warn,sample too small to test,0
+batter_strikeouts,asof::bat_hits_ppa_r10,veto,2/250 sampled rows match a window that includes the current game -- the feature sees its own outcome,2
+pitcher_strikeouts,quote_timing,ok,all 873 quotes strictly pre-first-pitch (min lead 30.3 min),873
+pitcher_strikeouts,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+pitcher_strikeouts,conditional_signal,ok,max residual AUC 0.559 (book_spread),0
+pitcher_strikeouts,asof::pit_strike_outs_r8,ok,250 sampled rows reproduce exactly from prior games only,250
+pitcher_outs,quote_timing,ok,all 1482 quotes strictly pre-first-pitch (min lead 30.3 min),1482
+pitcher_outs,fold_boundary,ok,"train ends 2025-07-04, test starts 2025-07-05",0
+pitcher_outs,conditional_signal,ok,max residual AUC 0.539 (hold_med),0
+pitcher_outs,asof::pit_strike_outs_r8,ok,250 sampled rows reproduce exactly from prior games only,250

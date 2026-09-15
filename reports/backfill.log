@@ -133,3 +133,25 @@ SEASON 2026  (2026-03-26 .. 2026-09-14)
   [featured decision] 3000/3435 (11.3/s, eta 0.6m) 18958 calls, 680,968 credits spent this run, 3,099,653 remaining
   [featured decision] 3200/3435 (11.1/s, eta 0.4m) 19156 calls, 686,908 credits spent this run, 3,093,711 remaining
   [featured decision] 3400/3435 (11.1/s, eta 0.1m) 19357 calls, 692,938 credits spent this run, 3,087,681 remaining
+[featured decision] done. 19391 calls, 693,958 credits spent this run, 3,086,691 remaining
+[props decision] 11380 (event,region) requests over 2276 events
+  [props decision] 200/11380 (11.9/s, eta 15.6m) 19591 calls, 702,128 credits spent this run, 3,078,491 remaining
+  [props decision] 400/11380 (12.5/s, eta 14.6m) 19791 calls, 710,038 credits spent this run, 3,070,581 remaining
+  [props decision] 600/11380 (12.4/s, eta 14.5m) 19981 calls, 717,708 credits spent this run, 3,062,911 remaining
+  [props decision] 800/11380 (12.5/s, eta 14.1m) 20176 calls, 725,528 credits spent this run, 3,055,091 remaining
+  [props decision] 1000/11380 (12.4/s, eta 13.9m) 20376 calls, 733,658 credits spent this run, 3,046,961 remaining
+  [props decision] 1200/11380 (12.5/s, eta 13.6m) 20576 calls, 741,848 credits spent this run, 3,038,771 remaining
+  [props decision] 1400/11380 (12.4/s, eta 13.4m) 20776 calls, 749,868 credits spent this run, 3,030,751 remaining
+  [props decision] 1600/11380 (12.3/s, eta 13.3m) 20976 calls, 757,958 credits spent this run, 3,022,661 remaining
+  [props decision] 1800/11380 (12.3/s, eta 13.0m) 21176 calls, 766,068 credits spent this run, 3,014,551 remaining
+  [props decision] 2000/11380 (12.2/s, eta 12.8m) 21371 calls, 773,838 credits spent this run, 3,006,781 remaining
+  [props decision] 2200/11380 (12.3/s, eta 12.5m) 21566 calls, 781,848 credits spent this run, 2,998,691 remaining
+  [props decision] 2400/11380 (12.3/s, eta 12.2m) 21756 calls, 789,528 credits spent this run, 2,991,231 remaining
+  [props decision] 2600/11380 (12.3/s, eta 11.9m) 21956 calls, 797,618 credits spent this run, 2,983,001 remaining
+  [props decision] 2800/11380 (12.3/s, eta 11.7m) 22146 calls, 805,358 credits spent this run, 2,975,261 remaining
+  [props decision] 3000/11380 (12.3/s, eta 11.4m) 22346 calls, 813,148 credits spent this run, 2,967,471 remaining
+  [props decision] 3200/11380 (12.2/s, eta 11.1m) 22546 calls, 821,268 credits spent this run, 2,959,361 remaining
+  [props decision] 3400/11380 (12.2/s, eta 10.9m) 22746 calls, 829,458 credits spent this run, 2,951,161 remaining
+  [props decision] 3600/11380 (12.2/s, eta 10.6m) 22946 calls, 837,748 credits spent this run, 2,942,871 remaining
+  [props decision] 3800/11380 (12.3/s, eta 10.3m) 23142 calls, 845,458 credits spent this run, 2,935,161 remaining
+  [props decision] 4000/11380 (12.3/s, eta 10.0m) 23331 calls, 852,598 credits spent this run, 2,928,021 remaining

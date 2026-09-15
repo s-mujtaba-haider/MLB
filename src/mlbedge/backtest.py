@@ -26,6 +26,7 @@ from .devig import logit
 from .grade import LOSS, PUSH, WIN
 from .model import MarketModel, side_probability
 from .odds import american_to_prob, ev_per_unit, profit_per_unit
+from .selection import SelectionCalibrator, add_apparent_edge
 
 
 @dataclass
@@ -60,7 +61,7 @@ def make_folds(dates: pd.Series, n_burn_days: int = 400,
 # ---------------------------------------------------------------------------
 
 def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
-                     min_bets: int = 150) -> float:
+                     min_bets: int = 150, ev_col: str = "ev") -> float:
     """Pick the EV cut that maximises a shrunk training ROI.
 
     The raw argmax of training ROI overfits toward thresholds so high that only
@@ -71,9 +72,11 @@ def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
     if train_bets.empty:
         return 0.02
     grid = grid if grid is not None else np.arange(0.0, 0.16, 0.005)
+    if ev_col not in train_bets.columns:
+        ev_col = "ev"
     best_t, best_score = 0.03, -np.inf
     for t in grid:
-        sel = train_bets[train_bets["ev"] >= t]
+        sel = train_bets[train_bets[ev_col] >= t]
         n = len(sel)
         if n < min_bets:
             continue
@@ -135,20 +138,28 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
             continue
         reports.append((f.test_start, rep))
 
-        # Threshold is fitted on training-window candidates only.
+        # The winner's-curse correction and the EV threshold are both fitted
+        # on training-window candidates only, using out-of-fold model
+        # probabilities so the correction is not fitted against the model's
+        # own overfit.
         tr_c = c[c["game_date"] <= f.train_end]
-        tr_bets = _score_oof(tr_c, mm)
-        thr = choose_threshold(tr_bets)
+        tr_bets = add_apparent_edge(_score_oof(tr_c, mm))
+        cal = SelectionCalibrator().fit(tr_bets)
+        tr_bets = cal.apply(tr_bets)
+        thr = choose_threshold(tr_bets, ev_col="ev_cal" if cal.fitted else "ev")
 
-        te_bets = _score(te_c, mm)
-        sel = te_bets[te_bets["ev"] >= thr].copy()
+        te_bets = cal.apply(add_apparent_edge(_score(te_c, mm)))
+        ev_col = "ev_cal" if cal.fitted else "ev"
+        sel = te_bets[te_bets[ev_col] >= thr].copy()
         sel["fold"] = f.test_start
         sel["threshold"] = thr
         sel["shrink"] = rep.shrink
+        sel["sel_cal_n"] = cal.n_fit
         all_bets.append(sel)
         if verbose:
             print(f"  [{market}] fold {f.test_start} train={len(tr_p)} "
-                  f"thr={thr:.3f} shrink={rep.shrink:.2f} bets={len(sel)}",
+                  f"thr={thr:.3f} shrink={rep.shrink:.2f} "
+                  f"gain={rep.model_gain:+.5f} bets={len(sel)}",
                   flush=True)
 
     bets = pd.concat(all_bets, ignore_index=True) if all_bets else pd.DataFrame()
