@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 
 from . import backtest as B
+from . import config as C
 
 PASS, FAIL, VETO = "PASS", "FAIL", "VETO"
 LIVE, VETO_FILTERED, KILLED = "live", "veto_filtered", "killed"
@@ -211,10 +212,15 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
             float(stab["profit"].max() / tot) if tot > 0 else np.nan)
         metrics["avg_shrink"] = float(bets["shrink"].mean()) if "shrink" in bets else np.nan
         metrics["recent_roi"] = recent_roi(bets)
+        maj = bets[bets["book"].isin(C.MAJOR_BOOKS)] if "book" in bets else bets.iloc[:0]
+        metrics["n_major"] = int(len(maj))
+        metrics["roi_major"] = (float(maj["profit"].mean())
+                                if len(maj) else float("nan"))
     else:
         metrics.update({"p_value": 1.0, "cal_error": np.nan, "n_folds": 0,
                         "fold_win_rate": np.nan, "max_fold_share": np.nan,
-                        "avg_shrink": np.nan, "recent_roi": np.nan})
+                        "avg_shrink": np.nan, "recent_roi": np.nan,
+                        "n_major": 0, "roi_major": np.nan})
 
     checks: dict[str, bool] = {}
 

@@ -185,6 +185,14 @@ MIN_BOOKS = {"batter_strikeouts": 1}
 def min_books_for(market: str) -> int:
     return MIN_BOOKS.get(market, DEFAULT_MIN_BOOKS)
 
+
+# The books a typical US bettor can actually reach and hold a balance at.
+# Reported separately because "best price across twenty books" overstates what
+# is executable: an edge that survives only at obscure or offshore shops is a
+# different product from one that is available at DraftKings.
+MAJOR_BOOKS = {"draftkings", "fanduel", "betmgm", "williamhill_us",
+               "espnbet", "betrivers", "fanatics"}
+
 # --- seasons & snapshot timing -------------------------------------------
 # Regular-season windows, inclusive. Postseason is excluded: different roster,
 # bullpen and lineup dynamics, and it contaminates rolling form features.

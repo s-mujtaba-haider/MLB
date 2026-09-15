@@ -61,6 +61,11 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
       "the same book and the same proposition. It is measured on every bet "
       "rather than through outcome noise, so it is the lower-variance "
       "evidence that an edge is real.")
+    a("- **Major-book ROI** restricts to DraftKings, FanDuel, BetMGM, "
+      "Caesars, ESPN Bet, BetRivers and Fanatics. 'Best price across twenty "
+      "books' overstates what is executable; an edge that survives only at "
+      "obscure or offshore shops is a different product from one available "
+      "at DraftKings.")
     a("- **Shrink** is how far the model was allowed to move from the market "
       "consensus, fitted per fold on training data. Near zero means the edge "
       "is line-shopping rather than projection — a real edge, but a different "
@@ -86,6 +91,8 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
           f"largest fold = {_fmt(met.get('max_fold_share'), '.0%')} of profit")
         a(f"- Calibration error: {_fmt(met.get('cal_error'), '.4f')}; "
           f"average price {met.get('avg_price', float('nan')):+.0f}")
+        a(f"- Executable at major US books only: "
+          f"{met.get('n_major', 0)} bets at {_fmt(met.get('roi_major'))}")
         if v.verdict != PASS:
             a(f"\n**Cause: `{v.cause}`**\n")
             a(f"**Lever.** {v.lever}\n")
