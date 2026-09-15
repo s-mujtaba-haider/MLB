@@ -92,7 +92,8 @@ def devig_pair(raw_a: np.ndarray, raw_b: np.ndarray,
 # Book-level fair probabilities
 # ---------------------------------------------------------------------------
 
-def book_views(quotes: pd.DataFrame, method: str = "shin") -> pd.DataFrame:
+def book_views(quotes: pd.DataFrame, method: str = "shin",
+               fitted_weights: dict | None = None) -> pd.DataFrame:
     """One row per (proposition, book) that quoted *both* sides.
 
     Returns the book's vig-free probability of the over/home side plus the
@@ -117,7 +118,14 @@ def book_views(quotes: pd.DataFrame, method: str = "shin") -> pd.DataFrame:
     raw_u = american_to_prob(bv["price_under"].to_numpy(dtype=float))
     bv["p_over"] = devig_pair(raw_o, raw_u, method=method)
     bv["hold"] = raw_o + raw_u - 1.0
-    bv["w"] = bv["book"].map(C.ANCHOR_WEIGHTS).fillna(C.DEFAULT_ANCHOR_WEIGHT)
+    if fitted_weights:
+        # Per-market measured weights where we have them, priors elsewhere.
+        bv["w"] = [
+            fitted_weights.get(mk, {}).get(
+                bk, C.ANCHOR_WEIGHTS.get(bk, C.DEFAULT_ANCHOR_WEIGHT))
+            for mk, bk in zip(bv["market"], bv["book"])]
+    else:
+        bv["w"] = bv["book"].map(C.ANCHOR_WEIGHTS).fillna(C.DEFAULT_ANCHOR_WEIGHT)
     # A book quoting an absurd margin is not expressing an opinion worth
     # weighting; DFS operators post a line at a fixed house price.
     bv.loc[bv["book"].isin(C.DFS_BOOKS), "w"] = 0.0
@@ -157,8 +165,8 @@ def consensus(book_view: pd.DataFrame, min_books: int = 2) -> pd.DataFrame:
 
 def attach_consensus(quotes: pd.DataFrame, method: str = "shin",
                      min_books: int = 2,
-                     self_anchor_markets: frozenset[str] = frozenset()
-                     ) -> pd.DataFrame:
+                     self_anchor_markets: frozenset[str] = frozenset(),
+                     fitted_weights: dict | None = None) -> pd.DataFrame:
     """Attach the consensus a quote should be judged against.
 
     For a book that quoted both sides, that is the leave-one-out consensus.
@@ -175,7 +183,9 @@ def attach_consensus(quotes: pd.DataFrame, method: str = "shin",
     before any bet fires, and if the model adds nothing the shrinkage collapses
     to zero and the market produces no bets at all.
     """
-    bv = consensus(book_views(quotes, method=method), min_books=min_books)
+    bv = consensus(book_views(quotes, method=method,
+                              fitted_weights=fitted_weights),
+                   min_books=min_books)
     q = quotes.copy()
     if bv.empty:
         q["p_cons"] = np.nan

@@ -116,6 +116,7 @@ def build_season_frames(season: int, devig_method: str = "shin",
     cluster job, for no benefit -- nothing downstream of the consensus needs
     to see two seasons at the same time.
     """
+    from . import calibrate as CAL
     from . import config as C
     from . import dataset as D
     from .devig import attach_consensus
@@ -123,7 +124,8 @@ def build_season_frames(season: int, devig_method: str = "shin",
     graded = build_graded(season, tags=tags)
     games, players = build_results(season)
     cons = attach_consensus(graded, method=devig_method, min_books=2,
-                            self_anchor_markets=C.SELF_ANCHOR_MARKETS)
+                            self_anchor_markets=C.SELF_ANCHOR_MARKETS,
+                            fitted_weights=CAL.load())
     props = D.build_props(graded, games, players, cons=cons)
     cand = D.build_candidates(graded, cons=cons, tag="decision")
     if not cand.empty:
