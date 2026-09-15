@@ -102,3 +102,24 @@ def test_unfitted_calibrator_is_a_no_op():
     assert not cal.fitted
     out = cal.apply(d)
     assert np.allclose(out["p_cal"], out["p_raw"])
+
+
+def test_calibrator_fits_anchor_types_separately():
+    """A ladder-anchored price carries estimation error on top of the
+    selection effect. Pooling the two regimes lets the better-measured group
+    absorb the other's correction."""
+    direct = _shopped(n=12000, margin=0.022, seed=1).assign(anchor_src="direct")
+    # The ladder group has a much larger apparent edge for the same truth.
+    ladder = _shopped(n=12000, margin=0.022, seed=2).assign(anchor_src="ladder")
+    ladder["p_model"] = np.clip(ladder["p_model"] + 0.06, 0.05, 0.95)
+    ladder = add_apparent_edge(ladder.drop(columns=["apparent_edge"]))
+    both = pd.concat([direct, ladder], ignore_index=True)
+
+    cal = SelectionCalibrator().fit(both)
+    assert set(cal.by_group) == {"direct", "ladder"}
+    out = cal.apply(both)
+    # Each group must be corrected back toward its own truth.
+    for key in ("direct", "ladder"):
+        g = out[out["anchor_src"] == key]
+        assert np.abs(g["p_cal"] - g["p_true"]).mean() < \
+               np.abs(g["p_model"] - g["p_true"]).mean(), key
