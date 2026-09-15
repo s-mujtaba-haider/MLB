@@ -9,6 +9,11 @@ runs_scored   batter_strikeouts   pitcher_strikeouts   pitcher_outs
 h2h   spreads   totals
 ```
 
+`runs_scored` is read as **batter runs scored** (`batter_runs_scored` upstream),
+not a team-runs market — it sits alongside the other batter props in the brief.
+Say so if the intent was team totals and it is a one-line change in
+`config.MARKETS`.
+
 Every market gets an honest **PASS / FAIL / VETO**, with a named cause and a
 specific lever for each failure. Markets that pass ship live and fire daily.
 Markets that fail are killed or veto-filtered — none are left running as they
@@ -26,7 +31,16 @@ Two distinct sources, and the reports say which one is carrying each market:
    better probability estimate than any one book's price, so a soft book
    quoting well away from it is a takeable edge.
 
-2. **Projection.** A per-market model over point-in-time features (rolling
+2. **The line ladder.** Books do not quote every line with equal care. A dozen
+   of them price Over 0.5 hits and argue about it all afternoon; Over 2.5 is
+   posted by two and then left alone. `ladder.py` learns, per market, the
+   empirical relationship between the consensus at the well-attended line and
+   the probability of clearing every other rung — so the sparse lines become
+   priceable instead of being discarded, which is where a lot of the edge is.
+   The same applies to alternate run lines and totals, which we ingest
+   explicitly: ~30 rungs per game per book against two on the main number.
+
+3. **Projection.** A per-market model over point-in-time features (rolling
    per-plate-appearance form, opposing starter, park run environment, rest)
    adjusts the consensus where the features genuinely add information.
 
