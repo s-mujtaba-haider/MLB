@@ -1,0 +1,92 @@
+{
+  "h2h": {
+    "learning_rate": 0.08,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 100,
+    "l2": 0.5,
+    "_config": "aggressive",
+    "_gain_vs_market": 0.0030865405401836465,
+    "_shrink": 0.375
+  },
+  "spreads": {
+    "learning_rate": 0.08,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 100,
+    "l2": 0.5,
+    "_config": "aggressive",
+    "_gain_vs_market": 0.0002516830775212142,
+    "_shrink": 0.07500000000000001
+  },
+  "totals": {
+    "learning_rate": 0.08,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 100,
+    "l2": 0.5,
+    "_config": "aggressive",
+    "_gain_vs_market": 0.0024327994375227258,
+    "_shrink": 0.225
+  },
+  "batter_hits": {
+    "learning_rate": 0.02,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 1000,
+    "l2": 5.0,
+    "_config": "very_regular",
+    "_gain_vs_market": 0.0004075989998535423,
+    "_shrink": 0.375
+  },
+  "batter_rbis": {
+    "learning_rate": 0.02,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 1000,
+    "l2": 5.0,
+    "_config": "very_regular",
+    "_gain_vs_market": 0.0002466877052502703,
+    "_shrink": 0.30000000000000004
+  },
+  "batter_total_bases": {
+    "learning_rate": 0.02,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 1000,
+    "l2": 5.0,
+    "_config": "very_regular",
+    "_gain_vs_market": 0.0012439091482289166,
+    "_shrink": 0.525
+  },
+  "batter_home_runs": {
+    "learning_rate": 0.03,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 500,
+    "l2": 2.0,
+    "_config": "conservative",
+    "_gain_vs_market": 0.0006896524510301427,
+    "_shrink": 0.45
+  },
+  "runs_scored": {
+    "learning_rate": 0.02,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 1000,
+    "l2": 5.0,
+    "_config": "very_regular",
+    "_gain_vs_market": 0.00029104505578259054,
+    "_shrink": 0.225
+  },
+  "pitcher_strikeouts": {
+    "learning_rate": 0.02,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 1000,
+    "l2": 5.0,
+    "_config": "very_regular",
+    "_gain_vs_market": 0.0008866979920806317,
+    "_shrink": 0.275
+  },
+  "pitcher_outs": {
+    "learning_rate": 0.04,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 400,
+    "l2": 3.0,
+    "_config": "deep_regular",
+    "_gain_vs_market": 0.0022359641254595664,
+    "_shrink": 0.35000000000000003
+  }
+}

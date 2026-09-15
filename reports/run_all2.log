@@ -1,0 +1,138 @@
+
+==============================================================================
+2/7 anchor weights
+==============================================================================
+measured skill weights for 11 markets
+comparing weighting schemes by consensus log-loss ...
+scheme              exchange_first   fitted    prior  sharp_heavy  sharp_only  uniform
+market                                                                                
+batter_hits                0.62399  0.62406  0.62393      0.62390         NaN  0.62399
+batter_home_runs           0.37124  0.37116  0.37113      0.37116         NaN  0.37117
+batter_rbis                0.61160  0.61158  0.61154      0.61156         NaN  0.61160
+batter_total_bases         0.66697  0.66682  0.66686      0.66683     0.67688  0.66680
+h2h                        0.67552  0.67555  0.67555      0.67562     0.67563  0.67562
+pitcher_outs               0.68004  0.68006  0.68003      0.68002         NaN  0.68019
+pitcher_strikeouts         0.64272  0.64282  0.64282      0.64267     0.68600  0.64292
+runs_scored                0.65856  0.65856  0.65852      0.65854         NaN  0.65856
+spreads                    0.53484  0.53471  0.53473      0.53481     0.67477  0.53475
+totals                     0.55797  0.55779  0.55784      0.55789     0.69193  0.55791
+
+  batter_hits            -> sharp_heavy     log-loss 0.62390 (prior 0.62393, gain +0.00003)
+  batter_home_runs       -> prior           log-loss 0.37113 (prior 0.37113, gain +0.00000)
+  batter_rbis            -> prior           log-loss 0.61154 (prior 0.61154, gain +0.00000)
+  batter_total_bases     -> uniform         log-loss 0.66680 (prior 0.66686, gain +0.00006)
+  h2h                    -> exchange_first  log-loss 0.67552 (prior 0.67555, gain +0.00003)
+  pitcher_outs           -> sharp_heavy     log-loss 0.68002 (prior 0.68003, gain +0.00002)
+  pitcher_strikeouts     -> sharp_heavy     log-loss 0.64267 (prior 0.64282, gain +0.00015)
+  runs_scored            -> prior           log-loss 0.65852 (prior 0.65852, gain +0.00000)
+  spreads                -> fitted          log-loss 0.53471 (prior 0.53473, gain +0.00002)
+  totals                 -> fitted          log-loss 0.55779 (prior 0.55784, gain +0.00005)
+saved fitted anchor weights for 10 markets -> C:\Users\mujta\mlb\data\anchor_weights.json
+[2/7 anchor weights] 188s
+
+==============================================================================
+3/7 ladder table
+==============================================================================
+loading season 2023 ...
+  256,187 directly-priced propositions
+saved ladder table: 10 markets, 199 line cells -> C:\Users\mujta\mlb\data\ladder_table.json
+
+  batter_hits            primary   0.5 -> lines [0.5, 1.5]
+  batter_hits            primary   1.5 -> lines [0.5, 1.5]
+  batter_home_runs       primary   0.5 -> lines [0.5]
+  batter_rbis            primary   0.5 -> lines [0.5]
+  batter_strikeouts      primary   0.5 -> lines [0.5, 1.5]
+  batter_strikeouts      primary   1.5 -> lines [0.5, 1.5]
+  batter_total_bases     primary   0.5 -> lines [0.5, 1.5]
+  batter_total_bases     primary   1.5 -> lines [0.5, 1.5]
+  pitcher_outs           primary  14.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  15.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  16.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  17.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_outs           primary  18.5 -> lines [15.5, 16.5, 17.5, 18.5]
+  pitcher_strikeouts     primary   3.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   4.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   5.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   6.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  pitcher_strikeouts     primary   7.5 -> lines [3.5, 4.5, 5.5, 6.5, 7.5]
+  runs_scored            primary   0.5 -> lines [0.5]
+  spreads                primary  -1.5 -> lines [-5.5, -4.5, -3.5, -3, -2.5, -2, -1.5, -1, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.5]
+  spreads                primary   1.5 -> lines [-5.5, -4.5, -3.5, -3, -2.5, -2, -1.5, -1, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5.5]
+  totals                 primary   7.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary     8 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary   8.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary     9 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+  totals                 primary   9.5 -> lines [4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5]
+[3/7 ladder table] 47s
+
+==============================================================================
+4/7 hyperparameters
+==============================================================================
+tuning on 298,293 propositions from 2023
+
+  h2h                    -> aggressive     ll 0.67243 (market 0.67551, gain +0.00309, shrink 0.38)
+  spreads                -> aggressive     ll 0.52627 (market 0.52653, gain +0.00025, shrink 0.08)
+  totals                 -> aggressive     ll 0.56172 (market 0.56416, gain +0.00243, shrink 0.23)
+  batter_hits            -> very_regular   ll 0.60564 (market 0.60604, gain +0.00041, shrink 0.38)
+  batter_rbis            -> very_regular   ll 0.61187 (market 0.61211, gain +0.00025, shrink 0.30)
+  batter_total_bases     -> very_regular   ll 0.65565 (market 0.65689, gain +0.00124, shrink 0.53)
+  batter_home_runs       -> conservative   ll 0.36854 (market 0.36923, gain +0.00069, shrink 0.45)
+  runs_scored            -> very_regular   ll 0.65847 (market 0.65876, gain +0.00029, shrink 0.23)
+  batter_strikeouts      too little data (807) -- keeping default
+  pitcher_strikeouts     -> very_regular   ll 0.60792 (market 0.60881, gain +0.00089, shrink 0.28)
+  pitcher_outs           -> deep_regular   ll 0.67837 (market 0.68060, gain +0.00224, shrink 0.35)
+
+saved 10 tuned configs -> C:\Users\mujta\mlb\data\model_params.json
+[4/7 hyperparameters] 534s
+
+==============================================================================
+5/7 validate
+==============================================================================
+
+--- season 2023 ---
+  propositions 298,293  candidates 571,610  closing 0
+
+--- season 2024 ---
+Traceback (most recent call last):
+  File "C:\Users\mujta\mlb\scripts\validate.py", line 142, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\mujta\mlb\scripts\validate.py", line 53, in main
+    p, c, cl = P.build_season_frames(s, devig_method=args.devig)
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mujta\mlb\src\mlbedge\pipeline.py", line 151, in build_season_frames
+    props = D.build_props(graded, games, players, cons=cons, ladder_table=tbl)
+  File "C:\Users\mujta\mlb\src\mlbedge\dataset.py", line 109, in build_props
+    out = attach_features(out, games, players)
+  File "C:\Users\mujta\mlb\src\mlbedge\dataset.py", line 158, in attach_features
+    out.loc[side != "batting", bat_cols] = np.nan
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 932, in __setitem__
+    indexer = self._get_setitem_indexer(key)
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 807, in _get_setitem_indexer
+    return self._convert_to_indexer(key, axis=0)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 1540, in _convert_to_indexer
+    return self._get_listlike_indexer(key, axis)[1]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexing.py", line 1576, in _get_listlike_indexer
+    keyarr, indexer = ax._get_indexer_strict(key, axis_name)
+                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 6297, in _get_indexer_strict
+    indexer = self.get_indexer_for(keyarr)
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 6284, in get_indexer_for
+    return self.get_indexer(target)
+           ~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 3792, in get_indexer
+    return this._get_indexer(
+           ~~~~~~~~~~~~~~~~~^
+        target, method=method, limit=limit, tolerance=tolerance
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mujta\Anaconda3\Lib\site-packages\pandas\core\indexes\base.py", line 3823, in _get_indexer
+    indexer = self._engine.get_indexer(tgt_values)
+  File "pandas/_libs/index.pyx", line 374, in pandas._libs.index.IndexEngine.get_indexer
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7719, in pandas._libs.hashtable.PyObjectHashTable.lookup
+TypeError: unhashable type: 'Series'
+5/7 validate failed with exit 1

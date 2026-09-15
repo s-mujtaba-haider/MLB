@@ -145,16 +145,26 @@ def attach_features(props: pd.DataFrame, games: pd.DataFrame,
     prk_cols = [c for c in prk.columns if c.startswith("park_")]
     tg_cols = [c for c in gcx.columns if c.startswith("tg_")]
 
-    side = out["market"].map({m.name: m.side for m in C.MARKETS})
-
     # Batter form for batting markets; pitcher form for pitching markets.
-    out = out.merge(bat[["event_id", "athlete_id", "team"] + bat_cols]
-                    .rename(columns={"event_id": "espn_id",
-                                     "team": "player_team"}),
-                    on=["espn_id", "athlete_id"], how="left")
-    out = out.merge(pit[["event_id", "athlete_id"] + pit_cols]
-                    .rename(columns={"event_id": "espn_id"}),
-                    on=["espn_id", "athlete_id"], how="left")
+    # Deduplicated first: ESPN occasionally lists a player twice in one game's
+    # batting group, and a one-to-many join there silently inflates the
+    # proposition frame -- which then desynchronises anything computed against
+    # its old length.
+    bat_j = (bat[["event_id", "athlete_id", "team"] + bat_cols]
+             .drop_duplicates(subset=["event_id", "athlete_id"], keep="first")
+             .rename(columns={"event_id": "espn_id", "team": "player_team"}))
+    pit_j = (pit[["event_id", "athlete_id"] + pit_cols]
+             .drop_duplicates(subset=["event_id", "athlete_id"], keep="first")
+             .rename(columns={"event_id": "espn_id"}))
+    n_before = len(out)
+    out = out.merge(bat_j, on=["espn_id", "athlete_id"], how="left")
+    out = out.merge(pit_j, on=["espn_id", "athlete_id"], how="left")
+    assert len(out) == n_before, (
+        f"form join changed the row count {n_before} -> {len(out)}")
+
+    # Computed here, after the joins: deriving it beforehand and applying it
+    # afterwards is only safe while the joins are exactly one-to-one.
+    side = out["market"].map({m.name: m.side for m in C.MARKETS})
     out.loc[side != "batting", bat_cols] = np.nan
     out.loc[side != "pitching", pit_cols] = np.nan
 
