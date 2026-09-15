@@ -171,6 +171,20 @@ ANCHOR_WEIGHTS = {
 }
 DEFAULT_ANCHOR_WEIGHT = 0.10
 
+# Markets where, for most of their history, exactly one bookmaker in the world
+# quotes the line. There is no cross-book benchmark to build, so that book's
+# own vig-free price anchors and the edge has to come from the projection
+# rather than from shopping the number. See devig.attach_consensus.
+SELF_ANCHOR_MARKETS = frozenset({"batter_strikeouts"})
+
+# How many *other* books must stand behind a price before it can be bet.
+DEFAULT_MIN_BOOKS = 3
+MIN_BOOKS = {"batter_strikeouts": 1}
+
+
+def min_books_for(market: str) -> int:
+    return MIN_BOOKS.get(market, DEFAULT_MIN_BOOKS)
+
 # --- seasons & snapshot timing -------------------------------------------
 # Regular-season windows, inclusive. Postseason is excluded: different roster,
 # bullpen and lineup dynamics, and it contaminates rolling form features.

@@ -63,7 +63,9 @@ class Bundle:
 
     @property
     def min_books(self) -> int:
-        return VETO_MIN_BOOKS if self.deployment == VETO_FILTERED else 3
+        base = C.min_books_for(self.market)
+        return max(base, VETO_MIN_BOOKS) if self.deployment == VETO_FILTERED \
+            else base
 
     @property
     def fires(self) -> bool:
@@ -71,7 +73,7 @@ class Bundle:
 
 
 def train_all(props: pd.DataFrame, candidates: pd.DataFrame,
-              verdicts: pd.DataFrame, min_books: int = 3) -> dict[str, Bundle]:
+              verdicts: pd.DataFrame) -> dict[str, Bundle]:
     """Fit a deployable model per market on the full history."""
     vmap = verdicts.set_index("market").to_dict("index")
     out: dict[str, Bundle] = {}
@@ -100,7 +102,8 @@ def train_all(props: pd.DataFrame, candidates: pd.DataFrame,
             if not merged.empty:
                 from .devig import logit
                 merged["logit_cons"] = logit(merged["p_cons"].to_numpy(dtype=float))
-                merged = merged[merged["n_books_cons"] >= min_books]
+                merged = merged[merged["n_books_cons"]
+                                >= C.min_books_for(mkt)]
                 scored = B._score(merged, mm)
                 thr = B.choose_threshold(scored)
 

@@ -156,13 +156,24 @@ def consensus(book_view: pd.DataFrame, min_books: int = 2) -> pd.DataFrame:
 
 
 def attach_consensus(quotes: pd.DataFrame, method: str = "shin",
-                     min_books: int = 2) -> pd.DataFrame:
+                     min_books: int = 2,
+                     self_anchor_markets: frozenset[str] = frozenset()
+                     ) -> pd.DataFrame:
     """Attach the consensus a quote should be judged against.
 
     For a book that quoted both sides, that is the leave-one-out consensus.
     For a book that quoted only one side (very common on alt lines, where
     FanDuel posts an Over and no Under), the book contributed nothing to the
     consensus, so the all-book consensus is already leave-one-out for it.
+
+    `self_anchor_markets` covers the degenerate case where exactly one book in
+    the world quotes a market -- batter strikeouts, for most of its history.
+    There is no cross-book benchmark to build, so the book's own vig-free price
+    becomes the anchor and the edge has to come from the model rather than from
+    line shopping. That is not circular: with the book's own opinion as the
+    starting point, the model has to disagree with it by more than the vig
+    before any bet fires, and if the model adds nothing the shrinkage collapses
+    to zero and the market produces no bets at all.
     """
     bv = consensus(book_views(quotes, method=method), min_books=min_books)
     q = quotes.copy()
@@ -185,6 +196,15 @@ def attach_consensus(quotes: pd.DataFrame, method: str = "shin",
     q["n_books_cons"] = np.where(contributed, q["n_books_loo"],
                                  q["n_books_w"]).astype("float")
     q = q.rename(columns={"hold": "hold_book", "p_over": "p_book_fair"})
+
+    q["self_anchored"] = False
+    if self_anchor_markets:
+        need = (q["p_cons"].isna() & q["p_book_fair"].notna()
+                & q["market"].isin(self_anchor_markets))
+        q.loc[need, "p_cons"] = q.loc[need, "p_book_fair"]
+        q.loc[need, "n_books_cons"] = 1.0
+        q.loc[need, "self_anchored"] = True
+
     return q.drop(columns=["p_cons_loo", "n_books_loo", "p_cons_all",
                            "n_books_w"])
 

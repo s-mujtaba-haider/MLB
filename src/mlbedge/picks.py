@@ -213,7 +213,8 @@ def generate(bundles: dict[str, Bundle], players: pd.DataFrame,
         print("all games are inside the minimum lead time")
         return pd.DataFrame()
 
-    cons = attach_consensus(quotes, min_books=2)
+    cons = attach_consensus(quotes, min_books=2,
+                            self_anchor_markets=C.SELF_ANCHOR_MARKETS)
 
     # Resolve players and attach form.
     lm = LiveMatcher(players, games)

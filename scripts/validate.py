@@ -36,7 +36,6 @@ def main() -> None:
     ap.add_argument("--markets", nargs="*", default=list(C.ALL_MARKET_NAMES))
     ap.add_argument("--burn-days", type=int, default=400)
     ap.add_argument("--step-days", type=int, default=30)
-    ap.add_argument("--min-books", type=int, default=3)
     ap.add_argument("--devig", default="shin")
     ap.add_argument("--rebuild", action="store_true")
     args = ap.parse_args()
@@ -49,7 +48,8 @@ def main() -> None:
           f"player-games {len(players):,}", flush=True)
 
     print("Building consensus ...", flush=True)
-    cons = attach_consensus(graded, method=args.devig, min_books=2)
+    cons = attach_consensus(graded, method=args.devig, min_books=2,
+                        self_anchor_markets=C.SELF_ANCHOR_MARKETS)
 
     print("Building proposition frame ...", flush=True)
     props = D.build_props(graded, games, players, cons=cons)
@@ -73,8 +73,7 @@ def main() -> None:
     all_bets, verdicts, leak_rows = [], [], []
     for mkt in args.markets:
         print(f"\n=== {mkt} ===", flush=True)
-        bets, reports = B.run_market(mkt, props, cand, folds,
-                                     min_books=args.min_books, verbose=True)
+        bets, reports = B.run_market(mkt, props, cand, folds, verbose=True)
         if bets.empty:
             v = GATE.Verdict(mkt, GATE.FAIL, "insufficient_sample",
                              GATE.LEVERS["insufficient_sample"], GATE.KILLED,

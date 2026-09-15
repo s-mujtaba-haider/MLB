@@ -36,7 +36,12 @@ def american_to_decimal(a: np.ndarray | float) -> np.ndarray:
 def american_to_prob(a: np.ndarray | float) -> np.ndarray:
     """Raw implied probability -- the break-even number, vig included."""
     a = np.asarray(a, dtype=float)
-    return np.where(a > 0, 100.0 / (a + 100.0), np.abs(a) / (np.abs(a) + 100.0))
+    # np.where evaluates both branches, so a price of exactly -100 would divide
+    # by zero in the positive branch before being discarded. Guard the
+    # denominator rather than filtering the warning.
+    pos = 100.0 / np.where(a > 0, a + 100.0, 1.0)
+    neg = np.abs(a) / (np.abs(a) + 100.0)
+    return np.where(a > 0, pos, neg)
 
 
 def decimal_to_american(d: np.ndarray | float) -> np.ndarray:

@@ -90,9 +90,11 @@ def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
 # ---------------------------------------------------------------------------
 
 def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
-               folds: list[Fold], min_books: int = 3,
+               folds: list[Fold], min_books: int | None = None,
                verbose: bool = False) -> tuple[pd.DataFrame, list]:
     """Walk-forward one market. Returns (bets, per-fold fit reports)."""
+    if min_books is None:
+        min_books = C.min_books_for(market)
     p = props[props["market"] == market].copy()
     c = candidates[candidates["market"] == market].copy()
     if p.empty or c.empty:

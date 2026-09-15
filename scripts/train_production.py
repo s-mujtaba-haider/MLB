@@ -34,7 +34,8 @@ def main() -> None:
     print("loading ...", flush=True)
     graded, games, players = P.load_all(tuple(sorted(args.seasons)),
                                         tags=("decision",))
-    cons = attach_consensus(graded, min_books=2)
+    cons = attach_consensus(graded, min_books=2,
+                            self_anchor_markets=C.SELF_ANCHOR_MARKETS)
     props = D.build_props(graded, games, players, cons=cons)
     cand = D.build_candidates(graded, cons=cons, tag="decision")
     cand = cand.merge(games[["espn_id", "game_date"]], on="espn_id", how="left",
