@@ -27,7 +27,11 @@ from .grade import LOSS, PUSH, VOID, WIN
 
 PROP_KEY = ["event_id", "market", "subject", "line"]
 
-MARKET_STRUCT = ["n_books_cons", "hold_book", "lead_min", "line",
+# Model features. These are all *proposition-level* quantities, deliberately
+# named so they cannot collide with the per-book columns on the candidate
+# frame -- a feature that means "median hold across books" at training time
+# and "this book's hold" at serving time is a silent train/serve skew.
+MARKET_STRUCT = ["n_books_prop", "hold_med", "lead_min", "line",
                  "book_spread", "n_quotes", "book_std",
                  "proj_mean", "line_minus_proj", "line_over_proj"]
 
@@ -63,8 +67,8 @@ def build_props(graded: pd.DataFrame, games: pd.DataFrame,
 
     base = (dec.groupby(PROP_KEY, dropna=False, observed=True)
                .agg(p_cons_all=("p_cons", "median"),
-                    n_books_cons=("n_books_cons", "max"),
-                    hold_book=("hold_book", "median"),
+                    n_books_prop=("n_books_prop", "max"),
+                    hold_med=("hold_book", "median"),
                     lead_min=("lead_min", "first"),
                     n_quotes=("price", "size"),
                     espn_id=("espn_id", "first"),

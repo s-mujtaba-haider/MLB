@@ -192,6 +192,13 @@ def attach_consensus(quotes: pd.DataFrame, method: str = "shin",
     q = q.join(per_book, on=PROP_KEY + ["book"])
 
     contributed = q["p_cons_loo"].notna() | q["p_over"].notna()
+    # Proposition-level count: how many weighted books priced this
+    # proposition at all. Distinct from n_books_cons, which is the
+    # leave-one-out count for the specific book on this row. The model is fed
+    # the former (a property of the proposition, identical at train and serve
+    # time); the latter is used only to decide whether a price is well enough
+    # supported to bet.
+    q["n_books_prop"] = q["n_books_w"].astype("float32")
     q["p_cons"] = np.where(contributed, q["p_cons_loo"], q["p_cons_all"])
     q["n_books_cons"] = np.where(contributed, q["n_books_loo"],
                                  q["n_books_w"]).astype("float")
