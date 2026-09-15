@@ -161,3 +161,44 @@ def test_genuinely_miscalibrated_market_still_fails(rng):
     ce = G.calibration_error(bets)
     floor = G.calibration_noise_floor(bets)
     assert ce > 3 * floor, (ce, floor)
+
+
+def test_clustered_bootstrap_is_wider_than_iid_on_correlated_bets():
+    """Bets inside a game share an outcome. Resampling bets one at a time
+    treats each as fresh information and produces an interval far narrower
+    than the truth -- which is how a market with no edge acquires a confidence
+    interval that clears zero."""
+    import numpy as np
+
+    from mlbedge import backtest as B
+
+    rng = np.random.default_rng(4)
+    n_games, per_game = 400, 12
+    # Every bet in a game wins or loses together: maximal within-game
+    # correlation, so the effective sample is 400, not 4,800.
+    game_won = rng.random(n_games) < 0.54
+    profit, clusters = [], []
+    for g in range(n_games):
+        for _ in range(per_game):
+            profit.append(0.91 if game_won[g] else -1.0)
+            clusters.append(f"g{g}")
+    profit = np.array(profit)
+    clusters = np.array(clusters)
+
+    _, lo_iid, hi_iid = B.bootstrap_roi(profit)
+    _, lo_cl, hi_cl = B.bootstrap_roi(profit, clusters=clusters)
+    width_iid, width_cl = hi_iid - lo_iid, hi_cl - lo_cl
+    assert width_cl > 2 * width_iid, (width_iid, width_cl)
+
+
+def test_clustered_and_iid_agree_when_every_bet_is_its_own_game():
+    import numpy as np
+
+    from mlbedge import backtest as B
+
+    rng = np.random.default_rng(5)
+    profit = np.where(rng.random(3000) < 0.54, 0.91, -1.0)
+    clusters = np.array([f"g{i}" for i in range(3000)])
+    _, lo_i, hi_i = B.bootstrap_roi(profit)
+    _, lo_c, hi_c = B.bootstrap_roi(profit, clusters=clusters)
+    assert abs((hi_c - lo_c) - (hi_i - lo_i)) < 0.02

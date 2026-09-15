@@ -236,16 +236,50 @@ def _score(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:
 # Metrics
 # ---------------------------------------------------------------------------
 
-def bootstrap_roi(profit: np.ndarray, n_boot: int = 5000,
-                  seed: int = 0) -> tuple[float, float, float]:
-    """Percentile bootstrap CI for ROI, resampling bets."""
+def cluster_indices(keys: np.ndarray) -> list[np.ndarray]:
+    """Row positions grouped by cluster key, ordered by first appearance."""
+    order = pd.factorize(pd.Series(keys))[0]
+    n = order.max() + 1 if len(order) else 0
+    buckets: list[list[int]] = [[] for _ in range(n)]
+    for i, g in enumerate(order):
+        buckets[g].append(i)
+    return [np.asarray(b, dtype=np.int64) for b in buckets]
+
+
+def bootstrap_roi(profit: np.ndarray, n_boot: int = 4000, seed: int = 0,
+                  clusters: np.ndarray | None = None
+                  ) -> tuple[float, float, float]:
+    """Percentile bootstrap CI for ROI, resampling **games**, not bets.
+
+    Bets inside one game are not independent: every batter in a fourteen-run
+    game goes over together, and the two sides of a total are the same event
+    twice. Resampling bets one at a time treats each as fresh information and
+    produces an interval far narrower than the truth -- which is precisely how
+    a market with no edge acquires a confidence interval that clears zero.
+    Resampling whole games keeps that correlation intact.
+    """
     if len(profit) == 0:
         return np.nan, np.nan, np.nan
     rng = np.random.default_rng(seed)
-    idx = rng.integers(0, len(profit), size=(n_boot, len(profit)))
-    rois = profit[idx].mean(axis=1)
-    return (float(profit.mean()), float(np.percentile(rois, 2.5)),
-            float(np.percentile(rois, 97.5)))
+    point = float(profit.mean())
+
+    if clusters is None:
+        idx = rng.integers(0, len(profit), size=(n_boot, len(profit)))
+        rois = profit[idx].mean(axis=1)
+        return point, float(np.percentile(rois, 2.5)), float(np.percentile(rois, 97.5))
+
+    groups = cluster_indices(clusters)
+    k = len(groups)
+    if k < 20:
+        return point, np.nan, np.nan
+    sums = np.array([profit[g].sum() for g in groups], dtype=float)
+    counts = np.array([len(g) for g in groups], dtype=float)
+    pick = rng.integers(0, k, size=(n_boot, k))
+    num = sums[pick].sum(axis=1)
+    den = counts[pick].sum(axis=1)
+    rois = np.divide(num, den, out=np.full(n_boot, np.nan), where=den > 0)
+    return (point, float(np.nanpercentile(rois, 2.5)),
+            float(np.nanpercentile(rois, 97.5)))
 
 
 def clv_metrics(bets: pd.DataFrame, closing: pd.DataFrame) -> dict:
@@ -277,7 +311,9 @@ def summarise(bets: pd.DataFrame) -> dict:
                 "profit": 0.0, "hit_rate": np.nan, "avg_price": np.nan,
                 "avg_ev": np.nan, "n_win": 0, "n_loss": 0, "n_push": 0}
     prof = bets["profit"].to_numpy(dtype=float)
-    roi, lo, hi = bootstrap_roi(prof)
+    clusters = (bets["event_id"].to_numpy() if "event_id" in bets.columns
+                else None)
+    roi, lo, hi = bootstrap_roi(prof, clusters=clusters)
     dec = bets["result"]
     nw, nl = int((dec == WIN).sum()), int((dec == LOSS).sum())
     return {

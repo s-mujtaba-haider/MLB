@@ -66,15 +66,34 @@ class Verdict:
 
 # ---------------------------------------------------------------------------
 
-def roi_pvalue(profit: np.ndarray, n_boot: int = 10000, seed: int = 0) -> float:
-    """One-sided bootstrap p-value for H0: ROI <= 0."""
+def roi_pvalue(profit: np.ndarray, n_boot: int = 8000, seed: int = 0,
+               clusters: np.ndarray | None = None) -> float:
+    """One-sided bootstrap p-value for H0: ROI <= 0.
+
+    Clustered by game for the same reason the interval is: bets within a game
+    share an outcome, and pretending otherwise shrinks the p-value toward
+    significance for free.
+    """
     if len(profit) == 0:
         return 1.0
     rng = np.random.default_rng(seed)
-    idx = rng.integers(0, len(profit), size=(n_boot, len(profit)))
-    rois = profit[idx].mean(axis=1)
-    centred = rois - profit.mean()
-    return float((centred >= profit.mean()).mean())
+    point = profit.mean()
+    if clusters is None:
+        idx = rng.integers(0, len(profit), size=(n_boot, len(profit)))
+        rois = profit[idx].mean(axis=1)
+    else:
+        groups = B.cluster_indices(clusters)
+        k = len(groups)
+        if k < 20:
+            return 1.0
+        sums = np.array([profit[g].sum() for g in groups], dtype=float)
+        counts = np.array([len(g) for g in groups], dtype=float)
+        pick = rng.integers(0, k, size=(n_boot, k))
+        den = counts[pick].sum(axis=1)
+        rois = np.divide(sums[pick].sum(axis=1), den,
+                         out=np.full(n_boot, np.nan), where=den > 0)
+    centred = rois - point
+    return float(np.nanmean(centred >= point))
 
 
 def recent_roi(bets: pd.DataFrame, frac: float = 1 / 3) -> float:
@@ -229,7 +248,11 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
 
     if not bets.empty:
         prof = bets["profit"].to_numpy(dtype=float)
-        metrics["p_value"] = roi_pvalue(prof)
+        clusters = (bets["event_id"].to_numpy() if "event_id" in bets.columns
+                    else None)
+        metrics["p_value"] = roi_pvalue(prof, clusters=clusters)
+        metrics["n_games"] = (int(pd.Series(clusters).nunique())
+                              if clusters is not None else np.nan)
         metrics["cal_error"] = calibration_error(bets)
         metrics["n_folds"] = len(stab)
         metrics["fold_win_rate"] = float((stab["roi"] > 0).mean()) if len(stab) else np.nan
@@ -248,7 +271,7 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
                         "fold_win_rate": np.nan, "max_fold_share": np.nan,
                         "avg_shrink": np.nan, "recent_roi": np.nan,
                         "n_major": 0, "roi_major": np.nan,
-                        "cal_noise_floor": np.nan})
+                        "cal_noise_floor": np.nan, "n_games": 0})
 
     checks: dict[str, bool] = {}
 
