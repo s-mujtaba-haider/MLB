@@ -35,6 +35,10 @@ PASS, FAIL, VETO = "PASS", "FAIL", "VETO"
 LIVE, VETO_FILTERED, KILLED = "live", "veto_filtered", "killed"
 
 MIN_BETS = 300
+# Bets within a game are correlated, so the count that matters for evidence is
+# the number of distinct games bet into. Three hundred bets spread over thirty
+# games is thirty observations wearing a disguise.
+MIN_GAMES = 150
 # Month-to-month variance on ~50% hit rates is large: a market with a genuine
 # three-point edge still loses a good four months in ten. The concentration
 # check below is the real guard against one hot month carrying everything, so
@@ -282,8 +286,11 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
                        KILLED, metrics, {"leakage": False})
     checks["leakage"] = True
 
-    # 2. Sample.
-    checks["sample"] = summ["n_bets"] >= min_bets
+    # 2. Sample, counted in independent games as well as bets.
+    n_games = metrics.get("n_games", np.nan)
+    checks["sample"] = bool(summ["n_bets"] >= min_bets
+                            and (not np.isfinite(n_games)
+                                 or n_games >= MIN_GAMES))
     if not checks["sample"]:
         return Verdict(market, FAIL, "insufficient_sample",
                        LEVERS["insufficient_sample"], KILLED, metrics, checks)
