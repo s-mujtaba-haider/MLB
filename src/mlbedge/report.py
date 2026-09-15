@@ -110,5 +110,34 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
                     a(f"| {r.fold} | {r.n} | {_fmt(r.roi)} |")
                 a("\n</details>\n")
 
+            if "book" in sub.columns and len(sub) > 30:
+                bb = (sub.groupby("book")
+                         .agg(bets=("profit", "size"), roi=("profit", "mean"),
+                              profit=("profit", "sum"))
+                         .sort_values("bets", ascending=False))
+                bb = bb[bb["bets"] >= 10]
+                if not bb.empty:
+                    a("<details><summary>Where the bets landed</summary>\n")
+                    a("This is the execution question: an edge concentrated at "
+                      "one book is only as good as that book's limits and how "
+                      "long it tolerates the action.\n")
+                    a("| Book | Bets | ROI | Profit (u) |")
+                    a("|---|---:|---:|---:|")
+                    for bk, r in bb.iterrows():
+                        a(f"| {bk} | {int(r['bets'])} | {_fmt(r['roi'])} | "
+                          f"{r['profit']:+.1f} |")
+                    a("\n</details>\n")
+
+            if "anchor_src" in sub.columns and len(sub) > 30:
+                asrc = (sub.groupby("anchor_src")
+                           .agg(bets=("profit", "size"), roi=("profit", "mean")))
+                if len(asrc) > 1:
+                    a("<details><summary>Direct line vs ladder-priced</summary>\n")
+                    a("| Anchor | Bets | ROI |")
+                    a("|---|---:|---:|")
+                    for k, r in asrc.iterrows():
+                        a(f"| {k} | {int(r['bets'])} | {_fmt(r['roi'])} |")
+                    a("\n</details>\n")
+
     path.write_text("\n".join(L), encoding="utf-8")
     print(f"wrote {path}")
