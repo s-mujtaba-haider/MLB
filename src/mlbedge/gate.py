@@ -35,9 +35,14 @@ PASS, FAIL, VETO = "PASS", "FAIL", "VETO"
 LIVE, VETO_FILTERED, KILLED = "live", "veto_filtered", "killed"
 
 MIN_BETS = 300
-MIN_FOLD_WIN_RATE = 0.50
+# Month-to-month variance on ~50% hit rates is large: a market with a genuine
+# three-point edge still loses a good four months in ten. The concentration
+# check below is the real guard against one hot month carrying everything, so
+# this one is set outside the noise band rather than at the coin-flip line.
+MIN_FOLD_WIN_RATE = 0.45
 MAX_SINGLE_FOLD_SHARE = 0.60
 MAX_CAL_ERROR = 0.035
+CAL_NOISE_MULTIPLE = 2.0
 ALPHA = 0.05
 
 
@@ -111,6 +116,27 @@ def calibration_error(bets: pd.DataFrame) -> float:
         return np.nan
     w = cal["n"] / cal["n"].sum()
     return float(np.sum(w * np.abs(cal["pred"] - cal["actual"])))
+
+
+def calibration_noise_floor(bets: pd.DataFrame) -> float:
+    """Calibration error expected from sampling noise alone.
+
+    A perfectly calibrated market still shows error, because each decile holds
+    a finite number of bets: for a bin of n bets at probability p the expected
+    absolute deviation is sqrt(2 p(1-p) / (pi n)). With a thousand bets across
+    ten bins that is already about four points -- above any fixed threshold
+    worth setting. Judging the measured error against a fixed number would
+    therefore fail well-calibrated markets for being small, so it is judged
+    against this floor instead.
+    """
+    cal = B.calibration(bets)
+    if cal.empty:
+        return np.nan
+    p = cal["pred"].to_numpy(dtype=float)
+    n = cal["n"].to_numpy(dtype=float)
+    w = n / n.sum()
+    per_bin = np.sqrt(2.0 * p * (1 - p) / (np.pi * np.maximum(n, 1)))
+    return float(np.sum(w * per_bin))
 
 
 def benjamini_hochberg(pvals: dict[str, float], alpha: float = ALPHA
@@ -212,6 +238,7 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
             float(stab["profit"].max() / tot) if tot > 0 else np.nan)
         metrics["avg_shrink"] = float(bets["shrink"].mean()) if "shrink" in bets else np.nan
         metrics["recent_roi"] = recent_roi(bets)
+        metrics["cal_noise_floor"] = calibration_noise_floor(bets)
         maj = bets[bets["book"].isin(C.MAJOR_BOOKS)] if "book" in bets else bets.iloc[:0]
         metrics["n_major"] = int(len(maj))
         metrics["roi_major"] = (float(maj["profit"].mean())
@@ -220,7 +247,8 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
         metrics.update({"p_value": 1.0, "cal_error": np.nan, "n_folds": 0,
                         "fold_win_rate": np.nan, "max_fold_share": np.nan,
                         "avg_shrink": np.nan, "recent_roi": np.nan,
-                        "n_major": 0, "roi_major": np.nan})
+                        "n_major": 0, "roi_major": np.nan,
+                        "cal_noise_floor": np.nan})
 
     checks: dict[str, bool] = {}
 
@@ -272,9 +300,13 @@ def judge(market: str, bets: pd.DataFrame, closing: pd.DataFrame | None,
         return Verdict(market, FAIL, "edge_decayed", LEVERS["edge_decayed"],
                        VETO_FILTERED, metrics, checks)
 
-    # 6. Calibration.
+    # 6. Calibration, judged against the noise floor rather than a fixed bar.
     ce = metrics["cal_error"]
-    checks["calibration"] = bool(not np.isfinite(ce) or ce <= MAX_CAL_ERROR)
+    floor = metrics.get("cal_noise_floor", np.nan)
+    bar = (max(MAX_CAL_ERROR, CAL_NOISE_MULTIPLE * floor)
+           if np.isfinite(floor) else MAX_CAL_ERROR)
+    metrics["cal_bar"] = bar
+    checks["calibration"] = bool(not np.isfinite(ce) or ce <= bar)
     if not checks["calibration"]:
         return Verdict(market, FAIL, "miscalibrated", LEVERS["miscalibrated"],
                        VETO_FILTERED, metrics, checks)

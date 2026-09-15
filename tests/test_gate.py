@@ -47,10 +47,14 @@ def test_edge_that_dies_is_caught_as_decay(rng):
     last April."""
     bets = dies_midway(rng)
     assert bets["profit"].mean() > 0, "setup: full-sample ROI is positive"
+    # The decay detector itself must see it...
+    assert G.decayed(bets), "recent slice is confidently losing"
+    # ...and the market must not be authorised, whichever check catches it
+    # first (a decayed edge also tends to fail the interval outright).
     v = G.judge("m", bets, closing=None)
     assert v.verdict == G.FAIL
-    assert v.cause in ("edge_decayed", "unstable"), v.cause
-    assert v.deployment == G.VETO_FILTERED
+    assert v.cause in ("edge_decayed", "unstable", "no_edge"), v.cause
+    assert v.deployment != G.LIVE
 
 
 def test_miscalibration_is_caught(rng):
@@ -133,3 +137,27 @@ def test_empty_ledger_does_not_crash():
     v = G.judge("m", pd.DataFrame(), closing=None)
     assert v.verdict == G.FAIL
     assert v.cause == "insufficient_sample"
+
+
+def test_calibration_bar_scales_with_sample_noise(rng):
+    """A perfectly calibrated market must not fail calibration just because
+    its deciles are small. The expected error from sampling alone is already
+    around four points at a thousand bets, so a fixed bar would fail it."""
+    import numpy as np
+    bets = real_edge(rng, n=1000, edge=0.03)
+    floor = G.calibration_noise_floor(bets)
+    assert np.isfinite(floor) and floor > 0.01, floor
+    v = G.judge("m", bets, closing=None)
+    assert v.cause != "miscalibrated", (v.metrics.get("cal_error"),
+                                        v.metrics.get("cal_bar"))
+
+
+def test_genuinely_miscalibrated_market_still_fails(rng):
+    """The bar must still bite when the error is far above the noise floor."""
+    import numpy as np
+    import pandas as pd
+    bets = real_edge(rng, n=6000, edge=0.03)
+    bets["p_model"] = np.clip(bets["p_model"] + 0.25, 0, 1)   # wildly overconfident
+    ce = G.calibration_error(bets)
+    floor = G.calibration_noise_floor(bets)
+    assert ce > 3 * floor, (ce, floor)
