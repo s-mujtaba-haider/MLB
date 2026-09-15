@@ -51,31 +51,40 @@ def proposition_outcome(graded: pd.DataFrame) -> pd.DataFrame:
         PROP_KEY + ["won", "stat_value"]]
 
 
-def build_props(graded: pd.DataFrame, games: pd.DataFrame,
-                players: pd.DataFrame, cons: pd.DataFrame | None = None
-                ) -> pd.DataFrame:
-    """Proposition-grain frame with consensus, outcome and features."""
-    q = cons if cons is not None else attach_consensus(graded)
-    dec = q[q["tag"] == "decision"]
+def proposition_structure(dec: pd.DataFrame) -> pd.DataFrame:
+    """Per-proposition market-structure summary.
 
-    # Market-structure summary per proposition.
+    Shared by the training frame and the live pick path. These are model
+    features, so they have to be computed the same way in both places -- the
+    live path previously left several of them null, which silently fed the
+    model a different world at serving time than it was fitted on.
+    """
     disp = (dec.dropna(subset=["p_book_fair"])
                .groupby(PROP_KEY, dropna=False, observed=True)["p_book_fair"]
                .agg(["std", "min", "max", "size"]))
     disp.columns = ["book_std", "book_min", "book_max", "n_two_sided"]
     disp["book_spread"] = disp["book_max"] - disp["book_min"]
 
-    base = (dec.groupby(PROP_KEY, dropna=False, observed=True)
-               .agg(p_cons_all=("p_cons", "median"),
-                    n_books_prop=("n_books_prop", "max"),
-                    hold_med=("hold_book", "median"),
-                    lead_min=("lead_min", "first"),
-                    n_quotes=("price", "size"),
-                    espn_id=("espn_id", "first"),
-                    athlete_id=("athlete_id", "first"),
-                    commence_time=("commence_time", "first"))
-               .reset_index()
-               .join(disp, on=PROP_KEY))
+    agg = {"p_cons_all": ("p_cons", "median"),
+           "n_books_prop": ("n_books_prop", "max"),
+           "hold_med": ("hold_book", "median"),
+           "lead_min": ("lead_min", "first"),
+           "n_quotes": ("price", "size"),
+           "commence_time": ("commence_time", "first")}
+    for opt in ("espn_id", "athlete_id"):
+        if opt in dec.columns:
+            agg[opt] = (opt, "first")
+    return (dec.groupby(PROP_KEY, dropna=False, observed=True)
+               .agg(**agg).reset_index().join(disp, on=PROP_KEY))
+
+
+def build_props(graded: pd.DataFrame, games: pd.DataFrame,
+                players: pd.DataFrame, cons: pd.DataFrame | None = None
+                ) -> pd.DataFrame:
+    """Proposition-grain frame with consensus, outcome and features."""
+    q = cons if cons is not None else attach_consensus(graded)
+    dec = q[q["tag"] == "decision"]
+    base = proposition_structure(dec)
 
     out = base.merge(proposition_outcome(dec), on=PROP_KEY, how="inner")
     out = out.dropna(subset=["p_cons_all"])

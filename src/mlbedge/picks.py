@@ -237,7 +237,8 @@ def generate(bundles: dict[str, Bundle], players: pd.DataFrame,
         sub = sub[sub["n_books_cons"] >= b.min_books]
         if sub.empty:
             continue
-        sub = _attach_live_features(sub, bat, pit, tm_latest, park, events, lm)
+        sub = _attach_live_features(sub, bat, pit, tm_latest, park,
+                                    events, lm, cons)
         sub["logit_cons"] = logit(sub["p_cons"].to_numpy(dtype=float))
         for f in b.features:
             if f not in sub.columns:
@@ -313,20 +314,39 @@ def _latest_park(games: pd.DataFrame) -> pd.DataFrame:
 def _attach_live_features(sub: pd.DataFrame, bat: pd.DataFrame,
                           pit: pd.DataFrame, tm: pd.DataFrame,
                           park: pd.DataFrame, events: pd.DataFrame,
-                          lm: LiveMatcher) -> pd.DataFrame:
+                          lm: LiveMatcher, all_quotes: pd.DataFrame
+                          ) -> pd.DataFrame:
+    """Build exactly the feature set the model was fitted on.
+
+    `all_quotes` is the full consensus frame, not the bettable subset: the
+    market-structure features describe how many books priced the proposition
+    and how far apart they were, which must be measured over every book that
+    quoted it, the same way build_props measures it.
+    """
+    from .dataset import PROP_KEY, add_projection, proposition_structure
+
+    struct = proposition_structure(all_quotes)
+    keep = [c for c in ("n_books_prop", "hold_med", "n_quotes", "book_std",
+                        "book_spread") if c in struct.columns]
+    sub = sub.drop(columns=[c for c in keep if c in sub.columns], errors="ignore")
+    sub = sub.merge(struct[PROP_KEY + keep], on=PROP_KEY, how="left")
+
     bat_cols = [c for c in bat.columns if c.startswith("bat_")]
     pit_cols = [c for c in pit.columns if c.startswith("pit_")]
     sub = sub.merge(bat[["athlete_id"] + bat_cols], on="athlete_id", how="left")
     sub = sub.merge(pit[["athlete_id"] + pit_cols], on="athlete_id", how="left")
+
     sub["player_team"] = sub["athlete_id"].map(lm.team)
     tm_cols = [c for c in tm.columns if c.startswith("tm_")]
     sub = sub.merge(tm.rename(columns={"team": "player_team"})
                     [["player_team"] + tm_cols], on="player_team", how="left")
-    sub["book_spread"] = np.nan
-    sub["n_quotes"] = sub.groupby(["event_id", "market", "subject", "line"],
-                                  dropna=False)["price"].transform("size")
-    sub["is_home_player"] = np.nan
-    return sub
+
+    home = dict(zip(events["event_id"], events["home_team"]))
+    sub["home_team"] = sub["event_id"].map(home)
+    sub["is_home_player"] = (sub["player_team"].notna() &
+                             (sub["player_team"] == sub["home_team"])
+                             ).astype(float)
+    return add_projection(sub)
 
 
 def save_picks(picks: pd.DataFrame, path=PICKS_PATH) -> None:
