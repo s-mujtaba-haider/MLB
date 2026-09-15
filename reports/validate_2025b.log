@@ -79,3 +79,32 @@ total: propositions 256,258  candidates 499,577  closing quotes 2,004
 === pitcher_strikeouts ===
   [pitcher_strikeouts] fold 2025-07-05 train=3166 thr=0.030 shrink=0.23 gain=+0.00059 bets=351
   [pitcher_strikeouts] fold 2025-07-26 train=3763 thr=0.000 shrink=0.23 gain=+0.00069 bets=312
+  [pitcher_strikeouts] fold 2025-08-16 train=4468 thr=0.035 shrink=0.18 gain=+0.00036 bets=235
+  [pitcher_strikeouts] fold 2025-09-06 train=5145 thr=0.080 shrink=0.23 gain=+0.00084 bets=165
+  [pitcher_strikeouts] fold 2025-09-27 train=5823 thr=0.090 shrink=0.33 gain=+0.00104 bets=17
+  bets=1080 roi=+0.0227 [-0.0417,+0.0891] p=0.2572 clv=+nan -> FAIL no_edge
+
+=== pitcher_outs ===
+  [pitcher_outs] fold 2025-07-05 train=2379 thr=0.005 shrink=0.40 gain=+0.00172 bets=356
+  [pitcher_outs] fold 2025-07-26 train=2882 thr=0.020 shrink=0.35 gain=+0.00124 bets=546
+  [pitcher_outs] fold 2025-08-16 train=3484 thr=0.010 shrink=0.40 gain=+0.00126 bets=208
+  [pitcher_outs] fold 2025-09-06 train=4101 thr=0.040 shrink=0.20 gain=+0.00029 bets=95
+  [pitcher_outs] fold 2025-09-27 train=4655 thr=0.010 shrink=0.33 gain=+0.00096 bets=22
+  bets=1227 roi=-0.0068 [-0.0682,+0.0537] p=0.5865 clv=+nan -> FAIL negative_edge
+wrote C:\Users\mujta\mlb\reports\market_report.md
+
+==============================================================================
+            market verdict    deployment  n_bets       roi    roi_lo  p_value  clv_mean               cause
+               h2h    FAIL veto_filtered     775  0.061515 -0.017537   0.0727  0.000000             no_edge
+           spreads    FAIL        killed     866 -0.010737 -0.076375   0.6303       NaN       negative_edge
+            totals    FAIL        killed     509 -0.078607 -0.167854   0.9558 -0.002719       negative_edge
+       batter_hits    VETO        killed    1203  0.008912 -0.061635   0.4046       NaN             leakage
+       batter_rbis    FAIL        killed    1023 -0.000156 -0.071640   0.5082       NaN       negative_edge
+batter_total_bases    VETO        killed    2627 -0.046794 -0.088970   0.9845       NaN             leakage
+  batter_home_runs    VETO        killed     379  0.068213 -0.133448   0.2640       NaN             leakage
+       runs_scored    FAIL        killed       9 -0.273856 -1.000000   0.8279       NaN insufficient_sample
+ batter_strikeouts    VETO        killed       5 -0.379125 -1.000000   0.9254       NaN             leakage
+pitcher_strikeouts    FAIL veto_filtered    1080  0.022748 -0.041712   0.2572       NaN             no_edge
+      pitcher_outs    FAIL        killed    1227 -0.006772 -0.068187   0.5865       NaN       negative_edge
+
+0/11 markets PASS. Completed in 2.8 min.

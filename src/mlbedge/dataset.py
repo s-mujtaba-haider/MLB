@@ -159,7 +159,67 @@ def attach_features(props: pd.DataFrame, games: pd.DataFrame,
     out["is_home_player"] = (out["player_team"].notna() &
                              (out["player_team"] == out["home_team"])
                              ).astype(float)
+    out = attach_opposing_starter(out, pit, pit_cols)
     return add_projection(out)
+
+
+def attach_opposing_starter(out: pd.DataFrame, pit: pd.DataFrame,
+                            pit_cols: list[str]) -> pd.DataFrame:
+    """Join the opposing starting pitcher's prior form onto batter props.
+
+    Who is starting is knowable at the decision instant *from the market
+    itself*: books quote pitcher strikeouts and pitcher outs only for announced
+    starters, so the presence of those props in the decision snapshot is the
+    announcement. That avoids reading the starter out of the boxscore, which
+    would be reading it out of the future.
+
+    It matters more than any batter-side feature for the strikeout market and a
+    great deal for hits and total bases -- facing a strikeout artist is most of
+    the story, and without this the model has to infer the opponent from the
+    consensus alone.
+    """
+    starters = (out[out["market"].isin(["pitcher_strikeouts", "pitcher_outs"])]
+                .dropna(subset=["athlete_id", "espn_id"])
+                [["espn_id", "athlete_id", "player_team"]]
+                .drop_duplicates())
+    if starters.empty:
+        for c in pit_cols:
+            out[f"opp_{c}"] = np.nan
+        out["has_opp_starter"] = 0.0
+        return out
+
+    # A starter's own team comes from the pitcher form table for that game;
+    # team membership is public before first pitch, unlike anything he does in
+    # it.
+    pteam = pit[["event_id", "athlete_id", "team"]].rename(
+        columns={"event_id": "espn_id", "team": "pitcher_team"})
+    starters = (starters.drop(columns=["player_team"])
+                        .merge(pteam, on=["espn_id", "athlete_id"], how="left")
+                        .dropna(subset=["pitcher_team"]))
+
+    # For each batting proposition, the starter on the *other* side.
+    bat_rows = out[["espn_id", "player_team"]].reset_index()
+    pair = bat_rows.merge(starters, on="espn_id", how="left")
+    pair = pair[pair["pitcher_team"].notna()
+                & pair["player_team"].notna()
+                & (pair["pitcher_team"] != pair["player_team"])]
+    pair = pair.drop_duplicates(subset=["index"], keep="first")
+
+    opp = pit[["event_id", "athlete_id"] + pit_cols].rename(
+        columns={"event_id": "espn_id", "athlete_id": "opp_athlete_id",
+                 **{c: f"opp_{c}" for c in pit_cols}})
+    pair = pair.rename(columns={"athlete_id": "opp_athlete_id"})
+    # Flag the *match*, not the form. Early in a season an identified starter
+    # legitimately has no rolling history yet, and the model should be able to
+    # tell "no opponent resolved" from "opponent resolved, form unknown".
+    pair["has_opp_starter"] = 1.0
+    pair = pair.merge(opp, on=["espn_id", "opp_athlete_id"], how="left")
+
+    keep = ["index", "has_opp_starter"] + [f"opp_{c}" for c in pit_cols]
+    out = out.merge(pair[keep].set_index("index"), left_index=True,
+                    right_index=True, how="left")
+    out["has_opp_starter"] = out["has_opp_starter"].fillna(0.0)
+    return out
 
 
 # Which rolling rate column carries each market's statistic.
@@ -251,6 +311,9 @@ def feature_columns(props: pd.DataFrame, market: str) -> list[str]:
     if m.side == "batting":
         cols += [c for c in props.columns if c.startswith(("bat_", "tm_"))]
         cols += [c for c in props.columns if c.startswith("park_")]
+        # The opposing starter is most of the story for a batter prop.
+        cols += [c for c in props.columns if c.startswith("opp_")]
+        cols += ["has_opp_starter"]
     elif m.side == "pitching":
         cols += [c for c in props.columns if c.startswith(("pit_", "park_"))]
         cols += [c for c in props.columns if c.startswith(("home_tg_", "away_tg_"))]

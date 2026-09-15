@@ -346,7 +346,58 @@ def _attach_live_features(sub: pd.DataFrame, bat: pd.DataFrame,
     sub["is_home_player"] = (sub["player_team"].notna() &
                              (sub["player_team"] == sub["home_team"])
                              ).astype(float)
+    sub = _attach_live_opponent(sub, pit, all_quotes, lm)
     return add_projection(sub)
+
+
+def _attach_live_opponent(sub: pd.DataFrame, pit: pd.DataFrame,
+                          all_quotes: pd.DataFrame, lm: LiveMatcher
+                          ) -> pd.DataFrame:
+    """Opposing starter's form, resolved from tonight's own market.
+
+    Books quote pitcher props only for announced starters, so the presence of
+    those props in the live snapshot identifies the two starters -- the same
+    point-in-time source the backtest uses.
+    """
+    pit_cols = [c for c in pit.columns if c.startswith("pit_")]
+    sub["has_opp_starter"] = 0.0
+    for c in pit_cols:
+        sub[f"opp_{c}"] = np.nan
+    if not pit_cols:
+        return sub
+
+    starters = (all_quotes[all_quotes["market"]
+                           .isin(["pitcher_strikeouts", "pitcher_outs"])]
+                .dropna(subset=["athlete_id"])[["event_id", "athlete_id"]]
+                .drop_duplicates())
+    if starters.empty:
+        return sub
+    starters["pitcher_team"] = starters["athlete_id"].map(lm.team)
+    starters = starters.dropna(subset=["pitcher_team"])
+    if starters.empty:
+        return sub
+
+    rows = sub[["event_id", "player_team"]].reset_index()
+    pair = rows.merge(starters, on="event_id", how="left")
+    pair = pair[pair["pitcher_team"].notna() & pair["player_team"].notna()
+                & (pair["pitcher_team"] != pair["player_team"])]
+    pair = pair.drop_duplicates(subset=["index"], keep="first")
+    if pair.empty:
+        return sub
+
+    opp = pit[["athlete_id"] + pit_cols].rename(
+        columns={"athlete_id": "opp_athlete_id",
+                 **{c: f"opp_{c}" for c in pit_cols}})
+    pair = pair.rename(columns={"athlete_id": "opp_athlete_id"})
+    pair["has_opp_starter"] = 1.0
+    pair = pair.merge(opp, on="opp_athlete_id", how="left")
+
+    keep = ["index", "has_opp_starter"] + [f"opp_{c}" for c in pit_cols]
+    sub = sub.drop(columns=[c for c in keep if c != "index" and c in sub.columns])
+    sub = sub.merge(pair[keep].set_index("index"), left_index=True,
+                    right_index=True, how="left")
+    sub["has_opp_starter"] = sub["has_opp_starter"].fillna(0.0)
+    return sub
 
 
 def save_picks(picks: pd.DataFrame, path=PICKS_PATH) -> None:

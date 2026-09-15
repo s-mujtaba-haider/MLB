@@ -8,17 +8,17 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Market | Verdict | Deploy | Bets | ROI | 95% CI | p | CLV | Hit | Shrink |
 |---|---|---|---:|---:|---|---:|---:|---:|---:|
-| `batter_hits` | **VETO** | killed | 2138 | -2.73% | -7.60% … +2.44% | 0.8713 | n/a | 44.3% | 0.42 |
-| `batter_home_runs` | **VETO** | killed | 633 | +9.53% | -6.87% … +26.51% | 0.1288 | n/a | 42.3% | 0.31 |
-| `batter_rbis` | **FAIL** | killed | 3078 | -1.12% | -6.03% … +3.72% | 0.6706 | n/a | 41.9% | 0.36 |
-| `batter_strikeouts` | **VETO** | killed | 14 | -48.77% | -87.36% … +1.54% | 0.9924 | n/a | 28.6% | 0.32 |
-| `batter_total_bases` | **VETO** | killed | 2241 | -1.57% | -5.89% … +2.86% | 0.7537 | n/a | 46.7% | 0.51 |
-| `h2h` | **FAIL** | veto_filtered | 989 | +3.72% | -3.28% … +10.91% | 0.1532 | +0.0000 | 46.6% | 0.26 |
-| `pitcher_outs` | **FAIL** | killed | 1482 | -1.16% | -6.49% … +4.22% | 0.6632 | n/a | 47.3% | 0.56 |
-| `pitcher_strikeouts` | **FAIL** | killed | 873 | -0.76% | -7.83% … +6.54% | 0.5787 | n/a | 46.2% | 0.49 |
-| `runs_scored` | **FAIL** | killed | 802 | -12.21% | -20.31% … -3.95% | 0.9988 | n/a | 36.8% | 0.81 |
-| `spreads` | **FAIL** | killed | 781 | -2.24% | -9.31% … +4.85% | 0.7369 | -0.0018 | 51.1% | 0.43 |
-| `totals` | **FAIL** | killed | 1107 | -1.49% | -7.38% … +4.43% | 0.6933 | -0.0026 | 49.9% | 0.97 |
+| `batter_hits` | **VETO** | killed | 1203 | +0.89% | -6.16% … +7.93% | 0.4046 | n/a | 41.1% | 0.22 |
+| `batter_home_runs` | **VETO** | killed | 379 | +6.82% | -13.34% … +28.88% | 0.2640 | n/a | 37.2% | 0.24 |
+| `batter_rbis` | **FAIL** | killed | 1023 | -0.02% | -7.16% … +7.61% | 0.5082 | n/a | 50.1% | 0.09 |
+| `batter_strikeouts` | **VETO** | killed | 5 | -37.91% | -100.00% … +31.72% | 0.9254 | n/a | 40.0% | 0.20 |
+| `batter_total_bases` | **VETO** | killed | 2627 | -4.68% | -8.90% … -0.42% | 0.9845 | n/a | 44.2% | 0.27 |
+| `h2h` | **FAIL** | veto_filtered | 775 | +6.15% | -1.75% … +14.33% | 0.0727 | +0.0000 | 47.4% | 0.33 |
+| `pitcher_outs` | **FAIL** | killed | 1227 | -0.68% | -6.82% … +5.37% | 0.5865 | n/a | 44.9% | 0.36 |
+| `pitcher_strikeouts` | **FAIL** | veto_filtered | 1080 | +2.27% | -4.17% … +8.91% | 0.2572 | n/a | 45.3% | 0.22 |
+| `runs_scored` | **FAIL** | killed | 9 | -27.39% | -100.00% … +45.23% | 0.8279 | n/a | 33.3% | 0.25 |
+| `spreads` | **FAIL** | killed | 866 | -1.07% | -7.64% … +5.26% | 0.6303 | n/a | 52.0% | 0.38 |
+| `totals` | **FAIL** | killed | 509 | -7.86% | -16.79% … +1.55% | 0.9558 | -0.0027 | 44.8% | 0.61 |
 
 ### How to read this
 
@@ -33,12 +33,12 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 ### `batter_hits` — Batter hits — **VETO**
 
-- Bets: **2138** (947W / 1191L / 0P)
-- ROI: **-2.73%** (95% CI -7.60% … +2.44%), p = 0.8713
+- Bets: **1203** (495W / 708L / 0P)
+- ROI: **+0.89%** (95% CI -6.16% … +7.93%), p = 0.4046
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 20% profitable, largest fold = n/a of profit
-- Calibration error: 0.0490; average price +55
-- Executable at major US books only: 975 bets at -2.21%
+- Stability: 5 folds, 60% profitable, largest fold = 137% of profit
+- Calibration error: 0.0482; average price +114
+- Executable at major US books only: 461 bets at -0.25%
 
 **Cause: `leakage`**
 
@@ -48,47 +48,47 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 870 | -1.59% |
-| 2025-07-26 | 147 | -19.64% |
-| 2025-08-16 | 344 | +4.36% |
-| 2025-09-06 | 769 | -3.93% |
-| 2025-09-27 | 8 | -6.25% |
+| 2025-07-05 | 337 | +4.35% |
+| 2025-07-26 | 424 | -3.98% |
+| 2025-08-16 | 181 | +7.52% |
+| 2025-09-06 | 255 | +0.53% |
+| 2025-09-27 | 6 | -33.49% |
 
 </details>
 
 ### `batter_home_runs` — Batter home runs — **VETO**
 
-- Bets: **633** (268W / 365L / 0P)
-- ROI: **+9.53%** (95% CI -6.87% … +26.51%), p = 0.1288
+- Bets: **379** (141W / 238L / 0P)
+- ROI: **+6.82%** (95% CI -13.34% … +28.88%), p = 0.2640
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 60% profitable, largest fold = 98% of profit
-- Calibration error: 0.0505; average price +221
-- Executable at major US books only: 259 bets at +22.74%
+- Stability: 5 folds, 80% profitable, largest fold = 44% of profit
+- Calibration error: 0.0489; average price +311
+- Executable at major US books only: 165 bets at +10.27%
 
 **Cause: `leakage`**
 
-**Lever.** A feature or price carries information from at or after the decision instant. Fix the as-of boundary and re-validate from scratch. No statistical result from this market means anything until it is clean. Detail: VETO: conditional_signal -- p_primary separates residual outcomes at AUC 0.741 -- implausible without leakage
+**Lever.** A feature or price carries information from at or after the decision instant. Fix the as-of boundary and re-validate from scratch. No statistical result from this market means anything until it is clean. Detail: VETO: asof::bat_hits_ppa_r10 -- 1/250 sampled rows match a window that includes the current game -- the feature sees its own outcome
 
 <details><summary>Per-fold breakdown</summary>
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 37 | -52.00% |
-| 2025-07-26 | 115 | +11.68% |
-| 2025-08-16 | 448 | +13.21% |
-| 2025-09-06 | 32 | -0.14% |
-| 2025-09-27 | 1 | +700.00% |
+| 2025-07-05 | 45 | +14.03% |
+| 2025-07-26 | 196 | +2.72% |
+| 2025-08-16 | 79 | +14.32% |
+| 2025-09-06 | 54 | -9.18% |
+| 2025-09-27 | 5 | +157.00% |
 
 </details>
 
 ### `batter_rbis` — Batter RBIs — **FAIL**
 
-- Bets: **3078** (1289W / 1789L / 0P)
-- ROI: **-1.12%** (95% CI -6.03% … +3.72%), p = 0.6706
+- Bets: **1023** (513W / 510L / 0P)
+- ROI: **-0.02%** (95% CI -7.16% … +7.61%), p = 0.5082
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 40% profitable, largest fold = n/a of profit
-- Calibration error: 0.0287; average price +82
-- Executable at major US books only: 1212 bets at -7.48%
+- Stability: 4 folds, 50% profitable, largest fold = n/a of profit
+- Calibration error: 0.0467; average price -0
+- Executable at major US books only: 520 bets at -5.32%
 
 **Cause: `negative_edge`**
 
@@ -98,21 +98,20 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 1525 | +0.24% |
-| 2025-07-26 | 59 | +38.73% |
-| 2025-08-16 | 863 | -0.84% |
-| 2025-09-06 | 620 | -8.29% |
-| 2025-09-27 | 11 | -22.29% |
+| 2025-07-26 | 123 | +13.81% |
+| 2025-08-16 | 732 | -1.57% |
+| 2025-09-06 | 125 | +6.05% |
+| 2025-09-27 | 43 | -30.70% |
 
 </details>
 
 ### `batter_strikeouts` — Batter strikeouts — **VETO**
 
-- Bets: **14** (4W / 10L / 0P)
-- ROI: **-48.77%** (95% CI -87.36% … +1.54%), p = 0.9924
+- Bets: **5** (2W / 3L / 0P)
+- ROI: **-37.91%** (95% CI -100.00% … +31.72%), p = 0.9254
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 2 folds, 0% profitable, largest fold = n/a of profit
-- Calibration error: 0.2755; average price -68
+- Stability: 2 folds, 50% profitable, largest fold = n/a of profit
+- Calibration error: 0.6664; average price -243
 - Executable at major US books only: 0 bets at n/a
 
 **Cause: `leakage`**
@@ -121,12 +120,12 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 ### `batter_total_bases` — Batter total bases — **VETO**
 
-- Bets: **2241** (1047W / 1194L / 0P)
-- ROI: **-1.57%** (95% CI -5.89% … +2.86%), p = 0.7537
+- Bets: **2627** (1162W / 1465L / 0P)
+- ROI: **-4.68%** (95% CI -8.90% … -0.42%), p = 0.9845
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 40% profitable, largest fold = n/a of profit
-- Calibration error: 0.0532; average price +54
-- Executable at major US books only: 822 bets at +2.96%
+- Stability: 5 folds, 20% profitable, largest fold = n/a of profit
+- Calibration error: 0.0364; average price +70
+- Executable at major US books only: 893 bets at +0.06%
 
 **Cause: `leakage`**
 
@@ -136,22 +135,22 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 435 | +3.72% |
-| 2025-07-26 | 510 | +5.32% |
-| 2025-08-16 | 406 | -19.02% |
-| 2025-09-06 | 889 | -0.02% |
-| 2025-09-27 | 1 | -100.00% |
+| 2025-07-05 | 240 | -7.37% |
+| 2025-07-26 | 1504 | -1.85% |
+| 2025-08-16 | 743 | -11.29% |
+| 2025-09-06 | 129 | +7.27% |
+| 2025-09-27 | 11 | -26.15% |
 
 </details>
 
 ### `h2h` — Moneyline — **FAIL**
 
-- Bets: **989** (461W / 528L / 0P)
-- ROI: **+3.72%** (95% CI -3.28% … +10.91%), p = 0.1532
-- CLV: +0.0000 on 3 matched bets; beat the close 0.0%
-- Stability: 5 folds, 60% profitable, largest fold = 68% of profit
-- Calibration error: 0.0436; average price +73
-- Executable at major US books only: 36 bets at -1.72%
+- Bets: **775** (367W / 408L / 0P)
+- ROI: **+6.15%** (95% CI -1.75% … +14.33%), p = 0.0727
+- CLV: +0.0000 on 2 matched bets; beat the close 0.0%
+- Stability: 5 folds, 60% profitable, largest fold = 51% of profit
+- Calibration error: 0.0480; average price +76
+- Executable at major US books only: 30 bets at -12.47%
 
 **Cause: `no_edge`**
 
@@ -161,22 +160,22 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 190 | +3.79% |
-| 2025-07-26 | 278 | +5.87% |
-| 2025-08-16 | 250 | +10.01% |
-| 2025-09-06 | 245 | -0.70% |
-| 2025-09-27 | 26 | -38.64% |
+| 2025-07-05 | 140 | +17.45% |
+| 2025-07-26 | 286 | +8.35% |
+| 2025-08-16 | 108 | +6.15% |
+| 2025-09-06 | 234 | -1.83% |
+| 2025-09-27 | 7 | -42.94% |
 
 </details>
 
 ### `pitcher_outs` — Pitcher outs — **FAIL**
 
-- Bets: **1482** (701W / 781L / 0P)
-- ROI: **-1.16%** (95% CI -6.49% … +4.22%), p = 0.6632
+- Bets: **1227** (551W / 676L / 0P)
+- ROI: **-0.68%** (95% CI -6.82% … +5.37%), p = 0.5865
 - CLV: n/a on 0 matched bets; beat the close n/a
 - Stability: 5 folds, 60% profitable, largest fold = n/a of profit
-- Calibration error: 0.0670; average price +42
-- Executable at major US books only: 365 bets at +2.70%
+- Calibration error: 0.0445; average price +79
+- Executable at major US books only: 230 bets at -2.22%
 
 **Cause: `negative_edge`**
 
@@ -186,72 +185,60 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 409 | -4.13% |
-| 2025-07-26 | 390 | -2.68% |
-| 2025-08-16 | 396 | +0.91% |
-| 2025-09-06 | 271 | +1.12% |
-| 2025-09-27 | 16 | +22.14% |
+| 2025-07-05 | 356 | +3.67% |
+| 2025-07-26 | 546 | -6.10% |
+| 2025-08-16 | 208 | +6.11% |
+| 2025-09-06 | 95 | -1.80% |
+| 2025-09-27 | 22 | +4.26% |
 
 </details>
 
 ### `pitcher_strikeouts` — Pitcher strikeouts — **FAIL**
 
-- Bets: **873** (403W / 470L / 0P)
-- ROI: **-0.76%** (95% CI -7.83% … +6.54%), p = 0.5787
+- Bets: **1080** (489W / 591L / 0P)
+- ROI: **+2.27%** (95% CI -4.17% … +8.91%), p = 0.2572
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 40% profitable, largest fold = n/a of profit
-- Calibration error: 0.0783; average price +66
-- Executable at major US books only: 152 bets at -9.27%
+- Stability: 5 folds, 80% profitable, largest fold = 39% of profit
+- Calibration error: 0.0333; average price +110
+- Executable at major US books only: 140 bets at -10.52%
 
-**Cause: `negative_edge`**
+**Cause: `no_edge`**
 
-**Lever.** Losing, not merely flat: the selection rule is picking the wrong side systematically. Check the de-vig model first -- a multiplicative de-vig on a longshot-heavy market overstates longshot probability and will reliably buy the wrong tail. Re-run with Shin and power and compare. Kill it live until it is positive out of sample.
+**Lever.** The market prices this efficiently at the books we can reach. The only lever with real headroom is a sharper anchor: weight the consensus harder toward the zero-vig exchanges (novig, prophetx) and Pinnacle and re-fit the anchor weights on train folds, then re-test. If the edge is still flat, this is a line-shopping market only -- run it veto-filtered at a high EV cut rather than killing it.
 
 <details><summary>Per-fold breakdown</summary>
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 174 | -7.38% |
-| 2025-07-26 | 387 | +2.55% |
-| 2025-08-16 | 169 | -5.57% |
-| 2025-09-06 | 106 | -1.35% |
-| 2025-09-27 | 37 | +19.48% |
+| 2025-07-05 | 351 | +1.30% |
+| 2025-07-26 | 312 | +3.11% |
+| 2025-08-16 | 235 | +0.91% |
+| 2025-09-06 | 165 | -0.05% |
+| 2025-09-27 | 17 | +48.47% |
 
 </details>
 
 ### `runs_scored` — Batter runs scored — **FAIL**
 
-- Bets: **802** (295W / 507L / 0P)
-- ROI: **-12.21%** (95% CI -20.31% … -3.95%), p = 0.9988
+- Bets: **9** (3W / 6L / 0P)
+- ROI: **-27.39%** (95% CI -100.00% … +45.23%), p = 0.8279
 - CLV: n/a on 0 matched bets; beat the close n/a
-- Stability: 5 folds, 0% profitable, largest fold = n/a of profit
-- Calibration error: 0.1059; average price +124
-- Executable at major US books only: 663 bets at -16.23%
+- Stability: 3 folds, 67% profitable, largest fold = n/a of profit
+- Calibration error: 0.3913; average price +150
+- Executable at major US books only: 6 bets at -100.00%
 
-**Cause: `negative_edge`**
+**Cause: `insufficient_sample`**
 
-**Lever.** Losing, not merely flat: the selection rule is picking the wrong side systematically. Check the de-vig model first -- a multiplicative de-vig on a longshot-heavy market overstates longshot probability and will reliably buy the wrong tail. Re-run with Shin and power and compare. Kill it live until it is positive out of sample.
-
-<details><summary>Per-fold breakdown</summary>
-
-| Fold | Bets | ROI |
-|---|---:|---:|
-| 2025-07-05 | 118 | -4.67% |
-| 2025-07-26 | 70 | -19.88% |
-| 2025-08-16 | 239 | -6.53% |
-| 2025-09-06 | 335 | -12.82% |
-| 2025-09-27 | 40 | -49.86% |
-
-</details>
+**Lever.** Sample is the binding constraint, not the edge. Widen the bet universe before touching the model: lower min_books from 3 to 2 to admit thinly-quoted propositions, extend the backfill another season, and add the alternate lines this market posts (they are already in the raw cache and cost nothing to re-parse).
 
 ### `spreads` — Run line — **FAIL**
 
-- Bets: **781** (399W / 382L / 0P)
-- ROI: **-2.24%** (95% CI -9.31% … +4.85%), p = 0.7369
-- CLV: -0.0018 on 1 matched bets; beat the close 0.0%
+- Bets: **866** (450W / 416L / 0P)
+- ROI: **-1.07%** (95% CI -7.64% … +5.26%), p = 0.6303
+- CLV: n/a on 0 matched bets; beat the close n/a
 - Stability: 5 folds, 40% profitable, largest fold = n/a of profit
-- Calibration error: 0.0594; average price -26
-- Executable at major US books only: 53 bets at -10.20%
+- Calibration error: 0.0438; average price -36
+- Executable at major US books only: 62 bets at -14.23%
 
 **Cause: `negative_edge`**
 
@@ -261,22 +248,22 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 103 | +9.24% |
-| 2025-07-26 | 117 | -8.54% |
-| 2025-08-16 | 282 | +0.00% |
-| 2025-09-06 | 265 | -5.47% |
-| 2025-09-27 | 14 | -17.96% |
+| 2025-07-05 | 58 | +22.48% |
+| 2025-07-26 | 248 | -1.57% |
+| 2025-08-16 | 272 | +2.05% |
+| 2025-09-06 | 263 | -7.41% |
+| 2025-09-27 | 25 | -18.09% |
 
 </details>
 
 ### `totals` — Game total — **FAIL**
 
-- Bets: **1107** (552W / 555L / 0P)
-- ROI: **-1.49%** (95% CI -7.38% … +4.43%), p = 0.6933
-- CLV: -0.0026 on 4 matched bets; beat the close 25.0%
-- Stability: 5 folds, 40% profitable, largest fold = n/a of profit
-- Calibration error: 0.1683; average price -9
-- Executable at major US books only: 128 bets at +1.06%
+- Bets: **509** (228W / 281L / 0P)
+- ROI: **-7.86%** (95% CI -16.79% … +1.55%), p = 0.9558
+- CLV: -0.0027 on 3 matched bets; beat the close 33.3%
+- Stability: 5 folds, 20% profitable, largest fold = n/a of profit
+- Calibration error: 0.0712; average price +64
+- Executable at major US books only: 29 bets at -38.05%
 
 **Cause: `negative_edge`**
 
@@ -286,10 +273,10 @@ Verdict: **0/11 PASS**, 4 VETO (leakage)
 
 | Fold | Bets | ROI |
 |---|---:|---:|
-| 2025-07-05 | 300 | +8.47% |
-| 2025-07-26 | 320 | -1.18% |
-| 2025-08-16 | 230 | -9.67% |
-| 2025-09-06 | 233 | -10.02% |
-| 2025-09-27 | 24 | +31.31% |
+| 2025-07-05 | 220 | -5.43% |
+| 2025-07-26 | 159 | -11.21% |
+| 2025-08-16 | 61 | -14.14% |
+| 2025-09-06 | 64 | +1.92% |
+| 2025-09-27 | 5 | -57.00% |
 
 </details>
