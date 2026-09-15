@@ -1,0 +1,10 @@
+pandas>=2.2
+numpy>=1.26
+pyarrow>=15
+scikit-learn>=1.4
+scipy>=1.11
+requests>=2.31
+fastapi>=0.110
+uvicorn>=0.29
+python-dateutil>=2.9
+pytest>=8.0
