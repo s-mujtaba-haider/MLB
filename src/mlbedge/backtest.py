@@ -109,6 +109,29 @@ def choose_threshold(train_bets: pd.DataFrame, grid: np.ndarray | None = None,
     return best_t
 
 
+def _profitable_groups(train_bets: pd.DataFrame, thr: float,
+                       ev_col: str = "ev", min_n: int = 250
+                       ) -> set[str] | None:
+    """Anchor groups that actually collect on the training fold.
+
+    Returns None when there is nothing to decide with, in which case every
+    group is allowed. A group with too few training bets to judge is kept:
+    the point is to drop what demonstrably loses, not to require proof of
+    innocence from a thin sample.
+    """
+    if train_bets.empty or "anchor_src" not in train_bets.columns:
+        return None
+    col = ev_col if ev_col in train_bets.columns else "ev"
+    sel = train_bets[train_bets[col] >= thr]
+    if sel.empty:
+        return None
+    keep = set()
+    for grp, sub in sel.groupby("anchor_src", observed=True):
+        if len(sub) < min_n or sub["profit"].mean() > 0:
+            keep.add(str(grp))
+    return keep or None
+
+
 # ---------------------------------------------------------------------------
 # Core walk-forward
 # ---------------------------------------------------------------------------
@@ -174,9 +197,20 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
         tr_bets = cal.apply(tr_bets)
         thr = choose_threshold(tr_bets, ev_col="ev_cal" if cal.fitted else "ev")
 
+        # Which anchor groups are allowed to bet is decided on the training
+        # fold, never on the fold being scored. A ladder-priced quote is an
+        # estimate standing in for a consensus, and in the tails -- where the
+        # alternate rungs live -- a small probability error becomes a large
+        # apparent edge. Where the training window says a group does not
+        # actually collect, it does not bet.
+        allowed = _profitable_groups(tr_bets, thr, ev_col="ev_cal"
+                                     if cal.fitted else "ev")
+
         te_bets = cal.apply(add_apparent_edge(_score(te_c, mm)))
         ev_col = "ev_cal" if cal.fitted else "ev"
         sel = te_bets[te_bets[ev_col] >= thr].copy()
+        if allowed is not None and "anchor_src" in sel.columns:
+            sel = sel[sel["anchor_src"].isin(allowed)]
         # One bet per proposition. Both sides can clear a threshold at the
         # margin, and taking both is a hedge that locks in the hold -- not
         # something a bettor would ever do, and it quietly halves the measured

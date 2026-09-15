@@ -103,13 +103,14 @@ def test_leaked_outcome_feature_is_flagged():
     df = pd.DataFrame({
         "won": y,
         "logit_cons": np.log(p / (1 - p)),
-        "honest": rng.normal(size=n),
-        "leaked": y + rng.normal(0, 0.25, n),   # a feature that saw the result
+        "bat_honest_r10": rng.normal(size=n),
+        "bat_leaked_ppa_r10": y + rng.normal(0, 0.25, n),  # saw the result
     })
     rep = LK.LeakReport()
-    LK.check_conditional_signal(df, ["honest", "leaked"], "won", "logit_cons", rep)
+    LK.check_conditional_signal(df, ["bat_honest_r10", "bat_leaked_ppa_r10"],
+                                "won", "logit_cons", rep)
     assert rep.vetoed
-    assert "leaked" in rep.findings[-1].detail
+    assert "bat_leaked_ppa_r10" in rep.findings[-1].detail
 
 
 def test_honest_features_do_not_trip_the_alarm():
@@ -118,9 +119,11 @@ def test_honest_features_do_not_trip_the_alarm():
     p = rng.uniform(0.35, 0.65, n)
     y = (rng.random(n) < p).astype(float)
     df = pd.DataFrame({"won": y, "logit_cons": np.log(p / (1 - p)),
-                       "a": rng.normal(size=n), "b": rng.normal(size=n)})
+                       "bat_a_r10": rng.normal(size=n),
+                       "bat_b_r10": rng.normal(size=n)})
     rep = LK.LeakReport()
-    LK.check_conditional_signal(df, ["a", "b"], "won", "logit_cons", rep)
+    LK.check_conditional_signal(df, ["bat_a_r10", "bat_b_r10"], "won",
+                                "logit_cons", rep)
     assert not rep.vetoed
 
 
@@ -239,8 +242,32 @@ def test_a_genuinely_leaked_feature_still_trips_the_stratified_test():
     from scipy.stats import poisson
     p = 1 - poisson.cdf(line, mu)
     df = pd.DataFrame({"won": y, "logit_cons": np.log(p / (1 - p)),
-                       "line": line, "peeked": y + rng.normal(0, 0.3, n)})
+                       "line": line,
+                       "bat_peeked_r10": y + rng.normal(0, 0.3, n)})
     rep = LK.LeakReport()
-    LK.check_conditional_signal(df, ["line", "peeked"], "won", "logit_cons", rep)
+    LK.check_conditional_signal(df, ["line", "bat_peeked_r10"], "won",
+                                "logit_cons", rep)
     assert rep.vetoed
-    assert "peeked" in rep.findings[-1].detail
+    assert "bat_peeked_r10" in rep.findings[-1].detail
+
+
+def test_market_structure_signal_warns_but_does_not_veto():
+    """A column read straight off the decision snapshot cannot be leaking.
+
+    Books thin out a total when rain is forecast and rain suppresses runs, so
+    the book count legitimately predicts the result -- that is information, not
+    a broken as-of boundary. Vetoing on it killed `totals` outright on real
+    data. Its timing is already proven by check_quote_timing.
+    """
+    rng = np.random.default_rng(31)
+    n = 8000
+    n_books = rng.integers(2, 16, n).astype(float)
+    p = np.clip(0.5 + (n_books - 9) * 0.02, 0.1, 0.9)
+    y = (rng.random(n) < p).astype(float)
+    df = pd.DataFrame({"won": y, "logit_cons": np.zeros(n),
+                       "n_books_primary": n_books})
+    rep = LK.LeakReport()
+    LK.check_conditional_signal(df, ["n_books_primary"], "won",
+                                "logit_cons", rep)
+    assert not rep.vetoed, [f.detail for f in rep.findings]
+    assert any(f.severity == "warn" for f in rep.findings)

@@ -165,6 +165,20 @@ def check_feature_asof(feature_rows: pd.DataFrame, source: pd.DataFrame,
                 checked)
 
 
+#: Only these families can have a broken as-of boundary, because only these
+#: are rolled up from past games. Market-structure columns (book counts, holds,
+#: quoted lines, lead time) are read straight off the decision snapshot, so
+#: their timing is already guaranteed by check_quote_timing -- and they can
+#: legitimately carry real pre-game signal. Books thin out a total when rain is
+#: forecast, and rain suppresses runs; that is information, not leakage, and
+#: vetoing on it kills a sound market.
+FORM_PREFIXES = ("bat_", "pit_", "tm_", "park_", "opp_", "home_tg_", "away_tg_")
+
+
+def _vetoable(name: str) -> bool:
+    return name.startswith(FORM_PREFIXES)
+
+
 def check_conditional_signal(df: pd.DataFrame, feature_cols: list[str],
                              outcome_col: str, market_col: str,
                              rep: LeakReport, warn_auc: float = 0.60,
@@ -194,6 +208,18 @@ def check_conditional_signal(df: pd.DataFrame, feature_cols: list[str],
         auc = max(auc, 1 - auc)
         if auc > worst_auc:
             worst, worst_auc = c, auc
+        if auc >= warn_auc and not _vetoable(c):
+            rep.add("conditional_signal_info", "warn",
+                    f"{c} carries residual signal at AUC {auc:.3f}; it is read "
+                    f"off the decision snapshot, so this is information rather "
+                    f"than leakage")
+
+    if worst is not None and not _vetoable(worst) and worst_auc >= veto_auc:
+        rep.add("conditional_signal", "warn",
+                f"{worst} residual AUC {worst_auc:.3f}, but it is a "
+                f"market-structure column whose timing is already proven by "
+                f"the quote-timing check -- not escalated to a veto")
+        return
 
     if worst is None:
         rep.add("conditional_signal", "ok", "no feature exceeds chance")

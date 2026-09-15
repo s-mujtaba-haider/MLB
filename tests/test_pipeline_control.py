@@ -163,3 +163,35 @@ def test_threshold_still_rejects_a_band_that_loses():
     d = pd.DataFrame(rows)
     thr = B.choose_threshold(d, min_bets=150)
     assert thr >= 0.02, thr
+
+
+def test_anchor_groups_are_gated_on_training_performance():
+    """A group that loses on the training fold must not be bet on the test
+    fold -- and the decision has to come from training data, never from the
+    fold being scored."""
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(33)
+    rows = []
+    for i in range(4000):      # 'direct' collects
+        rows.append({"ev": 0.05, "anchor_src": "direct",
+                     "profit": 0.91 if rng.random() < 0.56 else -1.0})
+    for i in range(4000):      # 'ladder' does not
+        rows.append({"ev": 0.05, "anchor_src": "ladder",
+                     "profit": 0.91 if rng.random() < 0.44 else -1.0})
+    tr = pd.DataFrame(rows)
+    allowed = B._profitable_groups(tr, 0.02)
+    assert allowed == {"direct"}, allowed
+
+
+def test_a_thin_group_is_not_dropped_for_lack_of_evidence():
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(34)
+    rows = [{"ev": 0.05, "anchor_src": "direct",
+             "profit": 0.91 if rng.random() < 0.56 else -1.0} for _ in range(3000)]
+    rows += [{"ev": 0.05, "anchor_src": "ladder", "profit": -1.0} for _ in range(20)]
+    allowed = B._profitable_groups(pd.DataFrame(rows), 0.02)
+    assert allowed == {"direct", "ladder"}, allowed
