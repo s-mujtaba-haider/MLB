@@ -47,6 +47,44 @@ def _iso(t: dt.datetime) -> str:
     return t.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+class _ChunkedRows:
+    """Accumulate quote dicts, converting to a compact frame every so often.
+
+    A season is roughly four million quotes. Held as Python dicts until the
+    end, that is several gigabytes of interpreter objects before pandas even
+    starts; converted and compacted in chunks, it stays in the low hundreds of
+    megabytes.
+    """
+
+    def __init__(self, chunk: int = 400_000):
+        self.chunk = chunk
+        self._rows: list[dict] = []
+        self._frames: list[pd.DataFrame] = []
+
+    def extend(self, rows) -> None:
+        self._rows.extend(rows)
+        if len(self._rows) >= self.chunk:
+            self.flush()
+
+    def append(self, row: dict) -> None:
+        self._rows.append(row)
+        if len(self._rows) >= self.chunk:
+            self.flush()
+
+    def flush(self) -> None:
+        if self._rows:
+            self._frames.append(compact(_finish(pd.DataFrame(self._rows))))
+            self._rows = []
+
+    def frame(self) -> pd.DataFrame:
+        self.flush()
+        if not self._frames:
+            return pd.DataFrame()
+        if len(self._frames) == 1:
+            return self._frames[0]
+        return compact(pd.concat(self._frames, ignore_index=True))
+
+
 def _lead_min(snapshot_ts: str | None, commence: str) -> float:
     if not snapshot_ts:
         return np.nan
@@ -61,7 +99,7 @@ def parse_props(events: pd.DataFrame, tag: str = "decision",
                 client: OddsClient | None = None) -> pd.DataFrame:
     client = client or OddsClient(cache_only=True)
     offset = C.DECISION_OFFSET_MIN if tag == "decision" else C.CLOSING_OFFSET_MIN
-    rows: list[dict] = []
+    rows = _ChunkedRows()
 
     for ev in events.itertuples():
         want = _iso(_parse(ev.commence_time) - dt.timedelta(minutes=offset))
@@ -104,7 +142,7 @@ def parse_props(events: pd.DataFrame, tag: str = "decision",
                             "lead_min": lead,
                             "tag": tag,
                         })
-    return _finish(pd.DataFrame(rows))
+    return rows.frame()
 
 
 def parse_alt(events: pd.DataFrame, tag: str = "alt",
@@ -116,7 +154,7 @@ def parse_alt(events: pd.DataFrame, tag: str = "alt",
     the main number.
     """
     client = client or OddsClient(cache_only=True)
-    rows: list[dict] = []
+    rows = _ChunkedRows()
     for ev in events.itertuples():
         want = _iso(_parse(ev.commence_time)
                     - dt.timedelta(minutes=C.DECISION_OFFSET_MIN))
@@ -138,7 +176,7 @@ def parse_alt(events: pd.DataFrame, tag: str = "alt",
                         mk, m, ev.event_id, bk.get("key"), region, snap,
                         ev.commence_time, lead, ev.home_team, ev.away_team,
                         "decision"))
-    return _finish(pd.DataFrame(rows))
+    return rows.frame()
 
 
 # ---------------------------------------------------------------------------
@@ -167,7 +205,7 @@ def parse_featured(events: pd.DataFrame, tag: str = "decision",
     else:
         buckets = featured_buckets(events)
 
-    rows: list[dict] = []
+    rows = _ChunkedRows()
     for want_ts, event_ids in buckets.items():
         wanted = set(event_ids)
         for region, markets in C.FEATURED_REQUEST_PLAN.items():
@@ -192,7 +230,7 @@ def parse_featured(events: pd.DataFrame, tag: str = "decision",
                         rows.extend(_featured_outcomes(
                             mk, m, eid, book, region, snap, commence, lead,
                             home, away, tag))
-    return _finish(pd.DataFrame(rows))
+    return rows.frame()
 
 
 def _featured_outcomes(mk, m, eid, book, region, snap, commence, lead,

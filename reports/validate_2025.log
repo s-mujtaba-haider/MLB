@@ -1,3 +1,9 @@
 
 --- season 2025 ---
 [quotes 2025] parsing props (decision) for 2448 events
+[quotes 2025] parsing featured (decision)
+[quotes 2025] parsing props (closing) for 2448 events
+[quotes 2025] parsing featured (closing)
+[quotes 2025] parsing alternate ladders
+[quotes 2025] 4,245,298 rows -> quotes_2025.parquet
+[graded 2025] 2413/2448 events matched to ESPN games
