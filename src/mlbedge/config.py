@@ -122,10 +122,14 @@ FEATURED_REQUEST_PLAN: dict[str, tuple[str, ...]] = {
 # DraftKings posts roughly thirty alternate spread and thirty alternate total
 # outcomes per game against two on the main line, and the alternate rungs are
 # the ones books leave alone once they are up.
+# Measured coverage per region on a sample game (outcomes returned, 20 credits
+# each): us 286 (DraftKings 64, Caesars 66), us2 114 across the soft books
+# where mispricing concentrates, eu 58 including Pinnacle as a sharp anchor,
+# us_ex only 26. The first three earn their cost; us_ex does not.
 ALT_REQUEST_PLAN: dict[str, tuple[str, ...]] = {
     "us": ("alternate_spreads", "alternate_totals"),
+    "us2": ("alternate_spreads", "alternate_totals"),
     "eu": ("alternate_spreads", "alternate_totals"),
-    "us_ex": ("alternate_spreads", "alternate_totals"),
 }
 ALT_API_KEYS = {"alternate_spreads": "spreads", "alternate_totals": "totals"}
 # An alternate rung is the same market at a different number, so it maps onto
