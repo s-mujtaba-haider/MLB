@@ -1,0 +1,18 @@
+
+======================================================================
+SEASON 2025  (2025-03-27 .. 2025-09-28)
+======================================================================
+[events 2025] 186 daily listings
+[events 2025] 2448 events -> events_2025.parquet
+[events 2025] 2448 in window
+[featured decision] 1230 snapshots x 3 regions = 3690 requests
+  [featured decision] 200/3690 (12.8/s, eta 4.5m) 383 calls, 6,183 credits spent this run, 3,774,431 remaining
+  [featured decision] 400/3690 (13.3/s, eta 4.1m) 586 calls, 12,273 credits spent this run, 3,768,401 remaining
+  [featured decision] 600/3690 (13.6/s, eta 3.8m) 784 calls, 18,213 credits spent this run, 3,762,401 remaining
+  [featured decision] 800/3690 (13.6/s, eta 3.5m) 983 calls, 24,183 credits spent this run, 3,756,461 remaining
+  [featured decision] 1000/3690 (13.4/s, eta 3.3m) 1184 calls, 30,213 credits spent this run, 3,750,431 remaining
+  [featured decision] 1200/3690 (13.4/s, eta 3.1m) 1383 calls, 36,183 credits spent this run, 3,744,461 remaining
+  [featured decision] 1400/3690 (13.4/s, eta 2.9m) 1583 calls, 42,183 credits spent this run, 3,738,461 remaining
+  [featured decision] 1600/3690 (13.8/s, eta 2.5m) 1732 calls, 46,653 credits spent this run, 3,733,991 remaining
+  [featured decision] 1800/3690 (13.7/s, eta 2.3m) 1932 calls, 52,653 credits spent this run, 3,727,991 remaining
+  [featured decision] 2000/3690 (13.5/s, eta 2.1m) 2132 calls, 58,653 credits spent this run, 3,721,991 remaining
