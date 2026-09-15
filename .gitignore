@@ -9,3 +9,6 @@ data/curated/
 *.db-wal
 *.db-shm
 .ipynb_checkpoints/
+models/*.pkl
+data/picks.parquet
+data/*.jsonl
