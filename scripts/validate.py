@@ -62,7 +62,9 @@ def main() -> None:
     cand = pd.concat(cand_frames, ignore_index=True)
     closing = (pd.concat(close_frames, ignore_index=True)
                if close_frames else pd.DataFrame())
-    del prop_frames, cand_frames, close_frames
+    games = pd.concat(game_frames, ignore_index=True).drop_duplicates("espn_id")
+    players = pd.concat(player_frames, ignore_index=True)
+    del prop_frames, cand_frames, close_frames, game_frames, player_frames
     gc.collect()
     print(f"\ntotal: propositions {len(props):,}  candidates {len(cand):,}  "
           f"closing quotes {len(closing):,}", flush=True)
@@ -90,7 +92,8 @@ def main() -> None:
         train = p_m[p_m["game_date"] <= folds[0].train_end]
         test = bets.assign(won=(bets["result"] == "win").astype(float))
         rep = LK.audit(bets, train, test, feats, outcome_col="won",
-                       market_col="logit_cons")
+                       market_col="logit_cons", props=p_m, players=players,
+                       games=games)
         for f in rep.findings:
             leak_rows.append({"market": mkt, **f.__dict__})
 

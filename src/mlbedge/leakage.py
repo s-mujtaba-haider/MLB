@@ -221,13 +221,59 @@ def _rank_auc(x: np.ndarray, pos: np.ndarray) -> float:
     return float((r[pos].sum() - n1 * (n1 + 1) / 2) / (n1 * n0))
 
 
+def audit_rolling_features(props: pd.DataFrame, players: pd.DataFrame,
+                           games: pd.DataFrame, rep: LeakReport,
+                           n_sample: int = 250) -> None:
+    """Rebuild representative rolling features from raw per-game data.
+
+    This is the check that actually proves the as-of boundary rather than
+    asserting it. The per-game observations are reconstructed independently of
+    features.py, and for a sample of proposition rows we require the stored
+    feature to equal the mean of that entity's *strictly prior* games. A stored
+    value that instead matches a window including the current game is reported
+    as a veto, naming the feature.
+    """
+    g = games[["espn_id", "game_date"]].copy()
+    g["game_date"] = g["game_date"].astype(str)
+
+    bat = players[players["group"] == "batting"].merge(
+        g, left_on="event_id", right_on="espn_id", how="inner")
+    if not bat.empty:
+        pa = bat["at_bats"].fillna(0) + bat["walks"].fillna(0)
+        bat = bat.assign(hits_ppa=np.where(pa > 0, bat["hits"].fillna(0) / pa,
+                                           np.nan))
+        src = bat[["athlete_id", "game_date", "hits_ppa"]].dropna()
+        rows = props.dropna(subset=["athlete_id"])
+        rows = rows[["athlete_id", "game_date", "bat_hits_ppa_r10"]].dropna()
+        if len(rows) > 50:
+            check_feature_asof(rows, src, "athlete_id", "game_date",
+                               "hits_ppa", "bat_hits_ppa_r10", 10, rep,
+                               n_sample=n_sample)
+
+    pit = players[players["group"] == "pitching"].merge(
+        g, left_on="event_id", right_on="espn_id", how="inner")
+    if not pit.empty:
+        src = pit[["athlete_id", "game_date", "strike_outs"]].dropna()
+        rows = props.dropna(subset=["athlete_id"])
+        rows = rows[["athlete_id", "game_date", "pit_strike_outs_r8"]].dropna() \
+            if "pit_strike_outs_r8" in props.columns else pd.DataFrame()
+        if len(rows) > 50:
+            check_feature_asof(rows, src, "athlete_id", "game_date",
+                               "strike_outs", "pit_strike_outs_r8", 8, rep,
+                               n_sample=n_sample)
+
+
 def audit(quotes: pd.DataFrame, train: pd.DataFrame, test: pd.DataFrame,
           feature_cols: list[str], outcome_col: str = "won",
-          market_col: str = "logit_cons") -> LeakReport:
+          market_col: str = "logit_cons", props: pd.DataFrame | None = None,
+          players: pd.DataFrame | None = None,
+          games: pd.DataFrame | None = None) -> LeakReport:
     """The standard bundle the gate runs for every market."""
     rep = LeakReport()
     check_quote_timing(quotes, rep)
     check_fold_boundary(train, test, rep)
     if not test.empty:
         check_conditional_signal(test, feature_cols, outcome_col, market_col, rep)
+    if props is not None and players is not None and games is not None:
+        audit_rolling_features(props, players, games, rep)
     return rep
