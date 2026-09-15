@@ -79,3 +79,29 @@ SEASON 2025  (2025-03-27 .. 2025-09-28)
   [props decision] 10200/12240 (13.6/s, eta 2.5m) 13731 calls, 510,503 credits spent this run, 3,270,069 remaining
   [props decision] 10400/12240 (13.6/s, eta 2.3m) 13931 calls, 518,503 credits spent this run, 3,262,139 remaining
   [props decision] 10600/12240 (13.6/s, eta 2.0m) 14131 calls, 526,423 credits spent this run, 3,254,219 remaining
+  [props decision] 10800/12240 (13.6/s, eta 1.8m) 14331 calls, 534,363 credits spent this run, 3,246,209 remaining
+  [props decision] 11000/12240 (13.6/s, eta 1.5m) 14531 calls, 542,263 credits spent this run, 3,238,309 remaining
+  [props decision] 11200/12240 (13.6/s, eta 1.3m) 14731 calls, 550,243 credits spent this run, 3,230,399 remaining
+  [props decision] 11400/12240 (13.6/s, eta 1.0m) 14931 calls, 558,073 credits spent this run, 3,222,759 remaining
+  [props decision] 11600/12240 (13.5/s, eta 0.8m) 15131 calls, 565,773 credits spent this run, 3,214,869 remaining
+  [props decision] 11800/12240 (13.5/s, eta 0.5m) 15331 calls, 573,723 credits spent this run, 3,206,919 remaining
+  [props decision] 12000/12240 (13.5/s, eta 0.3m) 15531 calls, 581,513 credits spent this run, 3,199,199 remaining
+  [props decision] 12200/12240 (13.5/s, eta 0.0m) 15731 calls, 589,193 credits spent this run, 3,191,449 remaining
+[props decision] done. 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+[espn scoreboards] 186 dates
+  [scoreboards] 40/186 (8.3/s, eta 0.3m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [scoreboards] 80/186 (9.7/s, eta 0.2m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [scoreboards] 120/186 (10.0/s, eta 0.1m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [scoreboards] 160/186 (10.1/s, eta 0.0m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+[espn boxscores] 2429 final games (30 non-final skipped)
+  [boxscores] 200/2429 (9.9/s, eta 3.8m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 400/2429 (10.4/s, eta 3.3m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 600/2429 (10.7/s, eta 2.9m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 800/2429 (10.9/s, eta 2.5m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 1000/2429 (11.7/s, eta 2.0m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 1200/2429 (11.7/s, eta 1.8m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 1400/2429 (11.4/s, eta 1.5m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 1600/2429 (11.1/s, eta 1.3m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 1800/2429 (10.8/s, eta 1.0m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 2000/2429 (10.5/s, eta 0.7m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 2200/2429 (10.4/s, eta 0.4m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining

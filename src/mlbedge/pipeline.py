@@ -119,6 +119,7 @@ def build_season_frames(season: int, devig_method: str = "shin",
     from . import calibrate as CAL
     from . import config as C
     from . import dataset as D
+    from . import ladder as LAD
     from .devig import attach_consensus
 
     graded = build_graded(season, tags=tags)
@@ -126,8 +127,10 @@ def build_season_frames(season: int, devig_method: str = "shin",
     cons = attach_consensus(graded, method=devig_method, min_books=2,
                             self_anchor_markets=C.SELF_ANCHOR_MARKETS,
                             fitted_weights=CAL.load())
-    props = D.build_props(graded, games, players, cons=cons)
-    cand = D.build_candidates(graded, cons=cons, tag="decision")
+    tbl = LAD.load()
+    props = D.build_props(graded, games, players, cons=cons, ladder_table=tbl)
+    cand = D.build_candidates(graded, cons=cons, tag="decision", props=props,
+                              ladder_table=tbl)
     if not cand.empty:
         cand = cand.merge(games[["espn_id", "game_date"]], on="espn_id",
                           how="left", suffixes=("", "_g"))

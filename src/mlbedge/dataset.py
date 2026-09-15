@@ -33,7 +33,11 @@ PROP_KEY = ["event_id", "market", "subject", "line"]
 # and "this book's hold" at serving time is a silent train/serve skew.
 MARKET_STRUCT = ["n_books_prop", "hold_med", "lead_min", "line",
                  "book_spread", "n_quotes", "book_std",
-                 "proj_mean", "line_minus_proj", "line_over_proj"]
+                 "proj_mean", "line_minus_proj", "line_over_proj",
+                 # ladder context: where this line sits relative to the one the
+                 # market actually prices, and how far the two disagree
+                 "primary_line", "p_primary", "n_books_primary",
+                 "ladder_minus_cons", "is_primary_line"]
 
 
 def proposition_outcome(graded: pd.DataFrame) -> pd.DataFrame:
@@ -79,16 +83,28 @@ def proposition_structure(dec: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_props(graded: pd.DataFrame, games: pd.DataFrame,
-                players: pd.DataFrame, cons: pd.DataFrame | None = None
-                ) -> pd.DataFrame:
+                players: pd.DataFrame, cons: pd.DataFrame | None = None,
+                ladder_table: dict | None = None) -> pd.DataFrame:
     """Proposition-grain frame with consensus, outcome and features."""
+    from . import ladder as LAD
+
     q = cons if cons is not None else attach_consensus(graded)
     dec = q[q["tag"] == "decision"]
     base = proposition_structure(dec)
 
     out = base.merge(proposition_outcome(dec), on=PROP_KEY, how="inner")
-    out = out.dropna(subset=["p_cons_all"])
-    out["logit_cons"] = logit(out["p_cons_all"].to_numpy())
+
+    # Price the rest of the ladder off the line the market prices best. Without
+    # this, a proposition quoted at an alternate line by fewer than two books
+    # has no consensus at all and is discarded -- which throws away precisely
+    # the lines books are laziest about.
+    tbl = ladder_table if ladder_table is not None else LAD.load()
+    out = LAD.attach(out, tbl)
+    out["anchor_src"] = np.where(out["p_cons_all"].notna(), "direct", "ladder")
+    out["p_anchor"] = out["p_cons_all"].fillna(out["p_ladder"])
+
+    out = out.dropna(subset=["p_anchor"])
+    out["logit_cons"] = logit(out["p_anchor"].to_numpy())
     out = attach_features(out, games, players)
     return out
 
@@ -252,13 +268,64 @@ def feature_columns(props: pd.DataFrame, market: str) -> list[str]:
 # Betting grain
 # ---------------------------------------------------------------------------
 
+def book_primary_anchor(dec: pd.DataFrame, primary: pd.DataFrame
+                        ) -> pd.DataFrame:
+    """Each book's *leave-one-out* consensus at its group's primary line.
+
+    When a proposition is priced off a different line, the anchor must still
+    exclude the book being judged -- otherwise a book that is an outlier at the
+    primary line quietly sets the benchmark for its own alternate-line price.
+    Books that do not quote the primary line contributed nothing to it, so the
+    all-book value is already leave-one-out for them.
+    """
+    p = primary[["event_id", "market", "subject", "primary_line"]]
+    at_primary = dec.merge(p, on=["event_id", "market", "subject"], how="inner")
+    at_primary = at_primary[at_primary["line"] == at_primary["primary_line"]]
+    if at_primary.empty:
+        return pd.DataFrame(columns=["event_id", "market", "subject", "book",
+                                     "p_primary_loo"])
+    return (at_primary.groupby(["event_id", "market", "subject", "book"],
+                               dropna=False, observed=True)["p_cons"]
+            .median().rename("p_primary_loo").reset_index())
+
+
 def build_candidates(graded: pd.DataFrame, cons: pd.DataFrame | None = None,
-                     tag: str = "decision") -> pd.DataFrame:
+                     tag: str = "decision", props: pd.DataFrame | None = None,
+                     ladder_table: dict | None = None) -> pd.DataFrame:
     """Best bettable price per (proposition, side), with that book's LOO
     consensus attached."""
+    from . import ladder as LAD
+
     q = cons if cons is not None else attach_consensus(graded)
     d = q[(q["tag"] == tag) & q["book"].isin(C.BETTABLE_BOOKS)]
     d = d[~d["book"].isin(C.DFS_BOOKS)]
+
+    # Fill a missing same-line consensus from the ladder, anchored on this
+    # book's own leave-one-out view of the primary line.
+    tbl = ladder_table if ladder_table is not None else LAD.load()
+    if tbl and props is not None and not props.empty and not d.empty:
+        pcols = [c for c in ("primary_line", "p_primary", "n_books_primary")
+                 if c in props.columns]
+        prim = props.drop_duplicates(subset=LAD.GROUP_KEY)[LAD.GROUP_KEY + pcols]
+        loo = book_primary_anchor(q[q["tag"] == tag], prim)
+        d = d.merge(prim, on=LAD.GROUP_KEY, how="left")
+        d = d.merge(loo, on=["event_id", "market", "subject", "book"],
+                    how="left")
+        d["p_primary_eff"] = d["p_primary_loo"].fillna(d["p_primary"])
+        need = d["p_cons"].isna() & d["p_primary_eff"].notna()
+        if need.any():
+            filled = LAD.apply(d.loc[need], tbl, p_primary_col="p_primary_eff")
+            d.loc[need, "p_cons"] = filled
+            # A ladder-derived anchor is exactly as well supported as the
+            # primary line it was derived from -- not more. Claiming a fixed
+            # minimum here would smuggle unsupported propositions past the
+            # book-count filter.
+            if "n_books_primary" in d.columns:
+                d.loc[need, "n_books_cons"] = d.loc[need, "n_books_primary"]
+            else:
+                d.loc[need, "n_books_cons"] = np.nan
+        d["anchor_src"] = np.where(need, "ladder", "direct")
+
     d = d.dropna(subset=["p_cons"])
     if d.empty:
         return d
