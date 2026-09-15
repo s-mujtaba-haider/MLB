@@ -1,0 +1,36 @@
+
+--- season 2025 ---
+  propositions 256,258  candidates 499,577  closing 2,004
+
+total: propositions 256,258  candidates 499,577  closing quotes 2,004
+  5 walk-forward folds (2025-07-05 .. 2025-09-28)
+
+=== h2h ===
+  [h2h] fold 2025-07-05 train=1314 thr=0.010 shrink=0.25 gain=+0.00194 bets=140
+  [h2h] fold 2025-07-26 train=1547 thr=0.050 shrink=0.25 gain=+0.00078 bets=286
+  [h2h] fold 2025-08-16 train=1826 thr=0.100 shrink=0.33 gain=+0.00168 bets=108
+  [h2h] fold 2025-09-06 train=2108 thr=0.035 shrink=0.48 gain=+0.00426 bets=234
+  [h2h] fold 2025-09-27 train=2388 thr=0.100 shrink=0.58 gain=+0.00452 bets=7
+  bets=775 roi=+0.0615 [-0.0175,+0.1433] p=0.0727 clv=+0.00000 -> FAIL no_edge
+
+=== spreads ===
+  [spreads] fold 2025-07-05 train=1596 thr=0.015 shrink=0.33 gain=+0.00119 bets=58
+  [spreads] fold 2025-07-26 train=1864 thr=0.000 shrink=0.48 gain=+0.00341 bets=248
+  [spreads] fold 2025-08-16 train=2193 thr=0.000 shrink=0.30 gain=+0.00244 bets=272
+  [spreads] fold 2025-09-06 train=2548 thr=0.025 shrink=0.38 gain=+0.00142 bets=263
+  [spreads] fold 2025-09-27 train=3023 thr=0.020 shrink=0.38 gain=+0.00198 bets=25
+  bets=866 roi=-0.0107 [-0.0764,+0.0526] p=0.6303 clv=+nan -> FAIL negative_edge
+
+=== totals ===
+  [totals] fold 2025-07-05 train=1990 thr=0.010 shrink=0.65 gain=+0.00418 bets=220
+  [totals] fold 2025-07-26 train=2362 thr=0.000 shrink=0.75 gain=+0.00273 bets=159
+  [totals] fold 2025-08-16 train=2783 thr=0.070 shrink=0.48 gain=+0.00141 bets=61
+  [totals] fold 2025-09-06 train=3220 thr=0.010 shrink=0.25 gain=+0.00010 bets=64
+  [totals] fold 2025-09-27 train=3651 thr=0.010 shrink=0.43 gain=+0.00056 bets=5
+  bets=509 roi=-0.0786 [-0.1679,+0.0155] p=0.9558 clv=-0.00272 -> FAIL negative_edge
+
+=== batter_hits ===
+  [batter_hits] fold 2025-07-05 train=23732 thr=0.020 shrink=0.23 gain=+0.00041 bets=337
+  [batter_hits] fold 2025-07-26 train=28148 thr=0.020 shrink=0.23 gain=+0.00032 bets=424
+  [batter_hits] fold 2025-08-16 train=33388 thr=0.030 shrink=0.18 gain=+0.00020 bets=181
+  [batter_hits] fold 2025-09-06 train=38694 thr=0.030 shrink=0.25 gain=+0.00023 bets=255
