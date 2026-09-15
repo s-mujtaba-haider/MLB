@@ -84,7 +84,8 @@ def proposition_structure(dec: pd.DataFrame) -> pd.DataFrame:
 
 def build_props(graded: pd.DataFrame, games: pd.DataFrame,
                 players: pd.DataFrame, cons: pd.DataFrame | None = None,
-                ladder_table: dict | None = None) -> pd.DataFrame:
+                ladder_table: dict | None = None,
+                move: pd.DataFrame | None = None) -> pd.DataFrame:
     """Proposition-grain frame with consensus, outcome and features."""
     from . import ladder as LAD
 
@@ -106,7 +107,23 @@ def build_props(graded: pd.DataFrame, games: pd.DataFrame,
     out = out.dropna(subset=["p_anchor"])
     out["logit_cons"] = logit(out["p_anchor"].to_numpy())
     out = attach_features(out, games, players)
+    out = attach_movement(out, move)
     return out
+
+
+def attach_movement(out: pd.DataFrame, move: pd.DataFrame | None
+                    ) -> pd.DataFrame:
+    """Join pre-game line movement onto the featured markets."""
+    from . import movement as MV
+
+    cols = list(MV.MOVE_COLS)
+    if move is None or move.empty:
+        for c in cols:
+            if c not in out.columns:
+                out[c] = np.nan
+        return out
+    keep = [c for c in cols if c in move.columns]
+    return out.merge(move[PROP_KEY + keep], on=PROP_KEY, how="left")
 
 
 def attach_features(props: pd.DataFrame, games: pd.DataFrame,
@@ -320,6 +337,11 @@ def feature_columns(props: pd.DataFrame, market: str) -> list[str]:
     else:
         cols += [c for c in props.columns
                  if c.startswith(("home_tg_", "away_tg_", "park_"))]
+        # Which way the number moved before first pitch is where the informed
+        # money went -- one of the few genuinely predictive things available
+        # at the decision instant, and free from snapshots already on disk.
+        from . import movement as MV
+        cols += [c for c in MV.MOVE_COLS if c in props.columns]
     cols = [c for c in dict.fromkeys(cols) if c in props.columns]
     sub = props[props["market"] == market]
     keep = [c for c in cols

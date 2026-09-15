@@ -125,6 +125,7 @@ def build_season_frames(season: int, devig_method: str = "shin",
     from . import config as C
     from . import dataset as D
     from . import ladder as LAD
+    from . import movement as MV
     from .devig import attach_consensus
 
     # Cache keyed on the inputs that change the answer: the de-vig model, and

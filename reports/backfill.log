@@ -214,3 +214,10 @@ SEASON 2026  (2026-03-26 .. 2026-09-14)
   [featured closing] 3800/5151 (11.0/s, eta 2.0m) 34473 calls, 1,259,478 credits spent this run, 2,521,026 remaining
   [featured closing] 4000/5151 (11.0/s, eta 1.7m) 34673 calls, 1,265,478 credits spent this run, 2,515,026 remaining
   [featured closing] 4200/5151 (11.0/s, eta 1.4m) 34873 calls, 1,271,478 credits spent this run, 2,509,026 remaining
+  [featured closing] 4400/5151 (11.0/s, eta 1.1m) 35074 calls, 1,277,508 credits spent this run, 2,502,996 remaining
+  [featured closing] 4600/5151 (11.0/s, eta 0.8m) 35274 calls, 1,283,508 credits spent this run, 2,497,026 remaining
+  [featured closing] 4800/5151 (11.0/s, eta 0.5m) 35473 calls, 1,289,478 credits spent this run, 2,491,026 remaining
+  [featured closing] 5000/5151 (11.0/s, eta 0.2m) 35673 calls, 1,295,478 credits spent this run, 2,485,026 remaining
+[featured closing] done. 35824 calls, 1,300,008 credits spent this run, 2,480,496 remaining
+[props closing] 11380 (event,region) requests over 2276 events
+  [props closing] 200/11380 (11.4/s, eta 16.4m) 36024 calls, 1,308,058 credits spent this run, 2,472,446 remaining

@@ -147,6 +147,70 @@ def _featured_rows(ev: dict, region: str, events: pd.DataFrame) -> list[dict]:
     return out
 
 
+def live_movement(events: pd.DataFrame) -> pd.DataFrame:
+    """Rebuild line movement from this session's own cached live snapshots.
+
+    The scheduler sweeps every fifteen minutes and the client caches each
+    whole-slate response, so by the time a game is inside the serving window
+    several snapshots of it already exist on disk. Reading them back gives the
+    featured markets the same movement features the backtest was fitted with.
+    Without this the model would be handed nulls at serving time for columns
+    that carried signal in training.
+    """
+    import gzip
+    import json
+
+    from . import movement as MV
+    from .normalize import _featured_outcomes, _finish
+
+    root = C.RAW / "live" / "featured" / C.SPORT
+    if not root.exists() or events.empty:
+        return pd.DataFrame()
+    meta = {e.event_id: (e.commence_time, e.home_team, e.away_team)
+            for e in events.itertuples()}
+
+    rows: list[dict] = []
+    for path in sorted(root.glob("*.json.gz")):
+        try:
+            with gzip.open(path, "rt", encoding="utf-8") as fh:
+                payload = json.load(fh)
+        except (OSError, EOFError, json.JSONDecodeError):
+            continue
+        data = payload.get("data") or []
+        region = path.stem.split("_")[0]
+        for ev in data:
+            eid = ev.get("id")
+            if eid not in meta:
+                continue
+            commence, home, away = meta[eid]
+            # The cached response carries each book's own last_update; use the
+            # freshest as the snapshot instant.
+            stamps = [bk.get("last_update") for bk in ev.get("bookmakers", [])
+                      if bk.get("last_update")]
+            if not stamps:
+                continue
+            snap = max(stamps)
+            lead = _lead(commence) if snap is None else None
+            from .normalize import _lead_min
+            lead = _lead_min(snap, commence)
+            if not np.isfinite(lead) or lead <= 0 or lead > 12 * 60:
+                continue
+            for bk in ev.get("bookmakers", []):
+                for mk in bk.get("markets", []):
+                    m = C.BY_API_KEY.get(mk.get("key"))
+                    if m is None or m.kind != "featured":
+                        continue
+                    rows.extend(_featured_outcomes(
+                        mk, m, eid, bk.get("key"), region, snap, commence,
+                        lead, home, away, "hist"))
+    if not rows:
+        return pd.DataFrame()
+    hist = _finish(pd.DataFrame(rows))
+    if hist.empty:
+        return pd.DataFrame()
+    return MV.movement_features(MV.consensus_history(hist))
+
+
 # ---------------------------------------------------------------------------
 # Live player matching
 # ---------------------------------------------------------------------------
@@ -225,6 +289,9 @@ def generate(bundles: dict[str, Bundle], players: pd.DataFrame,
                                        cons.loc[is_prop, "subject"]]
 
     as_of = dt.date.today().isoformat()
+    move = live_movement(events)
+    if not move.empty:
+        print(f"line movement rebuilt for {len(move)} propositions")
     bat, pit = F.current_form(players, games, as_of)
     tm_latest = _latest_team_form(players, games)
     park = _latest_park(games)
@@ -240,6 +307,8 @@ def generate(bundles: dict[str, Bundle], players: pd.DataFrame,
             continue
         sub = _attach_live_features(sub, bat, pit, tm_latest, park,
                                     events, lm, cons)
+        from .dataset import attach_movement
+        sub = attach_movement(sub, move)
         sub["logit_cons"] = logit(sub["p_cons"].to_numpy(dtype=float))
         for f in b.features:
             if f not in sub.columns:
