@@ -141,10 +141,19 @@ def check_feature_asof(feature_rows: pd.DataFrame, source: pd.DataFrame,
 
     if checked == 0:
         rep.add(f"asof::{feature_col}", "warn", "no comparable rows")
-    elif future_used:
+    elif future_used >= max(5, 0.02 * checked):
+        # Systematic, not incidental. A handful of coincidental matches is
+        # expected -- two windows can agree by chance, especially around a
+        # doubleheader where both games share a date -- and vetoing a market
+        # on one of them is a false positive that costs more than it saves.
         rep.add(f"asof::{feature_col}", "veto",
                 f"{future_used}/{checked} sampled rows match a window that "
                 f"includes the current game -- the feature sees its own outcome",
+                future_used)
+    elif future_used:
+        rep.add(f"asof::{feature_col}", "warn",
+                f"{future_used}/{checked} sampled rows coincide with a "
+                f"current-game window; below the systematic threshold",
                 future_used)
     elif mismatches:
         rep.add(f"asof::{feature_col}", "warn",
@@ -250,6 +259,13 @@ def audit_rolling_features(props: pd.DataFrame, players: pd.DataFrame,
     """
     g = games[["espn_id", "game_date"]].copy()
     g["game_date"] = g["game_date"].astype(str)
+    # Order on real first pitch, exactly as features.py does, so a doubleheader
+    # is compared against the same notion of "strictly before".
+    if "date" in games.columns:
+        g["asof_key"] = pd.to_datetime(games["date"], utc=True,
+                                       format="ISO8601").astype("int64")
+    else:
+        g["asof_key"] = pd.to_datetime(g["game_date"], utc=True).astype("int64")
 
     bat = players[players["group"] == "batting"].merge(
         g, left_on="event_id", right_on="espn_id", how="inner")
@@ -257,11 +273,12 @@ def audit_rolling_features(props: pd.DataFrame, players: pd.DataFrame,
         pa = bat["at_bats"].fillna(0) + bat["walks"].fillna(0)
         bat = bat.assign(hits_ppa=np.where(pa > 0, bat["hits"].fillna(0) / pa,
                                            np.nan))
-        src = bat[["athlete_id", "game_date", "hits_ppa"]].dropna()
-        rows = props.dropna(subset=["athlete_id"])
-        rows = rows[["athlete_id", "game_date", "bat_hits_ppa_r10"]].dropna()
+        src = bat[["athlete_id", "asof_key", "hits_ppa"]].dropna()
+        rows = props.dropna(subset=["athlete_id"]).merge(
+            g[["espn_id", "asof_key"]], on="espn_id", how="left")
+        rows = rows[["athlete_id", "asof_key", "bat_hits_ppa_r10"]].dropna()
         if len(rows) > 50:
-            check_feature_asof(rows, src, "athlete_id", "game_date",
+            check_feature_asof(rows, src, "athlete_id", "asof_key",
                                "hits_ppa", "bat_hits_ppa_r10", 10, rep,
                                n_sample=n_sample)
 

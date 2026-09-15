@@ -2,14 +2,18 @@
 
 The decision instant is first pitch minus 30 minutes. Everything here must be
 knowable then, and the enforcement is structural rather than a promise: every
-rolling aggregate is computed on a frame sorted by game date, grouped by
-entity, and **shifted by one game** before any window is applied. The current
-game can therefore never enter its own features.
+rolling aggregate is computed on a frame sorted by **actual first pitch**,
+grouped by entity, and **shifted by one appearance** before any window is
+applied. The current game can therefore never enter its own features.
 
-Same-day games are excluded too, not just the current one. A team can play a
-doubleheader, and game one finishes before game two starts; using a date-level
-cutoff rather than a timestamp cutoff gives up a sliver of real information in
-exchange for an airtight guarantee. That trade is the right way round.
+Ordering is on first pitch rather than on date, which matters for
+doubleheaders: both games share a date, game one finishes before game two
+starts, and its line is legitimately knowable by then. Sorting on the game id
+within a date would get that right only by luck -- if the ids happened to run
+the other way, the later game would feed the earlier one's features, which is
+a real leak. Ordering on the timestamp makes "strictly before this appearance"
+mean exactly that, and `leakage.audit_rolling_features` recomputes against the
+same definition.
 
 What is deliberately *not* used:
 
@@ -45,9 +49,20 @@ def _roll(df: pd.DataFrame, by: str, cols: list[str], windows=WINDOWS,
 
 
 def _game_frame(games: pd.DataFrame) -> pd.DataFrame:
-    g = games[["espn_id", "game_date", "venue", "home_team", "away_team",
-               "home_score", "away_score", "total_runs", "home_margin"]].copy()
+    cols = ["espn_id", "game_date", "venue", "home_team", "away_team",
+            "home_score", "away_score", "total_runs", "home_margin"]
+    g = games[[c for c in cols if c in games.columns]].copy()
     g["game_date"] = g["game_date"].astype(str)
+    # Actual first pitch, used to order appearances. Sorting by event id within
+    # a date is not the same thing: both halves of a doubleheader share a date,
+    # and if the ids happen to run the other way the later game would be fed
+    # into the earlier one's features. Ordering on the real start time makes
+    # "strictly before this appearance" mean exactly that.
+    if "date" in games.columns:
+        g["game_start"] = pd.to_datetime(games["date"], utc=True,
+                                         format="ISO8601")
+    else:
+        g["game_start"] = pd.to_datetime(g["game_date"], utc=True)
     return g
 
 
@@ -63,9 +78,10 @@ def batter_form(players: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     """One row per (athlete, game) with that batter's prior-games form."""
     g = _game_frame(games)
     b = players[players["group"] == "batting"].merge(
-        g[["espn_id", "game_date", "venue", "home_team", "away_team"]],
+        g[["espn_id", "game_date", "game_start", "venue", "home_team",
+           "away_team"]],
         left_on="event_id", right_on="espn_id", how="inner")
-    b = b.sort_values(["athlete_id", "game_date", "event_id"]).reset_index(drop=True)
+    b = b.sort_values(["athlete_id", "game_start", "event_id"]).reset_index(drop=True)
 
     b["pa"] = b["at_bats"].fillna(0) + b["walks"].fillna(0)
     b["pa"] = b["pa"].clip(lower=0)
@@ -99,9 +115,9 @@ PIT_COLS = ["outs", "strike_outs", "hits_allowed", "earned_runs", "walks",
 def pitcher_form(players: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     g = _game_frame(games)
     p = players[players["group"] == "pitching"].merge(
-        g[["espn_id", "game_date"]], left_on="event_id", right_on="espn_id",
-        how="inner")
-    p = p.sort_values(["athlete_id", "game_date", "event_id"]).reset_index(drop=True)
+        g[["espn_id", "game_date", "game_start"]], left_on="event_id",
+        right_on="espn_id", how="inner")
+    p = p.sort_values(["athlete_id", "game_start", "event_id"]).reset_index(drop=True)
 
     # A start is an outing of real length; relief cameos distort per-start form.
     p["is_start"] = (p["outs"] >= 9).astype(float)
@@ -126,9 +142,10 @@ def team_form(players: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     """Team-level offensive rates from prior games (per plate appearance)."""
     g = _game_frame(games)
     b = players[players["group"] == "batting"].merge(
-        g[["espn_id", "game_date"]], left_on="event_id", right_on="espn_id",
-        how="inner")
-    agg = (b.groupby(["team", "event_id", "game_date"], observed=True)
+        g[["espn_id", "game_date", "game_start"]], left_on="event_id",
+        right_on="espn_id", how="inner")
+    agg = (b.groupby(["team", "event_id", "game_date", "game_start"],
+                     observed=True)
              .agg(**{c: (c, "sum") for c in BAT_RATE_COLS},
                   at_bats=("at_bats", "sum"), pa_sum=("at_bats", "sum"))
              .reset_index())
@@ -136,7 +153,7 @@ def team_form(players: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
     for c in BAT_RATE_COLS:
         agg[f"tm_{c}_ppa"] = np.where(agg["pa_sum"] > 0,
                                       agg[c] / agg["pa_sum"], np.nan)
-    agg = agg.sort_values(["team", "game_date", "event_id"]).reset_index(drop=True)
+    agg = agg.sort_values(["team", "game_start", "event_id"]).reset_index(drop=True)
     feats = _roll(agg, "team", [f"tm_{c}_ppa" for c in BAT_RATE_COLS],
                   windows=(10, 30), prefix="")
     return pd.concat([agg[["team", "event_id", "game_date"]], feats], axis=1)
@@ -144,7 +161,7 @@ def team_form(players: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
 
 def park_form(games: pd.DataFrame) -> pd.DataFrame:
     """Rolling runs environment by venue, from prior games at that venue."""
-    g = _game_frame(games).sort_values(["venue", "game_date", "espn_id"])
+    g = _game_frame(games).sort_values(["venue", "game_start", "espn_id"])
     g = g.reset_index(drop=True)
     feats = _roll(g, "venue", ["total_runs"], windows=(30, 120), prefix="park_")
     return pd.concat([g[["espn_id", "venue", "game_date"]], feats], axis=1)
@@ -160,7 +177,7 @@ def game_context(games: pd.DataFrame) -> pd.DataFrame:
                  runs_for=g["away_score"], runs_against=g["home_score"]),
     ], ignore_index=True)
     long["won"] = (long["runs_for"] > long["runs_against"]).astype(float)
-    long = long.sort_values(["team", "game_date", "espn_id"]).reset_index(drop=True)
+    long = long.sort_values(["team", "game_start", "espn_id"]).reset_index(drop=True)
     feats = _roll(long, "team", ["runs_for", "runs_against", "won"],
                   windows=(10, 30, 90), prefix="tg_")
     return pd.concat([long[["espn_id", "team", "opp", "is_home", "game_date"]],

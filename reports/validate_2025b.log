@@ -34,3 +34,31 @@ total: propositions 256,258  candidates 499,577  closing quotes 2,004
   [batter_hits] fold 2025-07-26 train=28148 thr=0.020 shrink=0.23 gain=+0.00032 bets=424
   [batter_hits] fold 2025-08-16 train=33388 thr=0.030 shrink=0.18 gain=+0.00020 bets=181
   [batter_hits] fold 2025-09-06 train=38694 thr=0.030 shrink=0.25 gain=+0.00023 bets=255
+  [batter_hits] fold 2025-09-27 train=43906 thr=0.025 shrink=0.33 gain=+0.00044 bets=6
+  bets=1203 roi=+0.0089 [-0.0616,+0.0793] p=0.4046 clv=+nan -> VETO leakage
+
+=== batter_rbis ===
+  [batter_rbis] fold 2025-07-05 train=23254 thr=0.030 shrink=0.03 gain=+0.00000 bets=0
+  [batter_rbis] fold 2025-07-26 train=27429 thr=0.020 shrink=0.15 gain=+0.00010 bets=123
+  [batter_rbis] fold 2025-08-16 train=32419 thr=0.000 shrink=0.08 gain=+0.00003 bets=732
+  [batter_rbis] fold 2025-09-06 train=37460 thr=0.010 shrink=0.08 gain=+0.00002 bets=125
+  [batter_rbis] fold 2025-09-27 train=42452 thr=0.030 shrink=0.20 gain=+0.00018 bets=43
+  bets=1023 roi=-0.0002 [-0.0716,+0.0761] p=0.5082 clv=+nan -> FAIL negative_edge
+
+=== batter_total_bases ===
+  [batter_total_bases] fold 2025-07-05 train=24758 thr=0.040 shrink=0.18 gain=+0.00021 bets=240
+  [batter_total_bases] fold 2025-07-26 train=30191 thr=0.025 shrink=0.33 gain=+0.00071 bets=1504
+  [batter_total_bases] fold 2025-08-16 train=36555 thr=0.000 shrink=0.20 gain=+0.00028 bets=743
+  [batter_total_bases] fold 2025-09-06 train=42752 thr=0.035 shrink=0.28 gain=+0.00031 bets=129
+  [batter_total_bases] fold 2025-09-27 train=48566 thr=0.030 shrink=0.20 gain=+0.00024 bets=11
+  bets=2627 roi=-0.0468 [-0.0890,-0.0042] p=0.9845 clv=+nan -> VETO leakage
+
+=== batter_home_runs ===
+  [batter_home_runs] fold 2025-07-05 train=22244 thr=0.055 shrink=0.20 gain=+0.00020 bets=45
+  [batter_home_runs] fold 2025-07-26 train=26306 thr=0.015 shrink=0.23 gain=+0.00028 bets=196
+  [batter_home_runs] fold 2025-08-16 train=31193 thr=0.065 shrink=0.28 gain=+0.00033 bets=79
+  [batter_home_runs] fold 2025-09-06 train=36149 thr=0.055 shrink=0.28 gain=+0.00030 bets=54
+  [batter_home_runs] fold 2025-09-27 train=41048 thr=0.090 shrink=0.35 gain=+0.00046 bets=5
+  bets=379 roi=+0.0682 [-0.1334,+0.2888] p=0.2640 clv=+nan -> VETO leakage
+
+=== runs_scored ===
