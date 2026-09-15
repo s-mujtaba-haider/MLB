@@ -171,3 +171,31 @@ def test_conditional_model_separates_real_from_selected_edges():
     smart = out[out["ev_cal"] > 0.02]
     assert len(smart) > 500
     assert smart["profit"].mean() > naive["profit"].mean()
+
+
+def test_out_of_fold_scoring_does_not_flatter_the_training_bets():
+    """Fitting the correction on the training bets and then scoring those same
+    bets makes every group look profitable, because the isotonic fit has
+    already absorbed their outcomes. That is how a ladder group losing nine
+    points out of sample got waved through."""
+    d = _shopped(n=16000, margin=0.022, seed=41)
+    d["game_date"] = ["2025-04-%02d" % (1 + i % 28) for i in range(len(d))]
+
+    cal = SelectionCalibrator()
+    in_sample = cal.fit(d).apply(d)
+    oof = SelectionCalibrator().fit_oof(d)
+
+    # There is no real edge here at all, so a bet selected on the corrected EV
+    # must not look profitable once the correction is honest.
+    picked_in = in_sample[in_sample["ev_cal"] > 0.02]
+    picked_oof = oof[oof["ev_cal"] > 0.02]
+    if len(picked_in) > 200 and len(picked_oof) > 200:
+        assert picked_oof["profit"].mean() <= picked_in["profit"].mean() + 1e-9
+
+
+def test_fit_oof_covers_every_row_once():
+    d = _shopped(n=8000, seed=42)
+    d["game_date"] = ["2025-05-%02d" % (1 + i % 20) for i in range(len(d))]
+    oof = SelectionCalibrator().fit_oof(d)
+    assert len(oof) == len(d)
+    assert "ev_cal" in oof.columns and oof["ev_cal"].notna().all()

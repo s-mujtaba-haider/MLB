@@ -2,23 +2,23 @@
 
 Seasons: 2023, 2024, 2025, 2026  
 Walk-forward: 20 expanding-window folds, 2024-05-03 -> 2026-09-14  
-Verdict: **0/11 PASS**, 1 VETO (leakage)
+Verdict: **0/11 PASS**
 
 ## Summary
 
 | Market | Verdict | Deploy | Bets | Games | ROI | 95% CI | p | CLV | Hit | Shrink |
 |---|---|---|---:|---:|---:|---|---:|---:|---:|---:|
 | `batter_hits` | **FAIL** | killed | 5827 | 3155 | -0.12% | -3.89% ... +3.95% | 0.5256 | +0.0036 | 37.3% | 0.46 |
-| `batter_home_runs` | **FAIL** | killed | 2908 | 1852 | -4.25% | -12.70% ... +4.92% | 0.8264 | +0.0034 | 22.1% | 0.52 |
+| `batter_home_runs` | **FAIL** | killed | 2907 | 1851 | -4.22% | -12.90% ... +4.81% | 0.8291 | +0.0034 | 22.1% | 0.52 |
 | `batter_rbis` | **FAIL** | killed | 9833 | 3961 | -2.81% | -4.96% ... -0.61% | 0.9944 | +0.0022 | 51.6% | 0.31 |
-| `batter_strikeouts` | **FAIL** | killed | 699 | 551 | -1.96% | -10.04% ... +6.40% | 0.6886 | +0.0000 | 48.2% | 0.44 |
+| `batter_strikeouts` | **FAIL** | killed | 698 | 550 | -1.82% | -9.72% ... +6.07% | 0.6707 | +0.0000 | 48.3% | 0.44 |
 | `batter_total_bases` | **FAIL** | veto_filtered | 3672 | 2311 | +2.09% | -1.35% ... +5.70% | 0.1305 | +0.0027 | 51.1% | 0.67 |
 | `h2h` | **FAIL** | veto_filtered | 2939 | 2939 | +1.35% | -3.07% ... +5.57% | 0.2772 | +0.0026 | 43.1% | 0.28 |
 | `pitcher_outs` | **FAIL** | killed | 5193 | 3547 | -2.41% | -5.27% ... +0.54% | 0.9480 | +0.0039 | 47.0% | 0.26 |
 | `pitcher_strikeouts` | **FAIL** | killed | 6478 | 3947 | -1.34% | -4.59% ... +1.96% | 0.7897 | +0.0049 | 44.3% | 0.41 |
 | `runs_scored` | **FAIL** | killed | 6433 | 2967 | -6.05% | -8.64% ... -3.43% | 1.0000 | +0.0013 | 52.1% | 0.41 |
 | `spreads` | **FAIL** | killed | 13310 | 4492 | -2.17% | -6.86% ... +2.58% | 0.8105 | +0.0027 | 25.7% | 0.07 |
-| `totals` | **VETO** | killed | 3594 | 1241 | +1.26% | -6.92% ... +9.72% | 0.3787 | +0.0056 | 43.4% | 0.24 |
+| `totals` | **FAIL** | veto_filtered | 3594 | 1241 | +1.26% | -6.92% ... +9.72% | 0.3787 | +0.0056 | 43.4% | 0.24 |
 
 ### How to read this
 
@@ -94,12 +94,12 @@ This is the execution question: an edge concentrated at one book is only as good
 
 ### `batter_home_runs` -- Batter home runs -- **FAIL**
 
-- Bets: **2908** (642W / 2266L / 0P) across **1852** distinct games
-- ROI: **-4.25%** (95% CI -12.70% ... +4.92%), p = 0.8264
+- Bets: **2907** (642W / 2265L / 0P) across **1851** distinct games
+- ROI: **-4.22%** (95% CI -12.90% ... +4.81%), p = 0.8291
 - CLV: +0.0034 on 677 matched bets; beat the close 28.8%
 - Stability: 14 folds, 43% profitable, largest fold = n/a of profit
-- Calibration error: 0.0271; average price +536
-- Executable at major US books only: 1614 bets at -6.13%
+- Calibration error: 0.0269; average price +536
+- Executable at major US books only: 1613 bets at -6.07%
 
 **Cause: `negative_edge`**
 
@@ -111,7 +111,7 @@ This is the execution question: an edge concentrated at one book is only as good
 |---|---:|---:|
 | 2024-05-03 | 401 | +6.14% |
 | 2024-06-17 | 133 | -3.51% |
-| 2024-08-01 | 138 | -9.35% |
+| 2024-08-01 | 137 | -8.69% |
 | 2024-09-15 | 101 | -50.59% |
 | 2025-03-14 | 145 | +2.92% |
 | 2025-04-28 | 460 | -15.66% |
@@ -135,7 +135,7 @@ This is the execution question: an edge concentrated at one book is only as good
 | prophetx | 629 | -3.70% | -23.3 |
 | fanduel | 625 | -14.19% | -88.7 |
 | novig | 508 | -6.27% | -31.8 |
-| betrivers | 485 | +7.25% | +35.1 |
+| betrivers | 484 | +7.47% | +36.1 |
 | betmgm | 450 | -8.85% | -39.8 |
 | pinnacle | 128 | +20.92% | +26.8 |
 | williamhill_us | 41 | -23.17% | -9.5 |
@@ -149,7 +149,7 @@ This is the execution question: an edge concentrated at one book is only as good
 | Anchor | Bets | ROI |
 |---|---:|---:|
 | direct | 2352 | -5.11% |
-| ladder | 556 | -0.63% |
+| ladder | 555 | -0.45% |
 
 </details>
 
@@ -215,11 +215,11 @@ This is the execution question: an edge concentrated at one book is only as good
 
 ### `batter_strikeouts` -- Batter strikeouts -- **FAIL**
 
-- Bets: **699** (337W / 362L / 0P) across **551** distinct games
-- ROI: **-1.96%** (95% CI -10.04% ... +6.40%), p = 0.6886
+- Bets: **698** (337W / 361L / 0P) across **550** distinct games
+- ROI: **-1.82%** (95% CI -9.72% ... +6.07%), p = 0.6707
 - CLV: +0.0000 on 2 matched bets; beat the close 0.0%
 - Stability: 10 folds, 20% profitable, largest fold = n/a of profit
-- Calibration error: 0.0332; average price +4
+- Calibration error: 0.0325; average price +4
 - Executable at major US books only: 0 bets at n/a
 
 **Cause: `negative_edge`**
@@ -231,7 +231,7 @@ This is the execution question: an edge concentrated at one book is only as good
 | Fold | Bets | ROI |
 |---|---:|---:|
 | 2024-05-03 | 154 | +7.53% |
-| 2024-06-17 | 166 | -2.83% |
+| 2024-06-17 | 165 | -2.24% |
 | 2024-08-01 | 282 | -1.76% |
 | 2024-09-15 | 24 | -17.56% |
 | 2025-03-14 | 5 | -11.00% |
@@ -249,17 +249,8 @@ This is the execution question: an edge concentrated at one book is only as good
 
 | Book | Bets | ROI | Profit (u) |
 |---|---:|---:|---:|
-| hardrockbet | 567 | -4.02% | -22.8 |
+| hardrockbet | 566 | -3.85% | -21.8 |
 | fliff | 132 | +6.87% | +9.1 |
-
-</details>
-
-<details><summary>Direct line vs ladder-priced</summary>
-
-| Anchor | Bets | ROI |
-|---|---:|---:|
-| direct | 698 | -1.82% |
-| ladder | 1 | -100.00% |
 
 </details>
 
@@ -639,7 +630,7 @@ This is the execution question: an edge concentrated at one book is only as good
 
 </details>
 
-### `totals` -- Game total -- **VETO**
+### `totals` -- Game total -- **FAIL**
 
 - Bets: **3594** (1558W / 2036L / 0P) across **1241** distinct games
 - ROI: **+1.26%** (95% CI -6.92% ... +9.72%), p = 0.3787
@@ -648,9 +639,9 @@ This is the execution question: an edge concentrated at one book is only as good
 - Calibration error: 0.0927; average price +157
 - Executable at major US books only: 2210 bets at -2.83%
 
-**Cause: `leakage`**
+**Cause: `no_edge`**
 
-**Lever.** A feature or price carries information from at or after the decision instant. Fix the as-of boundary and re-validate from scratch. No statistical result from this market means anything until it is clean. Detail: VETO: conditional_signal -- n_books_primary separates residual outcomes at AUC 0.711 -- implausible without leakage
+**Lever.** The market prices this efficiently at the books we can reach. The only lever with real headroom is a sharper anchor: weight the consensus harder toward the zero-vig exchanges (novig, prophetx) and Pinnacle and re-fit the anchor weights on train folds, then re-test. If the edge is still flat, this is a line-shopping market only -- run it veto-filtered at a high EV cut rather than killing it.
 
 <details><summary>Per-fold breakdown</summary>
 

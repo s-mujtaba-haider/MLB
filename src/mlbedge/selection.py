@@ -144,6 +144,43 @@ class SelectionCalibrator:
             return
         self.cond = m
 
+    def fit_oof(self, bets: pd.DataFrame, n_folds: int = 4,
+                date_col: str = "game_date", **kw) -> pd.DataFrame:
+        """Out-of-fold corrected EVs for the training bets themselves.
+
+        Anything decided from the training bets -- the EV threshold, which
+        anchor groups are allowed to bet -- must be judged against a correction
+        that has not seen them. Fitting the calibrator on all the training bets
+        and then scoring those same bets makes every group look profitable by
+        construction, because the isotonic fit has already absorbed their
+        outcomes. That is precisely what happened: a ladder group losing nine
+        points out of sample looked fine in training and was waved through.
+
+        Folds are grouped by date for the same reason the model's are: bets in
+        one game share an outcome.
+        """
+        from sklearn.model_selection import GroupKFold
+
+        d = bets.reset_index(drop=True)
+        if len(d) < self.min_fit * 2:
+            return self.fit(d, **kw).apply(d, **{k: v for k, v in kw.items()
+                                                 if k != "outcome_col"})
+        groups = (d[date_col].to_numpy() if date_col in d.columns
+                  else np.arange(len(d)))
+        n_groups = len(pd.unique(groups))
+        splitter = GroupKFold(n_splits=min(n_folds, max(2, n_groups)))
+        out = [None] * len(d)
+        for tr, va in splitter.split(d, groups=groups):
+            sub = SelectionCalibrator(min_fit=self.min_fit,
+                                      group_col=self.group_col)
+            sub.fit(d.iloc[tr], **kw)
+            scored = sub.apply(d.iloc[va],
+                               **{k: v for k, v in kw.items()
+                                  if k != "outcome_col"})
+            for pos, row in zip(va, scored.to_dict("records")):
+                out[pos] = row
+        return pd.DataFrame([r for r in out if r is not None])
+
     def realised_edge(self, apparent: np.ndarray,
                       groups: np.ndarray | None = None) -> np.ndarray:
         if self.iso is None:

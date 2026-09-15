@@ -193,9 +193,13 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
         # own overfit.
         tr_c = c[c["game_date"] <= f.train_end]
         tr_bets = add_apparent_edge(_score_oof(tr_c, mm))
-        cal = SelectionCalibrator().fit(tr_bets)
-        tr_bets = cal.apply(tr_bets)
-        thr = choose_threshold(tr_bets, ev_col="ev_cal" if cal.fitted else "ev")
+        cal = SelectionCalibrator()
+        # Judge the training bets with a correction that has not seen them,
+        # then fit the deployable correction on all of them.
+        tr_judge = cal.fit_oof(tr_bets)
+        cal.fit(tr_bets)
+        ev_col_tr = "ev_cal" if cal.fitted else "ev"
+        thr = choose_threshold(tr_judge, ev_col=ev_col_tr)
 
         # Which anchor groups are allowed to bet is decided on the training
         # fold, never on the fold being scored. A ladder-priced quote is an
@@ -203,8 +207,7 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
         # alternate rungs live -- a small probability error becomes a large
         # apparent edge. Where the training window says a group does not
         # actually collect, it does not bet.
-        allowed = _profitable_groups(tr_bets, thr, ev_col="ev_cal"
-                                     if cal.fitted else "ev")
+        allowed = _profitable_groups(tr_judge, thr, ev_col=ev_col_tr)
 
         te_bets = cal.apply(add_apparent_edge(_score(te_c, mm)))
         ev_col = "ev_cal" if cal.fitted else "ev"
