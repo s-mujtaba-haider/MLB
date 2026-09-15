@@ -1,0 +1,11 @@
+2026-09-15T07:17:14+00:00 ERROR cycle failed: RuntimeError('simulated API outage')
+Traceback (most recent call last):
+  File "C:\Users\mujta\mlb\src\mlbedge\scheduler.py", line 149, in run_once
+    n = self.cycle()
+  File "<string>", line 7, in <lambda>
+    s.cycle=lambda: (_ for _ in ()).throw(RuntimeError('simulated API outage'))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 7, in <genexpr>
+    s.cycle=lambda: (_ for _ in ()).throw(RuntimeError('simulated API outage'))
+RuntimeError: simulated API outage
+

@@ -195,3 +195,5 @@ SEASON 2026  (2026-03-26 .. 2026-09-14)
 [featured closing] 1717 snapshots x 3 regions = 5151 requests
   [featured closing] 200/5151 (10.6/s, eta 7.8m) 30876 calls, 1,151,568 credits spent this run, 2,628,906 remaining
   [featured closing] 400/5151 (11.0/s, eta 7.2m) 31076 calls, 1,157,568 credits spent this run, 2,622,936 remaining
+  [featured closing] 600/5151 (11.2/s, eta 6.8m) 31276 calls, 1,163,568 credits spent this run, 2,616,936 remaining
+  [featured closing] 800/5151 (11.1/s, eta 6.5m) 31476 calls, 1,169,568 credits spent this run, 2,610,936 remaining
