@@ -172,7 +172,6 @@ def check_conditional_signal(df: pd.DataFrame, feature_cols: list[str],
         return
     y = d[outcome_col].to_numpy(dtype=float)
     m = d[market_col].to_numpy(dtype=float)
-    resid = y - _bin_mean(m, y)
 
     worst, worst_auc = None, 0.5
     for c in feature_cols:
@@ -182,7 +181,7 @@ def check_conditional_signal(df: pd.DataFrame, feature_cols: list[str],
         ok = np.isfinite(x)
         if ok.sum() < 500:
             continue
-        auc = _rank_auc(x[ok], resid[ok] > 0)
+        auc = _stratified_auc(x[ok], y[ok], m[ok])
         auc = max(auc, 1 - auc)
         if auc > worst_auc:
             worst, worst_auc = c, auc
@@ -201,15 +200,31 @@ def check_conditional_signal(df: pd.DataFrame, feature_cols: list[str],
                 f"max residual AUC {worst_auc:.3f} ({worst})")
 
 
-def _bin_mean(m: np.ndarray, y: np.ndarray, bins: int = 20) -> np.ndarray:
-    """Non-parametric E[y | m], used to residualise out the market."""
+def _stratified_auc(x: np.ndarray, y: np.ndarray, m: np.ndarray,
+                    bins: int = 20, min_stratum: int = 50) -> float:
+    """AUC of x against y *within* strata of the market probability.
+
+    Subtracting E[y|market] and testing the sign of the residual does not work
+    for a binary outcome: y - p is positive exactly when y == 1, so the test
+    silently degenerates into an unconditional AUC and flags any feature
+    related to the result at all -- the line itself, for instance, which is
+    related to the result only *through* the market. Stratifying and pooling
+    the within-stratum comparisons is the real conditional test: a feature that
+    adds nothing beyond the market scores 0.5.
+    """
     order = np.argsort(m)
-    out = np.empty_like(y, dtype=float)
-    chunks = np.array_split(order, bins)
-    for ch in chunks:
-        if len(ch):
-            out[ch] = y[ch].mean()
-    return out
+    weighted, total = 0.0, 0.0
+    for ch in np.array_split(order, bins):
+        if len(ch) < min_stratum:
+            continue
+        yy = y[ch].astype(bool)
+        n1, n0 = int(yy.sum()), int((~yy).sum())
+        if n1 == 0 or n0 == 0:
+            continue
+        w = float(n1 * n0)
+        weighted += _rank_auc(x[ch], yy) * w
+        total += w
+    return weighted / total if total else 0.5
 
 
 def _rank_auc(x: np.ndarray, pos: np.ndarray) -> float:

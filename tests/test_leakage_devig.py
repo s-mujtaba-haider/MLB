@@ -202,3 +202,45 @@ def test_absurd_hold_is_not_trusted_as_an_anchor():
                  "junkbook": (-400, -400)})
     bv = book_views(q)
     assert bv.loc[bv["book"] == "junkbook", "w"].iloc[0] == 0.0
+
+
+def test_feature_related_only_through_the_market_is_not_flagged():
+    """The bug this guards against.
+
+    `line` determines whether a total is exceeded, so its unconditional
+    correlation with the outcome is enormous -- but it acts entirely *through*
+    the market price, which already knows the line. Residualising a binary
+    outcome and testing the sign of the residual degenerates into an
+    unconditional test and vetoes such a feature, which is a false positive
+    that kills a perfectly good market.
+    """
+    rng = np.random.default_rng(11)
+    n = 20000
+    line = rng.choice([0.5, 1.5, 2.5, 3.5], size=n)
+    mu = rng.uniform(0.6, 1.6, n)
+    y = (rng.poisson(mu, n) > line).astype(float)
+    # A market that prices the line correctly.
+    from scipy.stats import poisson
+    p = 1 - poisson.cdf(line, mu)
+    df = pd.DataFrame({"won": y, "logit_cons": np.log(p / (1 - p)),
+                       "line": line, "proj_mean": mu})
+    rep = LK.LeakReport()
+    LK.check_conditional_signal(df, ["line", "proj_mean"], "won",
+                                "logit_cons", rep)
+    assert not rep.vetoed, rep.findings[-1].detail
+
+
+def test_a_genuinely_leaked_feature_still_trips_the_stratified_test():
+    rng = np.random.default_rng(12)
+    n = 20000
+    line = rng.choice([0.5, 1.5, 2.5], size=n)
+    mu = rng.uniform(0.6, 1.6, n)
+    y = (rng.poisson(mu, n) > line).astype(float)
+    from scipy.stats import poisson
+    p = 1 - poisson.cdf(line, mu)
+    df = pd.DataFrame({"won": y, "logit_cons": np.log(p / (1 - p)),
+                       "line": line, "peeked": y + rng.normal(0, 0.3, n)})
+    rep = LK.LeakReport()
+    LK.check_conditional_signal(df, ["line", "peeked"], "won", "logit_cons", rep)
+    assert rep.vetoed
+    assert "peeked" in rep.findings[-1].detail

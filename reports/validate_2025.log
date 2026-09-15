@@ -1,19 +1,67 @@
 
 --- season 2025 ---
-[quotes 2025] parsing props (decision) for 2448 events
-[quotes 2025] parsing featured (decision)
-[quotes 2025] parsing props (closing) for 2448 events
-[quotes 2025] parsing featured (closing)
-[quotes 2025] parsing alternate ladders
-[quotes 2025] 4,245,298 rows -> quotes_2025.parquet
-[graded 2025] 2413/2448 events matched to ESPN games
-[graded 2025] 4,245,298 rows -> graded_2025.parquet
   propositions 256,258  candidates 499,577  closing 2,004
-Traceback (most recent call last):
-  File "C:\Users\mujta\mlb\scripts\validate.py", line 138, in <module>
-    main()
-    ~~~~^^
-  File "C:\Users\mujta\mlb\scripts\validate.py", line 65, in main
-    games = pd.concat(game_frames, ignore_index=True).drop_duplicates("espn_id")
-                      ^^^^^^^^^^^
-UnboundLocalError: cannot access local variable 'game_frames' where it is not associated with a value
+
+total: propositions 256,258  candidates 499,577  closing quotes 2,004
+  5 walk-forward folds (2025-07-05 .. 2025-09-28)
+
+=== h2h ===
+  [h2h] fold 2025-07-05 train=1314 thr=0.005 shrink=0.23 bets=190
+  [h2h] fold 2025-07-26 train=1547 thr=0.000 shrink=0.28 bets=278
+  [h2h] fold 2025-08-16 train=1826 thr=0.010 shrink=0.35 bets=250
+  [h2h] fold 2025-09-06 train=2108 thr=0.005 shrink=0.18 bets=245
+  [h2h] fold 2025-09-27 train=2388 thr=0.000 shrink=0.40 bets=26
+  bets=989 roi=+0.0372 [-0.0328,+0.1091] p=0.1532 clv=+0.00000 -> FAIL no_edge
+
+=== spreads ===
+  [spreads] fold 2025-07-05 train=1596 thr=0.040 shrink=0.43 bets=103
+  [spreads] fold 2025-07-26 train=1864 thr=0.055 shrink=0.48 bets=117
+  [spreads] fold 2025-08-16 train=2193 thr=0.005 shrink=0.35 bets=282
+  [spreads] fold 2025-09-06 train=2548 thr=0.015 shrink=0.50 bets=265
+  [spreads] fold 2025-09-27 train=3023 thr=0.050 shrink=0.62 bets=14
+  bets=781 roi=-0.0224 [-0.0931,+0.0485] p=0.7369 clv=-0.00180 -> FAIL negative_edge
+
+=== totals ===
+  [totals] fold 2025-07-05 train=1990 thr=0.030 shrink=0.98 bets=300
+  [totals] fold 2025-07-26 train=2362 thr=0.055 shrink=0.98 bets=320
+  [totals] fold 2025-08-16 train=2783 thr=0.085 shrink=0.95 bets=230
+  [totals] fold 2025-09-06 train=3220 thr=0.120 shrink=0.98 bets=233
+  [totals] fold 2025-09-27 train=3651 thr=0.070 shrink=0.98 bets=24
+  bets=1107 roi=-0.0149 [-0.0738,+0.0443] p=0.6933 clv=-0.00262 -> FAIL negative_edge
+
+=== batter_hits ===
+  [batter_hits] fold 2025-07-05 train=23732 thr=0.035 shrink=0.48 bets=870
+  [batter_hits] fold 2025-07-26 train=28148 thr=0.080 shrink=0.43 bets=147
+  [batter_hits] fold 2025-08-16 train=33388 thr=0.040 shrink=0.40 bets=344
+  [batter_hits] fold 2025-09-06 train=38694 thr=0.030 shrink=0.38 bets=769
+  [batter_hits] fold 2025-09-27 train=43906 thr=0.075 shrink=0.43 bets=8
+  bets=2138 roi=-0.0273 [-0.0760,+0.0244] p=0.8713 clv=+nan -> VETO leakage
+
+=== batter_rbis ===
+  [batter_rbis] fold 2025-07-05 train=23254 thr=0.000 shrink=0.35 bets=1525
+  [batter_rbis] fold 2025-07-26 train=27429 thr=0.095 shrink=0.43 bets=59
+  [batter_rbis] fold 2025-08-16 train=32419 thr=0.015 shrink=0.35 bets=863
+  [batter_rbis] fold 2025-09-06 train=37460 thr=0.035 shrink=0.40 bets=620
+  [batter_rbis] fold 2025-09-27 train=42452 thr=0.055 shrink=0.38 bets=11
+  bets=3078 roi=-0.0112 [-0.0603,+0.0372] p=0.6706 clv=+nan -> FAIL negative_edge
+
+=== batter_total_bases ===
+  [batter_total_bases] fold 2025-07-05 train=24758 thr=0.075 shrink=0.48 bets=435
+  [batter_total_bases] fold 2025-07-26 train=30191 thr=0.080 shrink=0.55 bets=510
+  [batter_total_bases] fold 2025-08-16 train=36555 thr=0.110 shrink=0.58 bets=406
+  [batter_total_bases] fold 2025-09-06 train=42752 thr=0.030 shrink=0.48 bets=889
+  [batter_total_bases] fold 2025-09-27 train=48566 thr=0.090 shrink=0.50 bets=1
+  bets=2241 roi=-0.0157 [-0.0589,+0.0286] p=0.7537 clv=+nan -> VETO leakage
+
+=== batter_home_runs ===
+  [batter_home_runs] fold 2025-07-05 train=22244 thr=0.095 shrink=0.28 bets=37
+  [batter_home_runs] fold 2025-07-26 train=26306 thr=0.050 shrink=0.25 bets=115
+  [batter_home_runs] fold 2025-08-16 train=31193 thr=0.025 shrink=0.33 bets=448
+  [batter_home_runs] fold 2025-09-06 train=36149 thr=0.120 shrink=0.35 bets=32
+  [batter_home_runs] fold 2025-09-27 train=41048 thr=0.095 shrink=0.28 bets=1
+  bets=633 roi=+0.0953 [-0.0687,+0.2651] p=0.1288 clv=+nan -> VETO leakage
+
+=== runs_scored ===
+  [runs_scored] fold 2025-07-05 train=23174 thr=0.060 shrink=0.80 bets=118
+  [runs_scored] fold 2025-07-26 train=27161 thr=0.130 shrink=0.75 bets=70
+  [runs_scored] fold 2025-08-16 train=32118 thr=0.105 shrink=0.88 bets=239
