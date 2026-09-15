@@ -221,3 +221,5 @@ SEASON 2026  (2026-03-26 .. 2026-09-14)
 [featured closing] done. 35824 calls, 1,300,008 credits spent this run, 2,480,496 remaining
 [props closing] 11380 (event,region) requests over 2276 events
   [props closing] 200/11380 (11.4/s, eta 16.4m) 36024 calls, 1,308,058 credits spent this run, 2,472,446 remaining
+  [props closing] 400/11380 (12.1/s, eta 15.2m) 36224 calls, 1,316,128 credits spent this run, 2,464,386 remaining
+  [props closing] 600/11380 (12.4/s, eta 14.5m) 36414 calls, 1,323,668 credits spent this run, 2,456,836 remaining

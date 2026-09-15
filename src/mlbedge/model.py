@@ -86,7 +86,7 @@ class MarketModel:
                  max_iter: int = 300, learning_rate: float = 0.05,
                  max_leaf_nodes: int = 31, min_samples_leaf: int = 200,
                  l2: float = 1.0, n_calib_folds: int = 3,
-                 max_train_rows: int = 400_000):
+                 max_train_rows: int = 300_000):
         self.market = market
         self.seed = seed
         over = tuned_params(market)

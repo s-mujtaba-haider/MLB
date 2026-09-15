@@ -52,11 +52,12 @@ def drop_derived(patterns=("quotes_*.parquet", "graded_*.parquet",
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seasons", type=int, nargs="+", default=[2024, 2025, 2026])
-    ap.add_argument("--fit-season", type=int, default=2024)
+    ap.add_argument("--seasons", type=int, nargs="+",
+                    default=[2023, 2024, 2025, 2026])
+    ap.add_argument("--fit-season", type=int, default=2023)
     ap.add_argument("--skip-alt", action="store_true")
     ap.add_argument("--burn-days", type=int, default=400)
-    ap.add_argument("--step-days", type=int, default=30)
+    ap.add_argument("--step-days", type=int, default=45)
     args = ap.parse_args()
     seasons = [str(s) for s in sorted(args.seasons)]
 
