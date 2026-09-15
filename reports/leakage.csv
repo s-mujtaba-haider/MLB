@@ -1,46 +1,45 @@
 market,check,severity,detail,n
-h2h,quote_timing,ok,all 2939 quotes strictly pre-first-pitch (min lead 30.3 min),2939
+h2h,quote_timing,ok,all 2825 quotes strictly pre-first-pitch (min lead 30.3 min),2825
 h2h,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-h2h,conditional_signal,ok,max residual AUC 0.526 (away_tg_runs_against_exp),0
-spreads,quote_timing,ok,all 13310 quotes strictly pre-first-pitch (min lead 30.3 min),13310
+h2h,conditional_signal,ok,max residual AUC 0.517 (home_tg_runs_against_r90),0
+spreads,quote_timing,ok,all 6411 quotes strictly pre-first-pitch (min lead 30.3 min),6411
 spreads,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-spreads,conditional_signal,ok,max residual AUC 0.544 (book_spread),0
-totals,quote_timing,ok,all 3594 quotes strictly pre-first-pitch (min lead 30.3 min),3594
+spreads,conditional_signal,ok,max residual AUC 0.544 (n_quotes),0
+totals,quote_timing,ok,all 7274 quotes strictly pre-first-pitch (min lead 30.3 min),7274
 totals,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-totals,conditional_signal_info,warn,"n_books_primary carries residual signal at AUC 0.711; it is read off the decision snapshot, so this is information rather than leakage",0
-totals,conditional_signal,warn,"n_books_primary residual AUC 0.711, but it is a market-structure column whose timing is already proven by the quote-timing check -- not escalated to a veto",0
-batter_hits,quote_timing,ok,all 5827 quotes strictly pre-first-pitch (min lead 30.3 min),5827
+totals,conditional_signal_info,warn,"n_books_primary carries residual signal at AUC 0.611; it is read off the decision snapshot, so this is information rather than leakage",0
+totals,conditional_signal,warn,n_books_primary residual AUC 0.611 (above 0.6),0
+batter_hits,quote_timing,ok,all 7826 quotes strictly pre-first-pitch (min lead 30.3 min),7826
 batter_hits,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-batter_hits,conditional_signal,ok,max residual AUC 0.530 (hold_med),0
+batter_hits,conditional_signal,ok,max residual AUC 0.523 (opp_pit_pitch_per_out_exp),0
 batter_hits,asof::bat_hits_ppa_r10,warn,1/250 sampled rows coincide with a current-game window; below the systematic threshold,1
-batter_rbis,quote_timing,ok,all 9833 quotes strictly pre-first-pitch (min lead 30.3 min),9833
+batter_rbis,quote_timing,ok,all 2427 quotes strictly pre-first-pitch (min lead 30.3 min),2427
 batter_rbis,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-batter_rbis,conditional_signal_info,warn,"p_primary carries residual signal at AUC 0.655; it is read off the decision snapshot, so this is information rather than leakage",0
-batter_rbis,conditional_signal_info,warn,"ladder_minus_cons carries residual signal at AUC 0.655; it is read off the decision snapshot, so this is information rather than leakage",0
-batter_rbis,conditional_signal,warn,ladder_minus_cons residual AUC 0.655 (above 0.6),0
+batter_rbis,conditional_signal_info,warn,"p_primary carries residual signal at AUC 0.643; it is read off the decision snapshot, so this is information rather than leakage",0
+batter_rbis,conditional_signal_info,warn,"ladder_minus_cons carries residual signal at AUC 0.643; it is read off the decision snapshot, so this is information rather than leakage",0
+batter_rbis,conditional_signal,warn,ladder_minus_cons residual AUC 0.643 (above 0.6),0
 batter_rbis,asof::bat_hits_ppa_r10,warn,2/250 sampled rows coincide with a current-game window; below the systematic threshold,2
-batter_total_bases,quote_timing,ok,all 3672 quotes strictly pre-first-pitch (min lead 30.3 min),3672
+batter_total_bases,quote_timing,ok,all 3971 quotes strictly pre-first-pitch (min lead 30.3 min),3971
 batter_total_bases,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-batter_total_bases,conditional_signal,ok,max residual AUC 0.530 (p_primary),0
+batter_total_bases,conditional_signal,ok,max residual AUC 0.529 (opp_pit_outs_r3),0
 batter_total_bases,asof::bat_hits_ppa_r10,warn,1/250 sampled rows coincide with a current-game window; below the systematic threshold,1
-batter_home_runs,quote_timing,ok,all 2907 quotes strictly pre-first-pitch (min lead 30.3 min),2907
+batter_home_runs,quote_timing,ok,all 3291 quotes strictly pre-first-pitch (min lead 30.3 min),3291
 batter_home_runs,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-batter_home_runs,conditional_signal_info,warn,"p_primary carries residual signal at AUC 0.626; it is read off the decision snapshot, so this is information rather than leakage",0
-batter_home_runs,conditional_signal,warn,p_primary residual AUC 0.626 (above 0.6),0
+batter_home_runs,conditional_signal,ok,max residual AUC 0.553 (tm_total_bases_ppa_r10),0
 batter_home_runs,asof::bat_hits_ppa_r10,warn,64/250 rows differ from an independent recomputation (not explained by future data),64
-runs_scored,quote_timing,ok,all 6433 quotes strictly pre-first-pitch (min lead 30.3 min),6433
+runs_scored,quote_timing,ok,all 2443 quotes strictly pre-first-pitch (min lead 30.3 min),2443
 runs_scored,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-runs_scored,conditional_signal,ok,max residual AUC 0.590 (p_primary),0
+runs_scored,conditional_signal,ok,max residual AUC 0.568 (p_primary),0
 runs_scored,asof::bat_hits_ppa_r10,warn,63/250 rows differ from an independent recomputation (not explained by future data),63
-batter_strikeouts,quote_timing,ok,all 698 quotes strictly pre-first-pitch (min lead 30.3 min),698
+batter_strikeouts,quote_timing,ok,all 1562 quotes strictly pre-first-pitch (min lead 30.3 min),1562
 batter_strikeouts,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-batter_strikeouts,conditional_signal,ok,no feature exceeds chance,0
+batter_strikeouts,conditional_signal,ok,max residual AUC 0.543 (bat_home_runs_ppa_r90),0
 batter_strikeouts,asof::bat_hits_ppa_r10,warn,41/250 rows differ from an independent recomputation (not explained by future data),41
-pitcher_strikeouts,quote_timing,ok,all 6478 quotes strictly pre-first-pitch (min lead 30.3 min),6478
+pitcher_strikeouts,quote_timing,ok,all 5158 quotes strictly pre-first-pitch (min lead 30.3 min),5158
 pitcher_strikeouts,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-pitcher_strikeouts,conditional_signal,ok,max residual AUC 0.527 (book_spread),0
+pitcher_strikeouts,conditional_signal,ok,max residual AUC 0.532 (away_tg_runs_against_r10),0
 pitcher_strikeouts,asof::pit_strike_outs_r8,warn,59/250 rows differ from an independent recomputation (not explained by future data),59
-pitcher_outs,quote_timing,ok,all 5193 quotes strictly pre-first-pitch (min lead 30.3 min),5193
+pitcher_outs,quote_timing,ok,all 2238 quotes strictly pre-first-pitch (min lead 30.3 min),2238
 pitcher_outs,fold_boundary,ok,"train ends 2024-05-02, test starts 2024-05-03",0
-pitcher_outs,conditional_signal,ok,max residual AUC 0.517 (n_books_primary),0
+pitcher_outs,conditional_signal,ok,max residual AUC 0.537 (pit_k_per_out_r3),0
 pitcher_outs,asof::pit_strike_outs_r8,warn,37/250 rows differ from an independent recomputation (not explained by future data),37

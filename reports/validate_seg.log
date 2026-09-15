@@ -1,0 +1,218 @@
+
+--- season 2023 ---
+  propositions 298,293  candidates 571,610  closing 0
+
+--- season 2024 ---
+  propositions 445,614  candidates 863,094  closing 0
+
+--- season 2025 ---
+  propositions 421,428  candidates 790,209  closing 2,004
+
+--- season 2026 ---
+  propositions 345,585  candidates 658,945  closing 2,769,066
+
+total: propositions 1,510,920  candidates 2,883,858  closing quotes 2,771,070
+  20 walk-forward folds (2024-05-03 .. 2026-09-14)
+
+=== h2h ===
+  [h2h] fold 2024-05-03 train=2727 thr=0.018 shrink=0.45 gain=+0.00353 bets=322
+  [h2h] fold 2024-06-17 train=3323 thr=0.015 shrink=0.28 gain=+0.00205 bets=353
+  [h2h] fold 2024-08-01 train=3876 thr=0.030 shrink=0.38 gain=+0.00193 bets=342
+  [h2h] fold 2024-09-15 train=4471 thr=0.028 shrink=0.25 gain=+0.00069 bets=68
+  [h2h] fold 2025-03-14 train=4664 thr=0.048 shrink=0.18 gain=+0.00117 bets=109
+  [h2h] fold 2025-04-28 train=5081 thr=0.085 shrink=0.18 gain=+0.00059 bets=38
+  [h2h] fold 2025-06-12 train=5676 thr=0.020 shrink=0.25 gain=+0.00101 bets=433
+  [h2h] fold 2025-07-27 train=6227 thr=0.052 shrink=0.33 gain=+0.00139 bets=332
+  [h2h] fold 2025-09-10 train=6828 thr=0.018 shrink=0.33 gain=+0.00119 bets=198
+  [h2h] fold 2026-03-09 train=7076 thr=0.068 shrink=0.23 gain=+0.00104 bets=136
+  [h2h] fold 2026-04-23 train=7443 thr=0.060 shrink=0.18 gain=+0.00049 bets=124
+  [h2h] fold 2026-06-07 train=8038 thr=0.130 shrink=0.28 gain=+0.00098 bets=54
+  [h2h] fold 2026-07-22 train=8587 thr=0.025 shrink=0.23 gain=+0.00061 bets=313
+  [h2h] fold 2026-09-05 train=9192 thr=0.118 shrink=0.20 gain=+0.00087 bets=3
+  bets=2825 roi=-0.0087 [-0.0504,+0.0350] p=0.6494 clv=+0.00278 -> FAIL negative_edge
+
+=== spreads ===
+  [spreads] fold 2024-05-03 train=36128 thr=0.083 shrink=0.15 gain=+0.00094 bets=353
+  [spreads] fold 2024-06-17 train=44707 thr=0.045 shrink=0.05 gain=+0.00012 bets=1643
+  [spreads] fold 2024-08-01 train=52716 thr=0.083 shrink=0.08 gain=+0.00019 bets=943
+  [spreads] fold 2024-09-15 train=61268 thr=0.035 shrink=0.12 gain=+0.00051 bets=579
+  [spreads] fold 2025-03-14 train=64050 thr=0.030 shrink=0.08 gain=+0.00018 bets=377
+  [spreads] fold 2025-04-28 train=70001 thr=0.098 shrink=0.03 gain=+0.00004 bets=42
+  [spreads] fold 2025-06-12 train=78561 thr=0.010 shrink=0.10 gain=+0.00026 bets=1651
+  [spreads] fold 2025-07-27 train=86977 thr=0.095 shrink=0.10 gain=+0.00031 bets=229
+  [spreads] fold 2025-09-10 train=96252 thr=0.092 shrink=0.05 gain=+0.00006 bets=13
+  [spreads] fold 2026-03-09 train=100011 thr=0.085 shrink=0.05 gain=+0.00010 bets=50
+  [spreads] fold 2026-04-23 train=105496 thr=0.030 shrink=0.08 gain=+0.00021 bets=207
+  [spreads] fold 2026-06-07 train=114420 thr=0.043 shrink=0.08 gain=+0.00013 bets=277
+  [spreads] fold 2026-07-22 train=123316 thr=0.058 shrink=0.05 gain=+0.00004 bets=41
+  [spreads] fold 2026-09-05 train=133238 thr=0.088 shrink=0.03 gain=+0.00003 bets=6
+  bets=6411 roi=+0.0006 [-0.0684,+0.0672] p=0.4843 clv=+0.00415 -> FAIL no_edge
+
+=== totals ===
+  [totals] fold 2024-05-03 train=46174 thr=0.040 shrink=0.28 gain=+0.00327 bets=5882
+  [totals] fold 2024-06-17 train=58045 thr=0.140 shrink=0.20 gain=+0.00206 bets=91
+  [totals] fold 2024-08-01 train=69043 thr=0.145 shrink=0.18 gain=+0.00146 bets=119
+  [totals] fold 2024-09-15 train=80842 thr=0.158 shrink=0.20 gain=+0.00173 bets=73
+  [totals] fold 2025-03-14 train=84670 thr=0.122 shrink=0.28 gain=+0.00315 bets=423
+  [totals] fold 2025-04-28 train=93108 thr=0.143 shrink=0.23 gain=+0.00263 bets=96
+  [totals] fold 2025-06-12 train=105075 thr=0.147 shrink=0.23 gain=+0.00229 bets=83
+  [totals] fold 2025-07-27 train=116081 thr=0.155 shrink=0.20 gain=+0.00208 bets=151
+  [totals] fold 2025-09-10 train=128299 thr=0.155 shrink=0.20 gain=+0.00213 bets=85
+  [totals] fold 2026-03-09 train=133352 thr=0.158 shrink=0.23 gain=+0.00241 bets=78
+  [totals] fold 2026-04-23 train=140864 thr=0.158 shrink=0.23 gain=+0.00241 bets=58
+  [totals] fold 2026-06-07 train=152795 thr=0.152 shrink=0.23 gain=+0.00249 bets=75
+  [totals] fold 2026-07-22 train=163624 thr=0.155 shrink=0.20 gain=+0.00152 bets=53
+  [totals] fold 2026-09-05 train=175739 thr=0.145 shrink=0.25 gain=+0.00261 bets=7
+  bets=7274 roi=+0.0218 [-0.0401,+0.0835] p=0.2431 clv=+0.00395 -> FAIL no_edge
+
+=== batter_hits ===
+  [batter_hits] fold 2024-05-03 train=74948 thr=0.072 shrink=0.35 gain=+0.00034 bets=469
+  [batter_hits] fold 2024-06-17 train=96148 thr=0.022 shrink=0.35 gain=+0.00031 bets=1807
+  [batter_hits] fold 2024-08-01 train=115839 thr=0.015 shrink=0.30 gain=+0.00020 bets=614
+  [batter_hits] fold 2024-09-15 train=137011 thr=0.030 shrink=0.38 gain=+0.00025 bets=43
+  [batter_hits] fold 2025-03-14 train=143920 thr=0.025 shrink=0.45 gain=+0.00034 bets=459
+  [batter_hits] fold 2025-04-28 train=158628 thr=0.090 shrink=0.53 gain=+0.00044 bets=37
+  [batter_hits] fold 2025-06-12 train=179772 thr=0.022 shrink=0.58 gain=+0.00048 bets=1225
+  [batter_hits] fold 2025-07-27 train=199491 thr=0.007 shrink=0.53 gain=+0.00036 bets=1863
+  [batter_hits] fold 2025-09-10 train=220994 thr=0.030 shrink=0.53 gain=+0.00036 bets=233
+  [batter_hits] fold 2026-03-09 train=229847 thr=0.033 shrink=0.55 gain=+0.00035 bets=428
+  [batter_hits] fold 2026-04-23 train=242877 thr=0.050 shrink=0.53 gain=+0.00033 bets=34
+  [batter_hits] fold 2026-06-07 train=262028 thr=0.050 shrink=0.55 gain=+0.00035 bets=190
+  [batter_hits] fold 2026-07-22 train=274618 thr=0.045 shrink=0.58 gain=+0.00037 bets=336
+  [batter_hits] fold 2026-09-05 train=288647 thr=0.037 shrink=0.60 gain=+0.00038 bets=88
+  bets=7826 roi=-0.0084 [-0.0391,+0.0233] p=0.6970 clv=+0.00408 -> FAIL negative_edge
+
+=== batter_rbis ===
+  [batter_rbis] fold 2024-05-03 train=40808 thr=0.010 shrink=0.33 gain=+0.00035 bets=765
+  [batter_rbis] fold 2024-06-17 train=51385 thr=0.072 shrink=0.23 gain=+0.00016 bets=32
+  [batter_rbis] fold 2024-08-01 train=61214 thr=0.055 shrink=0.30 gain=+0.00019 bets=71
+  [batter_rbis] fold 2024-09-15 train=71759 thr=0.030 shrink=0.20 gain=+0.00009 bets=62
+  [batter_rbis] fold 2025-03-14 train=75210 thr=0.033 shrink=0.23 gain=+0.00010 bets=132
+  [batter_rbis] fold 2025-04-28 train=82546 thr=0.015 shrink=0.30 gain=+0.00017 bets=733
+  [batter_rbis] fold 2025-06-12 train=93087 thr=0.058 shrink=0.30 gain=+0.00015 bets=34
+  [batter_rbis] fold 2025-07-27 train=102926 thr=0.065 shrink=0.35 gain=+0.00025 bets=18
+  [batter_rbis] fold 2025-09-10 train=113670 thr=0.100 shrink=0.35 gain=+0.00018 bets=14
+  [batter_rbis] fold 2026-03-09 train=118091 thr=0.062 shrink=0.38 gain=+0.00023 bets=50
+  [batter_rbis] fold 2026-04-23 train=124511 thr=0.043 shrink=0.30 gain=+0.00015 bets=70
+  [batter_rbis] fold 2026-06-07 train=134750 thr=0.060 shrink=0.28 gain=+0.00012 bets=36
+  [batter_rbis] fold 2026-07-22 train=144464 thr=0.043 shrink=0.38 gain=+0.00018 bets=145
+  [batter_rbis] fold 2026-09-05 train=155208 thr=0.003 shrink=0.30 gain=+0.00010 bets=265
+  bets=2427 roi=-0.0512 [-0.0972,-0.0056] p=0.9851 clv=+0.00351 -> FAIL negative_edge
+
+=== batter_total_bases ===
+  [batter_total_bases] fold 2024-05-03 train=75066 thr=0.090 shrink=0.50 gain=+0.00100 bets=152
+  [batter_total_bases] fold 2024-06-17 train=96104 thr=0.092 shrink=0.53 gain=+0.00087 bets=197
+  [batter_total_bases] fold 2024-08-01 train=115459 thr=0.065 shrink=0.58 gain=+0.00094 bets=259
+  [batter_total_bases] fold 2024-09-15 train=136212 thr=0.040 shrink=0.65 gain=+0.00099 bets=173
+  [batter_total_bases] fold 2025-03-14 train=143038 thr=0.120 shrink=0.62 gain=+0.00100 bets=195
+  [batter_total_bases] fold 2025-04-28 train=157632 thr=0.088 shrink=0.68 gain=+0.00101 bets=252
+  [batter_total_bases] fold 2025-06-12 train=178276 thr=0.077 shrink=0.68 gain=+0.00102 bets=283
+  [batter_total_bases] fold 2025-07-27 train=197169 thr=0.062 shrink=0.70 gain=+0.00099 bets=226
+  [batter_total_bases] fold 2025-09-10 train=218548 thr=0.075 shrink=0.68 gain=+0.00087 bets=75
+  [batter_total_bases] fold 2026-03-09 train=227370 thr=0.110 shrink=0.73 gain=+0.00100 bets=186
+  [batter_total_bases] fold 2026-04-23 train=240358 thr=0.098 shrink=0.70 gain=+0.00090 bets=430
+  [batter_total_bases] fold 2026-06-07 train=259646 thr=0.052 shrink=0.73 gain=+0.00092 bets=638
+  [batter_total_bases] fold 2026-07-22 train=274678 thr=0.040 shrink=0.73 gain=+0.00084 bets=851
+  [batter_total_bases] fold 2026-09-05 train=291825 thr=0.055 shrink=0.78 gain=+0.00095 bets=54
+  bets=3971 roi=+0.0179 [-0.0152,+0.0516] p=0.1447 clv=+0.00268 -> FAIL no_edge
+
+=== batter_home_runs ===
+  [batter_home_runs] fold 2024-05-03 train=41163 thr=0.130 shrink=0.45 gain=+0.00063 bets=181
+  [batter_home_runs] fold 2024-06-17 train=51711 thr=0.147 shrink=0.48 gain=+0.00055 bets=72
+  [batter_home_runs] fold 2024-08-01 train=61441 thr=0.018 shrink=0.43 gain=+0.00043 bets=449
+  [batter_home_runs] fold 2024-09-15 train=71322 thr=0.020 shrink=0.48 gain=+0.00050 bets=210
+  [batter_home_runs] fold 2025-03-14 train=74490 thr=0.110 shrink=0.58 gain=+0.00060 bets=40
+  [batter_home_runs] fold 2025-04-28 train=81494 thr=0.048 shrink=0.55 gain=+0.00067 bets=633
+  [batter_home_runs] fold 2025-06-12 train=91478 thr=0.030 shrink=0.45 gain=+0.00037 bets=128
+  [batter_home_runs] fold 2025-07-27 train=101071 thr=0.155 shrink=0.53 gain=+0.00047 bets=74
+  [batter_home_runs] fold 2025-09-10 train=111625 thr=0.068 shrink=0.55 gain=+0.00046 bets=120
+  [batter_home_runs] fold 2026-03-09 train=115961 thr=0.055 shrink=0.58 gain=+0.00045 bets=206
+  [batter_home_runs] fold 2026-04-23 train=120134 thr=0.055 shrink=0.55 gain=+0.00043 bets=308
+  [batter_home_runs] fold 2026-06-07 train=128561 thr=0.158 shrink=0.58 gain=+0.00046 bets=17
+  [batter_home_runs] fold 2026-07-22 train=136920 thr=0.030 shrink=0.58 gain=+0.00044 bets=841
+  [batter_home_runs] fold 2026-09-05 train=146172 thr=0.118 shrink=0.53 gain=+0.00036 bets=12
+  bets=3291 roi=-0.1313 [-0.2164,-0.0471] p=0.9986 clv=+0.00216 -> FAIL negative_edge
+
+=== runs_scored ===
+  [runs_scored] fold 2024-05-03 train=41301 thr=0.040 shrink=0.40 gain=+0.00063 bets=361
+  [runs_scored] fold 2024-06-17 train=51880 thr=0.052 shrink=0.35 gain=+0.00052 bets=137
+  [runs_scored] fold 2024-08-01 train=61709 thr=0.030 shrink=0.30 gain=+0.00032 bets=118
+  [runs_scored] fold 2024-09-15 train=72247 thr=0.030 shrink=0.35 gain=+0.00039 bets=22
+  [runs_scored] fold 2025-03-14 train=75695 thr=0.030 shrink=0.33 gain=+0.00034 bets=202
+  [runs_scored] fold 2025-04-28 train=83027 thr=0.072 shrink=0.43 gain=+0.00055 bets=112
+  [runs_scored] fold 2025-06-12 train=93509 thr=0.005 shrink=0.45 gain=+0.00058 bets=1317
+  [runs_scored] fold 2025-07-27 train=103143 thr=0.083 shrink=0.40 gain=+0.00048 bets=17
+  [runs_scored] fold 2025-09-10 train=113840 thr=0.045 shrink=0.45 gain=+0.00051 bets=26
+  [runs_scored] fold 2026-03-09 train=118237 thr=0.015 shrink=0.48 gain=+0.00054 bets=106
+  [runs_scored] fold 2026-04-23 train=124705 thr=0.045 shrink=0.45 gain=+0.00046 bets=11
+  [runs_scored] fold 2026-06-07 train=134989 thr=0.075 shrink=0.53 gain=+0.00057 bets=3
+  [runs_scored] fold 2026-07-22 train=144296 thr=0.080 shrink=0.48 gain=+0.00048 bets=5
+  [runs_scored] fold 2026-09-05 train=154848 thr=0.128 shrink=0.55 gain=+0.00055 bets=6
+  bets=2443 roi=-0.0244 [-0.0660,+0.0174] p=0.8750 clv=+0.00105 -> FAIL negative_edge
+
+=== batter_strikeouts ===
+  [batter_strikeouts] fold 2024-05-03 train=9021 thr=0.025 shrink=0.48 gain=+0.00233 bets=1228
+  [batter_strikeouts] fold 2024-06-17 train=19588 thr=0.110 shrink=0.43 gain=+0.00153 bets=22
+  [batter_strikeouts] fold 2024-08-01 train=29386 thr=0.040 shrink=0.43 gain=+0.00109 bets=203
+  [batter_strikeouts] fold 2024-09-15 train=39937 thr=0.035 shrink=0.48 gain=+0.00116 bets=78
+  [batter_strikeouts] fold 2025-03-14 train=43364 thr=0.110 shrink=0.43 gain=+0.00085 bets=9
+  [batter_strikeouts] fold 2025-04-28 train=46542 thr=0.068 shrink=0.40 gain=+0.00081 bets=3
+  [batter_strikeouts] fold 2025-06-12 train=50665 thr=0.058 shrink=0.43 gain=+0.00081 bets=0
+  [batter_strikeouts] fold 2025-07-27 train=54730 thr=0.020 shrink=0.48 gain=+0.00090 bets=19
+  [batter_strikeouts] fold 2025-09-10 train=59269 thr=0.040 shrink=0.43 gain=+0.00066 bets=0
+  [batter_strikeouts] fold 2026-03-09 train=59525 thr=0.030 shrink=0.48 gain=+0.00084 bets=0
+  [batter_strikeouts] fold 2026-04-23 train=60190 thr=0.030 shrink=0.48 gain=+0.00080 bets=0
+  [batter_strikeouts] fold 2026-06-07 train=61512 thr=0.033 shrink=0.48 gain=+0.00090 bets=0
+  [batter_strikeouts] fold 2026-07-22 train=62386 thr=0.065 shrink=0.45 gain=+0.00074 bets=0
+  bets=1562 roi=-0.0042 [-0.0488,+0.0410] p=0.5650 clv=+nan -> FAIL negative_edge
+
+=== pitcher_strikeouts ===
+  [pitcher_strikeouts] fold 2024-05-03 train=14546 thr=0.075 shrink=0.43 gain=+0.00179 bets=782
+  [pitcher_strikeouts] fold 2024-06-17 train=19451 thr=0.077 shrink=0.38 gain=+0.00122 bets=482
+  [pitcher_strikeouts] fold 2024-08-01 train=23215 thr=0.115 shrink=0.33 gain=+0.00094 bets=64
+  [pitcher_strikeouts] fold 2024-09-15 train=26311 thr=0.045 shrink=0.40 gain=+0.00124 bets=82
+  [pitcher_strikeouts] fold 2025-03-14 train=27339 thr=0.065 shrink=0.48 gain=+0.00185 bets=676
+  [pitcher_strikeouts] fold 2025-04-28 train=30026 thr=0.025 shrink=0.38 gain=+0.00107 bets=915
+  [pitcher_strikeouts] fold 2025-06-12 train=33804 thr=0.058 shrink=0.38 gain=+0.00110 bets=346
+  [pitcher_strikeouts] fold 2025-07-27 train=37276 thr=0.055 shrink=0.40 gain=+0.00102 bets=492
+  [pitcher_strikeouts] fold 2025-09-10 train=41129 thr=0.037 shrink=0.35 gain=+0.00092 bets=134
+  [pitcher_strikeouts] fold 2026-03-09 train=42681 thr=0.075 shrink=0.40 gain=+0.00107 bets=126
+  [pitcher_strikeouts] fold 2026-04-23 train=45109 thr=0.030 shrink=0.50 gain=+0.00147 bets=682
+  [pitcher_strikeouts] fold 2026-06-07 train=48795 thr=0.045 shrink=0.38 gain=+0.00077 bets=163
+  [pitcher_strikeouts] fold 2026-07-22 train=51696 thr=0.060 shrink=0.33 gain=+0.00056 bets=99
+  [pitcher_strikeouts] fold 2026-09-05 train=54967 thr=0.030 shrink=0.40 gain=+0.00085 bets=115
+  bets=5158 roi=-0.0075 [-0.0443,+0.0283] p=0.6495 clv=+0.00494 -> FAIL negative_edge
+
+=== pitcher_outs ===
+  [pitcher_outs] fold 2024-05-03 train=3718 thr=0.150 shrink=0.48 gain=+0.00259 bets=89
+  [pitcher_outs] fold 2024-06-17 train=4922 thr=0.075 shrink=0.23 gain=+0.00048 bets=139
+  [pitcher_outs] fold 2024-08-01 train=6116 thr=0.085 shrink=0.33 gain=+0.00098 bets=44
+  [pitcher_outs] fold 2024-09-15 train=7240 thr=0.045 shrink=0.30 gain=+0.00073 bets=29
+  [pitcher_outs] fold 2025-03-14 train=7467 thr=0.060 shrink=0.33 gain=+0.00087 bets=167
+  [pitcher_outs] fold 2025-04-28 train=8325 thr=0.068 shrink=0.18 gain=+0.00034 bets=136
+  [pitcher_outs] fold 2025-06-12 train=9640 thr=0.043 shrink=0.35 gain=+0.00082 bets=544
+  [pitcher_outs] fold 2025-07-27 train=11042 thr=0.060 shrink=0.20 gain=+0.00039 bets=223
+  [pitcher_outs] fold 2025-09-10 train=12638 thr=0.077 shrink=0.33 gain=+0.00105 bets=146
+  [pitcher_outs] fold 2026-03-09 train=13184 thr=0.043 shrink=0.30 gain=+0.00087 bets=283
+  [pitcher_outs] fold 2026-04-23 train=14148 thr=0.080 shrink=0.23 gain=+0.00047 bets=140
+  [pitcher_outs] fold 2026-06-07 train=15689 thr=0.110 shrink=0.25 gain=+0.00058 bets=50
+  [pitcher_outs] fold 2026-07-22 train=17110 thr=0.030 shrink=0.20 gain=+0.00032 bets=111
+  [pitcher_outs] fold 2026-09-05 train=18784 thr=0.018 shrink=0.28 gain=+0.00056 bets=137
+  bets=2238 roi=-0.0254 [-0.0718,+0.0215] p=0.8490 clv=+0.00427 -> FAIL negative_edge
+wrote C:\Users\mujta\mlb\reports\market_report.md
+
+==============================================================================
+            market verdict    deployment  n_bets       roi    roi_lo  p_value  clv_mean         cause
+               h2h    FAIL        killed    2825 -0.008653 -0.050433 0.649375  0.002780 negative_edge
+           spreads    FAIL veto_filtered    6411  0.000600 -0.068440 0.484250  0.004152       no_edge
+            totals    FAIL veto_filtered    7274  0.021837 -0.040137 0.243125  0.003951       no_edge
+       batter_hits    FAIL        killed    7826 -0.008383 -0.039065 0.697000  0.004085 negative_edge
+       batter_rbis    FAIL        killed    2427 -0.051160 -0.097155 0.985125  0.003513 negative_edge
+batter_total_bases    FAIL veto_filtered    3971  0.017883 -0.015169 0.144750  0.002679       no_edge
+  batter_home_runs    FAIL        killed    3291 -0.131340 -0.216407 0.998625  0.002156 negative_edge
+       runs_scored    FAIL        killed    2443 -0.024400 -0.066013 0.875000  0.001047 negative_edge
+ batter_strikeouts    FAIL        killed    1562 -0.004221 -0.048839 0.565000       NaN negative_edge
+pitcher_strikeouts    FAIL        killed    5158 -0.007534 -0.044343 0.649500  0.004939 negative_edge
+      pitcher_outs    FAIL        killed    2238 -0.025364 -0.071817 0.849000  0.004267 negative_edge
+
+0/11 markets PASS. Completed in 60.5 min.

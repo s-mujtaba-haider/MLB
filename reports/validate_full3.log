@@ -106,3 +106,4 @@ total: propositions 1,510,920  candidates 2,883,858  closing quotes 2,771,070
   [batter_total_bases] fold 2024-09-15 train=136212 thr=0.040 shrink=0.65 gain=+0.00099 bets=173
   [batter_total_bases] fold 2025-03-14 train=143038 thr=0.120 shrink=0.62 gain=+0.00100 bets=195
   [batter_total_bases] fold 2025-04-28 train=157632 thr=0.088 shrink=0.68 gain=+0.00101 bets=256
+  [batter_total_bases] fold 2025-06-12 train=178276 thr=0.077 shrink=0.68 gain=+0.00102 bets=283
