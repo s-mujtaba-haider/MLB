@@ -91,9 +91,12 @@ prop markets are liquid, and a human could actually place the bet.
 - **Odds** come from a historical snapshot taken at that instant. Closing
   prices are pulled separately and are used *only* to measure CLV; they never
   feed a decision.
-- **Features** are computed on a frame sorted by date, grouped by entity, and
-  shifted by one game before any window is applied. Same-day games are excluded
-  too, so a doubleheader's first game cannot inform its second.
+- **Features** are computed on a frame sorted by **actual first pitch**, grouped
+  by entity, and shifted by one appearance before any window is applied.
+  Ordering on the timestamp rather than the date is what makes a doubleheader
+  correct: game one finishes before game two starts, so it is legitimately
+  knowable, while sorting by game id within a date would get that right only by
+  luck.
 - **Actual batting order is deliberately unused.** It is public at decision
   time, but the only available source for it is the play-by-play, which exists
   only for players who actually batted — keying on it would leak the fact that
@@ -120,7 +123,7 @@ A market must clear all of:
 |---|---|
 | leakage | clean as-of audit — vetoes outright |
 | sample | ≥ 300 graded out-of-sample bets |
-| roi | bootstrap 95% CI lower bound above zero |
+| roi | bootstrap 95% CI lower bound above zero, **resampling games not bets** |
 | family | survives Benjamini-Hochberg across all eleven markets |
 | clv | positive closing-line value where closing prices exist |
 | stability | edge present across folds, not one hot month |
@@ -143,7 +146,7 @@ that is being improved cannot bleed while it waits; `killed` does not fire.
 |---|---|
 | Odds | The Odds API v4 — historical snapshots, regions `us`/`us2`/`eu`/`us_ex`/`us_dfs` |
 | Results | ESPN public API — boxscores and play-by-play |
-| Seasons | 2024, 2025, 2026 |
+| Seasons | 2023, 2024, 2025, 2026 (9,731 games) |
 
 Total bases is derived from play-by-play, because ESPN's batting line has no
 2B/3B column. MLB's own `statsapi.mlb.com` does not resolve from this network,
