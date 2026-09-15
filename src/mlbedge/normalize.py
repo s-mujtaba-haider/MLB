@@ -107,6 +107,40 @@ def parse_props(events: pd.DataFrame, tag: str = "decision",
     return _finish(pd.DataFrame(rows))
 
 
+def parse_alt(events: pd.DataFrame, tag: str = "alt",
+              client: OddsClient | None = None) -> pd.DataFrame:
+    """Alternate spread/total rungs from the per-event endpoint.
+
+    They normalise into the same `spreads`/`totals` markets at a different
+    `line`, so they grade, de-vig and price through exactly the same path as
+    the main number.
+    """
+    client = client or OddsClient(cache_only=True)
+    rows: list[dict] = []
+    for ev in events.itertuples():
+        want = _iso(_parse(ev.commence_time)
+                    - dt.timedelta(minutes=C.DECISION_OFFSET_MIN))
+        for region, markets in C.ALT_REQUEST_PLAN.items():
+            r = client.historical_event_odds(ev.event_id, want, region,
+                                             markets, tag)
+            if not r.data:
+                continue
+            snap = r.snapshot_ts
+            lead = _lead_min(snap, ev.commence_time)
+            if np.isfinite(lead) and lead <= 0:
+                continue
+            for bk in r.data.get("bookmakers", []):
+                for mk in bk.get("markets", []):
+                    m = C.BY_API_KEY.get(mk.get("key"))
+                    if m is None:
+                        continue
+                    rows.extend(_featured_outcomes(
+                        mk, m, ev.event_id, bk.get("key"), region, snap,
+                        ev.commence_time, lead, ev.home_team, ev.away_team,
+                        "decision"))
+    return _finish(pd.DataFrame(rows))
+
+
 # ---------------------------------------------------------------------------
 # Featured
 # ---------------------------------------------------------------------------

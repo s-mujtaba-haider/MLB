@@ -40,6 +40,9 @@ def main() -> None:
     ap.add_argument("--closing", type=int, nargs="*", default=[2026])
     ap.add_argument("--workers", type=int, default=12)
     ap.add_argument("--skip-odds", action="store_true")
+    ap.add_argument("--alt", action="store_true",
+                    help="also pull alternate spread/total ladders")
+    ap.add_argument("--only-alt", action="store_true")
     ap.add_argument("--skip-results", action="store_true")
     args = ap.parse_args()
 
@@ -63,10 +66,16 @@ def main() -> None:
         if events.empty:
             continue
 
+        if args.only_alt:
+            IO.fetch_alt(events, client=client, workers=args.workers)
+            continue
+
         if not args.skip_odds:
             IO.fetch_featured(events, client=client, workers=args.workers)
             IO.fetch_props(events, tag="decision", client=client,
                            workers=args.workers)
+            if args.alt:
+                IO.fetch_alt(events, client=client, workers=args.workers)
             if season in (args.closing or []):
                 IO.fetch_featured(events, client=client, workers=args.workers,
                                   tag="closing")

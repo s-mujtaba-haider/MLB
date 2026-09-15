@@ -105,3 +105,16 @@ SEASON 2025  (2025-03-27 .. 2025-09-28)
   [boxscores] 1800/2429 (10.8/s, eta 1.0m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
   [boxscores] 2000/2429 (10.5/s, eta 0.7m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
   [boxscores] 2200/2429 (10.4/s, eta 0.4m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+  [boxscores] 2400/2429 (10.3/s, eta 0.0m) 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+[espn] 2429 games, 71758 player-game rows
+[season 2025] done at 1463s. 15771 calls, 590,723 credits spent this run, 3,189,919 remaining
+
+======================================================================
+SEASON 2026  (2026-03-26 .. 2026-09-14)
+======================================================================
+[events 2026] 186 daily listings
+[events 2026] 2290 events -> events_2026.parquet
+[events 2026] 2276 in window
+[featured decision] 1145 snapshots x 3 regions = 3435 requests
+  [featured decision] 200/3435 (11.5/s, eta 4.7m) 16156 calls, 596,908 credits spent this run, 3,183,683 remaining
+  [featured decision] 400/3435 (11.6/s, eta 4.4m) 16356 calls, 602,908 credits spent this run, 3,177,713 remaining

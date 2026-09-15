@@ -47,6 +47,8 @@ def build_quotes(season: int, tags: tuple[str, ...] = ("decision",),
         frames.append(N.parse_props(events, tag=tag, client=client))
         print(f"[quotes {season}] parsing featured ({tag})", flush=True)
         frames.append(N.parse_featured(events, tag=tag, client=client))
+    print(f"[quotes {season}] parsing alternate ladders", flush=True)
+    frames.append(N.parse_alt(events, client=client))
     q = pd.concat([f for f in frames if not f.empty], ignore_index=True)
     q["season"] = season
     q.to_parquet(out, index=False)

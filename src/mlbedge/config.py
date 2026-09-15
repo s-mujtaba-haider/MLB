@@ -117,6 +117,22 @@ FEATURED_REQUEST_PLAN: dict[str, tuple[str, ...]] = {
     "us_ex": ("h2h", "spreads", "totals"),
 }
 
+# Alternate run lines and totals. Only on the per-event endpoint, never the
+# whole-slate one, so they cost per event rather than per snapshot. Worth it:
+# DraftKings posts roughly thirty alternate spread and thirty alternate total
+# outcomes per game against two on the main line, and the alternate rungs are
+# the ones books leave alone once they are up.
+ALT_REQUEST_PLAN: dict[str, tuple[str, ...]] = {
+    "us": ("alternate_spreads", "alternate_totals"),
+    "eu": ("alternate_spreads", "alternate_totals"),
+    "us_ex": ("alternate_spreads", "alternate_totals"),
+}
+ALT_API_KEYS = {"alternate_spreads": "spreads", "alternate_totals": "totals"}
+# An alternate rung is the same market at a different number, so it maps onto
+# the same Market object and flows through the identical normalise/grade path.
+for _alt, _canon in ALT_API_KEYS.items():
+    BY_API_KEY[_alt] = BY_NAME[_canon]
+
 # --- bookmakers -----------------------------------------------------------
 # Sharpness tier drives consensus weighting and which books may anchor a price.
 #   0 : zero/low-vig exchanges -- closest thing to a true probability

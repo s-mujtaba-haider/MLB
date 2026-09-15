@@ -129,6 +129,35 @@ def fetch_props(events: pd.DataFrame, tag: str = "decision",
     return len(got)
 
 
+def fetch_alt(events: pd.DataFrame, tag: str = "alt",
+              client: OddsClient | None = None, workers: int = 10,
+              regions: tuple[str, ...] | None = None) -> int:
+    """Alternate run lines and totals, from the per-event endpoint.
+
+    Same decision instant as everything else. Cached under its own tag so it
+    is additive to an existing backfill rather than invalidating it.
+    """
+    client = client or OddsClient()
+    plan = {r: mk for r, mk in C.ALT_REQUEST_PLAN.items()
+            if regions is None or r in regions}
+    jobs = []
+    for row in events.itertuples():
+        snap = _iso(_parse(row.commence_time)
+                    - dt.timedelta(minutes=C.DECISION_OFFSET_MIN))
+        for region, markets in plan.items():
+            jobs.append((row.event_id, snap, region, markets, tag))
+
+    def one(event_id, snap, region, markets, tag):
+        client.historical_event_odds(event_id, snap, region, markets, tag)
+        return 1
+
+    print(f"[alt {tag}] {len(jobs)} (event,region) requests over "
+          f"{len(events)} events")
+    got = run_pool(jobs, one, workers=workers, desc=f"alt {tag}")
+    print(f"[alt {tag}] done. {LEDGER.summary()}")
+    return len(got)
+
+
 # ---------------------------------------------------------------------------
 # Featured
 # ---------------------------------------------------------------------------
