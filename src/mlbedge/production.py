@@ -33,6 +33,7 @@ from . import config as C
 from . import dataset as D
 from .gate import KILLED, LIVE, VETO_FILTERED
 from .model import MarketModel
+from .selection import SelectionCalibrator, add_apparent_edge
 
 MODEL_DIR = C.ROOT / "models"
 MODEL_DIR.mkdir(exist_ok=True)
@@ -50,6 +51,10 @@ class Bundle:
     threshold: float
     deployment: str
     verdict: str
+    # The winner's-curse correction, fitted on training candidates. Without it
+    # production prices a shopped quote with the same upward bias the backtest
+    # exists to remove -- and the live EVs come out absurd.
+    selection: object | None = None
     cause: str = ""
     trained_at: str = ""
     n_train: int = 0
@@ -96,6 +101,7 @@ def train_all(props: pd.DataFrame, candidates: pd.DataFrame,
 
         c = candidates[candidates["market"] == mkt]
         thr = 0.03
+        sel_cal = SelectionCalibrator()
         if not c.empty:
             merged = c.merge(p[D.PROP_KEY + [f for f in feats if f in p.columns]],
                              on=D.PROP_KEY, how="inner", suffixes=("", "_p"))
@@ -104,11 +110,15 @@ def train_all(props: pd.DataFrame, candidates: pd.DataFrame,
                 merged["logit_cons"] = logit(merged["p_cons"].to_numpy(dtype=float))
                 merged = merged[merged["n_books_cons"]
                                 >= C.min_books_for(mkt)]
-                scored = B._score(merged, mm)
-                thr = B.choose_threshold(scored)
+                scored = add_apparent_edge(B._score_oof(merged, mm))
+                sel_cal = SelectionCalibrator().fit(scored)
+                scored = sel_cal.apply(scored)
+                thr = B.choose_threshold(
+                    scored, ev_col="ev_cal" if sel_cal.fitted else "ev")
 
         out[mkt] = Bundle(
             market=mkt, model=mm, features=feats, threshold=thr,
+            selection=sel_cal,
             deployment=deployment, verdict=info.get("verdict", "FAIL"),
             cause=info.get("cause", ""),
             trained_at=dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),

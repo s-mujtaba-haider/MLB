@@ -24,6 +24,7 @@ from .devig import attach_consensus, logit
 from .match import norm_player
 from .model import side_probability
 from .odds import american_to_prob, ev_per_unit, kelly_fraction
+from .selection import add_apparent_edge
 from .oddsapi import OddsClient, run_pool
 from .production import Bundle
 
@@ -248,18 +249,36 @@ def generate(bundles: dict[str, Bundle], players: pd.DataFrame,
         price = sub["price"].to_numpy(dtype=float)
         sub["p_raw"] = american_to_prob(price)
         sub["ev"] = ev_per_unit(sub["p_model"].to_numpy(), price)
+
+        # Apply the same winner's-curse correction the backtest was scored
+        # under. Skipping it here would publish EVs the validation never
+        # endorsed -- and they are badly inflated, because a shopped price is
+        # selected on the book's own error.
+        sub = add_apparent_edge(sub)
+        cal = getattr(b, "selection", None)
+        if cal is not None and getattr(cal, "fitted", False):
+            sub = cal.apply(sub)
+            ev_col = "ev_cal"
+        else:
+            sub["p_cal"] = sub["p_model"]
+            sub["ev_cal"] = sub["ev"]
+            ev_col = "ev_cal"
+        sub["p_model"] = sub["p_cal"]
+        sub["ev"] = sub[ev_col]
         sub["kelly"] = np.minimum(
-            kelly_fraction(sub["p_model"].to_numpy(), price), kelly_cap)
+            kelly_fraction(sub["p_cal"].to_numpy(), price), kelly_cap)
         sub["threshold"] = b.effective_threshold
         sub["deployment"] = b.deployment
-        sel = sub[sub["ev"] >= b.effective_threshold].copy()
+        sel = sub[sub[ev_col] >= b.effective_threshold].copy()
         if sel.empty:
             continue
         # One pick per proposition+side: the best price only.
+        # One bet per proposition: both sides can clear at the margin and
+        # taking both just locks in the hold.
         sel = (sel.sort_values("ev", ascending=False)
                   .drop_duplicates(subset=["event_id", "market", "subject",
-                                           "line", "side"], keep="first"))
-        out.append(sel)
+                                           "line"], keep="first"))
+        out.append(sel.copy())
 
     if not out:
         print("no picks cleared their thresholds")

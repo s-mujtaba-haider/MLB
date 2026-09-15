@@ -44,7 +44,11 @@ LOGFILE = C.REPORTS / "scheduler.log"
 # Games are priced once they are inside this window before first pitch. The
 # upper bound keeps us from quoting a market before lineups exist; the lower
 # bound leaves time to actually place the bet.
-LEAD_MAX_MIN = 240
+# The models are fitted on snapshots 30-45 minutes before first pitch, so
+# serving must stay inside that window. Pricing a game four hours out asks the
+# model to extrapolate on a feature (lead time) far outside its training
+# range, and prop markets are thin and stale that early anyway.
+LEAD_MAX_MIN = 90
 LEAD_MIN_MIN = 20
 
 
