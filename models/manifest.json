@@ -1,0 +1,200 @@
+{
+  "h2h": {
+    "deployment": "live",
+    "verdict": "PASS",
+    "threshold": 0.05,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:14+00:00",
+    "n_train": 2412,
+    "shrink": 0.35,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "spreads": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.005,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:14+00:00",
+    "n_train": 3066,
+    "shrink": 0.4,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "totals": {
+    "deployment": "veto_filtered",
+    "verdict": "FAIL",
+    "threshold": 0.08,
+    "cause": "no_edge",
+    "trained_at": "2026-09-15T07:16:15+00:00",
+    "n_train": 3689,
+    "shrink": 0.475,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "batter_hits": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.02,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:22+00:00",
+    "n_train": 44352,
+    "shrink": 0.15,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "batter_rbis": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.0,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:26+00:00",
+    "n_train": 42881,
+    "shrink": 0.175,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "batter_total_bases": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.045,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:34+00:00",
+    "n_train": 49116,
+    "shrink": 0.35,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "batter_home_runs": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.06,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:36+00:00",
+    "n_train": 41471,
+    "shrink": 0.275,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "runs_scored": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.03,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:45+00:00",
+    "n_train": 42542,
+    "shrink": 0.2,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "batter_strikeouts": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.03,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:47+00:00",
+    "n_train": 16161,
+    "shrink": 0.2,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "pitcher_strikeouts": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.025,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:48+00:00",
+    "n_train": 5882,
+    "shrink": 0.2,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  },
+  "pitcher_outs": {
+    "deployment": "killed",
+    "verdict": "FAIL",
+    "threshold": 0.11,
+    "cause": "",
+    "trained_at": "2026-09-15T07:16:51+00:00",
+    "n_train": 4686,
+    "shrink": 0.475,
+    "metrics": {
+      "n_bets": null,
+      "roi": null,
+      "roi_lo": null,
+      "roi_hi": null,
+      "p_value": null,
+      "clv_mean": null,
+      "hit_rate": null
+    }
+  }
+}

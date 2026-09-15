@@ -103,7 +103,11 @@ def train_all(props: pd.DataFrame, candidates: pd.DataFrame,
         thr = 0.03
         sel_cal = SelectionCalibrator()
         if not c.empty:
-            merged = c.merge(p[D.PROP_KEY + [f for f in feats if f in p.columns]],
+            # `line` is both a join key and a feature; listing it twice makes
+            # pandas reject the merge on a duplicate label.
+            extra = [f for f in feats
+                     if f in p.columns and f not in D.PROP_KEY]
+            merged = c.merge(p[D.PROP_KEY + list(dict.fromkeys(extra))],
                              on=D.PROP_KEY, how="inner", suffixes=("", "_p"))
             if not merged.empty:
                 from .devig import logit

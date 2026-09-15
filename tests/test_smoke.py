@@ -65,3 +65,22 @@ def test_scripts_parse():
     for p in sorted((root / "scripts").glob("*.py")):
         ast.parse(p.read_text(encoding="utf-8"), filename=str(p))
     ast.parse((root / "api" / "server.py").read_text(encoding="utf-8"))
+
+
+def test_feature_lists_never_duplicate_a_join_key():
+    """`line` is both a proposition key and a model feature. Projecting the
+    key list plus the feature list without de-duplicating makes pandas reject
+    the merge -- it has bitten both the backtest and the trainer."""
+    from mlbedge import config as C
+    from mlbedge import dataset as D
+
+    props = pd.DataFrame({
+        "event_id": ["e1"], "market": ["totals"], "subject": ["game"],
+        "line": [8.5], "n_books_prop": [6.0], "hold_med": [0.04],
+        "lead_min": [30.0], "n_quotes": [12.0], "book_std": [0.01],
+        "book_spread": [0.02], "logit_cons": [0.1], "won": [1.0],
+    })
+    feats = D.feature_columns(props, "totals")
+    projection = D.PROP_KEY + [f for f in feats
+                               if f in props.columns and f not in D.PROP_KEY]
+    assert len(projection) == len(set(projection)), projection

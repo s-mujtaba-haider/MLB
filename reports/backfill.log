@@ -188,3 +188,10 @@ SEASON 2026  (2026-03-26 .. 2026-09-14)
   [props decision] 10200/11380 (12.3/s, eta 1.6m) 29496 calls, 1,096,708 credits spent this run, 2,683,798 remaining
   [props decision] 10400/11380 (12.3/s, eta 1.3m) 29696 calls, 1,105,138 credits spent this run, 2,675,368 remaining
   [props decision] 10600/11380 (12.3/s, eta 1.1m) 29896 calls, 1,113,528 credits spent this run, 2,666,976 remaining
+  [props decision] 10800/11380 (12.3/s, eta 0.8m) 30096 calls, 1,121,698 credits spent this run, 2,658,806 remaining
+  [props decision] 11000/11380 (12.3/s, eta 0.5m) 30296 calls, 1,129,958 credits spent this run, 2,650,546 remaining
+  [props decision] 11200/11380 (12.3/s, eta 0.2m) 30497 calls, 1,138,268 credits spent this run, 2,642,236 remaining
+[props decision] done. 30676 calls, 1,145,568 credits spent this run, 2,634,936 remaining
+[featured closing] 1717 snapshots x 3 regions = 5151 requests
+  [featured closing] 200/5151 (10.6/s, eta 7.8m) 30876 calls, 1,151,568 credits spent this run, 2,628,906 remaining
+  [featured closing] 400/5151 (11.0/s, eta 7.2m) 31076 calls, 1,157,568 credits spent this run, 2,622,936 remaining

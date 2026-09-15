@@ -195,6 +195,7 @@ def _score_oof(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:
     d = cand.merge(mm.oof_frame, on=[c for c in PROP_KEY
                                      if c in mm.oof_frame.columns],
                    how="inner")
+    d = _ensure_payout(d)
     if d.empty:
         return _score(cand, mm)
     d["p_model"] = side_probability(d["p_over_oof"].to_numpy(dtype=float),
@@ -206,10 +207,19 @@ def _score_oof(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:
     return d.dropna(subset=["ev"])
 
 
+def _ensure_payout(d: pd.DataFrame) -> pd.DataFrame:
+    """Profit-on-win per unit. run_market precomputes it; callers that score a
+    candidate frame directly (train_production) do not."""
+    if "payout" not in d.columns:
+        d = d.copy()
+        d["payout"] = profit_per_unit(d["price"].to_numpy(dtype=float))
+    return d
+
+
 def _score(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:
     if cand.empty:
         return cand.assign(ev=[], p_model=[], profit=[])
-    d = cand.copy()
+    d = _ensure_payout(cand.copy())
     p_over = mm.predict_over(d)
     d["p_model"] = side_probability(p_over, d["side"])
     d["p_market"] = side_probability(d["p_cons"].to_numpy(dtype=float), d["side"])
