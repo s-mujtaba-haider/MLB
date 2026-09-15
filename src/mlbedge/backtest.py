@@ -137,7 +137,7 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
 
         # Threshold is fitted on training-window candidates only.
         tr_c = c[c["game_date"] <= f.train_end]
-        tr_bets = _score(tr_c, mm)
+        tr_bets = _score_oof(tr_c, mm)
         thr = choose_threshold(tr_bets)
 
         te_bets = _score(te_c, mm)
@@ -153,6 +153,29 @@ def run_market(market: str, props: pd.DataFrame, candidates: pd.DataFrame,
 
     bets = pd.concat(all_bets, ignore_index=True) if all_bets else pd.DataFrame()
     return bets, reports
+
+
+def _score_oof(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:
+    """Score training candidates with the model's out-of-fold probabilities.
+
+    Using the refitted model here would price training candidates with a model
+    that has seen them, inflating their EVs and tuning the threshold against
+    the model's own overfit instead of against the edge.
+    """
+    if cand.empty or mm.oof_frame is None:
+        return _score(cand, mm)
+    d = cand.merge(mm.oof_frame, on=[c for c in PROP_KEY
+                                     if c in mm.oof_frame.columns],
+                   how="inner")
+    if d.empty:
+        return _score(cand, mm)
+    d["p_model"] = side_probability(d["p_over_oof"].to_numpy(dtype=float),
+                                    d["side"])
+    price = d["price"].to_numpy(dtype=float)
+    d["ev"] = ev_per_unit(d["p_model"].to_numpy(), price)
+    d["profit"] = np.where(d["result"] == WIN, d["payout"],
+                           np.where(d["result"] == LOSS, -1.0, 0.0))
+    return d.dropna(subset=["ev"])
 
 
 def _score(cand: pd.DataFrame, mm: MarketModel) -> pd.DataFrame:

@@ -228,8 +228,10 @@ def _blend(*series, weights=(0.3, 0.5, 0.2)):
 
 def feature_columns(props: pd.DataFrame, market: str) -> list[str]:
     """Features appropriate to one market, dropping all-null columns."""
-    m = C.BY_NAME[market]
+    m = C.BY_NAME.get(market)
     cols = list(MARKET_STRUCT) + ["is_home_player", "logit_cons"]
+    if m is None:
+        return [c for c in cols if c in props.columns]
     if m.side == "batting":
         cols += [c for c in props.columns if c.startswith(("bat_", "tm_"))]
         cols += [c for c in props.columns if c.startswith("park_")]

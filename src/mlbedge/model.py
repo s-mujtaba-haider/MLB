@@ -81,6 +81,7 @@ class MarketModel:
         self.iso: IsotonicRegression | None = None
         self.shrink: float = 0.0
         self.report: FitReport | None = None
+        self.oof_frame: pd.DataFrame | None = None
 
     # -- fitting ---------------------------------------------------------
     def fit(self, train: pd.DataFrame, features: list[str],
@@ -115,6 +116,16 @@ class MarketModel:
 
         p_market = expit(lc)
         p_final = expit(lc + self.shrink * (logit(oof_cal) - lc))
+
+        # Keep the out-of-fold probabilities. The EV threshold is chosen from
+        # these rather than from the refitted model's in-sample predictions:
+        # in-sample EVs are optimistic, and a threshold tuned against them is
+        # tuned against the model's own overfit rather than against the edge.
+        key = [c for c in ("event_id", "market", "subject", "line")
+               if c in d.columns]
+        self.oof_frame = d[key].copy() if key else None
+        if self.oof_frame is not None:
+            self.oof_frame["p_over_oof"] = p_final
         self.report = FitReport(
             market=self.market, n_train=len(d), shrink=self.shrink,
             ll_market=log_loss(y, p_market), ll_model=log_loss(y, oof_cal),
