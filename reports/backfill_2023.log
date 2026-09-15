@@ -1,0 +1,13 @@
+=== starting 2023 ===
+
+======================================================================
+SEASON 2023  (2023-03-30 .. 2023-10-01)
+======================================================================
+[events 2023] 186 daily listings
+[events 2023] 2301 events -> events_2023.parquet
+[events 2023] 2301 in window
+[featured decision] 1152 snapshots x 3 regions = 3456 requests
+  [featured decision] 200/3456 (15.1/s, eta 3.6m) 386 calls, 6,186 credits spent this run, 1,586,085 remaining
+  [featured decision] 400/3456 (15.6/s, eta 3.3m) 587 calls, 12,216 credits spent this run, 1,575,655 remaining
+  [featured decision] 600/3456 (15.7/s, eta 3.0m) 786 calls, 18,186 credits spent this run, 1,565,405 remaining
+  [featured decision] 800/3456 (15.3/s, eta 2.9m) 986 calls, 24,186 credits spent this run, 1,555,045 remaining

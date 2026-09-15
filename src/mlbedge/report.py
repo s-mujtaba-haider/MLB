@@ -33,15 +33,17 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
       + (f", {nveto} VETO (leakage)" if nveto else "") + "\n")
 
     a("## Summary\n")
-    a("| Market | Verdict | Deploy | Bets | ROI | 95% CI | p | CLV | Hit | "
-      "Shrink |")
-    a("|---|---|---|---:|---:|---|---:|---:|---:|---:|")
+    a("| Market | Verdict | Deploy | Bets | Games | ROI | 95% CI | p | CLV | "
+      "Hit | Shrink |")
+    a("|---|---|---|---:|---:|---:|---|---:|---:|---:|---:|")
     for v in sorted(verdicts, key=lambda x: (x.verdict != PASS, x.market)):
         m = v.metrics
         ci = (f"{_fmt(m.get('roi_lo'))} … {_fmt(m.get('roi_hi'))}"
               if np.isfinite(m.get("roi_lo", np.nan)) else "n/a")
+        ng = m.get("n_games")
+        ng = "�" if ng is None or not np.isfinite(ng) else f"{int(ng)}"
         a(f"| `{v.market}` | **{v.verdict}** | {v.deployment} | "
-          f"{m.get('n_bets', 0)} | {_fmt(m.get('roi'))} | {ci} | "
+          f"{m.get('n_bets', 0)} | {ng} | {_fmt(m.get('roi'))} | {ci} | "
           f"{_fmt(m.get('p_value'), '.4f')} | {_fmt(m.get('clv_mean'), '+.4f')} | "
           f"{_fmt(m.get('hit_rate'), '.1%')} | "
           f"{_fmt(m.get('avg_shrink'), '.2f')} |")
@@ -51,7 +53,7 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
     a("- **ROI** is flat-stake return per unit risked on out-of-sample bets "
       "only; every fold's model, calibration and EV threshold were fitted "
       "strictly before that fold began.")
-    a("- **95% CI** is a percentile bootstrap over bets. A market passes only "
+    a("- **95% CI** is a percentile bootstrap over **games**, not bets. A market passes only "
       "if the lower bound clears zero — a positive point estimate with an "
       "interval straddling zero is not evidence.")
     a("- **p** is a one-sided bootstrap p-value, then corrected across all "
@@ -77,9 +79,12 @@ def write_market_report(verdicts: list[Verdict], bets: pd.DataFrame,
         m = C.BY_NAME.get(v.market)
         a(f"### `{v.market}` — {m.label if m else ''} — **{v.verdict}**\n")
         met = v.metrics
+        ng = met.get("n_games")
+        ng_txt = ("" if ng is None or not np.isfinite(ng)
+                  else f" across **{int(ng)}** distinct games")
         a(f"- Bets: **{met.get('n_bets', 0)}** "
           f"({met.get('n_win', 0)}W / {met.get('n_loss', 0)}L / "
-          f"{met.get('n_push', 0)}P)")
+          f"{met.get('n_push', 0)}P){ng_txt}")
         a(f"- ROI: **{_fmt(met.get('roi'))}** "
           f"(95% CI {_fmt(met.get('roi_lo'))} … {_fmt(met.get('roi_hi'))}), "
           f"p = {_fmt(met.get('p_value'), '.4f')}")
